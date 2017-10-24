@@ -58,7 +58,7 @@ namespace FF6_Save_State_Editor.Util
         /// <summary>
         /// Offset to the start of the Rage flags
         /// </summary>
-        private const int RAGE_OFFSET = 0x74B;
+        private const int RAGE_OFFSET = 0x72C;
 
         // Inventory
         /// <summary>
