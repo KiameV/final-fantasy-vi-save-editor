@@ -724,7 +724,7 @@ namespace FF6_Save_Editor.Util
                     if (terraName[i] == '?')
                         name[i] = 0xBF;
                     else
-                        name[i] = (byte)terraName[i];
+                        name[i] = (byte)(terraName[i] + 63);
                 }
                 try
                 {
