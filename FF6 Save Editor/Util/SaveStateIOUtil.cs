@@ -6,9 +6,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 using static FF6_Save_State_Editor.Util.EsperContainer;
 using static FF6_Save_State_Editor.Util.OffsetFactory;
 using static FF6_Save_State_Editor.Util.RagesContainer;
+using Microsoft.VisualBasic;
 
 namespace FF6_Save_Editor.Util
 {
@@ -23,13 +25,30 @@ namespace FF6_Save_Editor.Util
         /// <param name="saveStateDto">SaveStateDto which contains the fields and the save's byte array to sync</param>
         public static void LoadSaveStateInformation(SaveDto saveStateDto)
         {
-            Offsets offsets = OffsetFactory.CreateOffsets(saveStateDto.SaveFileType);
+            Offsets offsets = null;
+            if (saveStateDto.SaveFileType == SaveFileTypeEnum.Snes9xSaveState16)
+            {
+                if (!TryFindDynamicOffset(saveStateDto, out int offset))
+                    return;
 
-            LoadCharacters(saveStateDto.Characters, saveStateDto.SaveByteArray, offsets);
-            LoadInventory(saveStateDto.Inventory, saveStateDto.SaveByteArray, offsets);
-            LoadSkills(saveStateDto.Skills, saveStateDto.SaveByteArray, offsets);
-            LoadEspers(saveStateDto.KnownEspers, saveStateDto.SaveByteArray, offsets);
-            LoadOtherStats(saveStateDto.OtherStats, saveStateDto.SaveByteArray, offsets);
+                offsets = OffsetFactory.CreateOffsets(offset);
+            }
+            else {
+                offsets = OffsetFactory.CreateOffsets(saveStateDto.SaveFileType);
+            }
+
+            try
+            {
+                LoadCharacters(saveStateDto.Characters, saveStateDto.SaveByteArray, offsets);
+                LoadInventory(saveStateDto.Inventory, saveStateDto.SaveByteArray, offsets);
+                LoadSkills(saveStateDto.Skills, saveStateDto.SaveByteArray, offsets);
+                LoadEspers(saveStateDto.KnownEspers, saveStateDto.SaveByteArray, offsets);
+                LoadOtherStats(saveStateDto.OtherStats, saveStateDto.SaveByteArray, offsets);
+            }
+            catch
+            {
+                MessageBox.Show("Failed to load.");
+            }
         }
 
         /// <summary>
@@ -38,36 +57,54 @@ namespace FF6_Save_Editor.Util
         /// <param name="saveStateDto">SaveStateDto which contains the save's byte array and the fields to sync</param>
         public static void SaveSaveStateInformation(SaveDto saveStateDto)
         {
-            Offsets offsets = OffsetFactory.CreateOffsets(saveStateDto.SaveFileType);
-
-            SaveCharacters(saveStateDto.Characters, saveStateDto.SaveByteArray, offsets);
-            SaveInventory(saveStateDto.Inventory, saveStateDto.SaveByteArray, offsets);
-            SaveSkills(saveStateDto.Skills, saveStateDto.SaveByteArray, offsets);
-            SaveEspers(saveStateDto.KnownEspers, saveStateDto.SaveByteArray, offsets);
-            SaveOtherStats(saveStateDto.OtherStats, saveStateDto.SaveByteArray, offsets);
-
-            if (saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot1 ||
-                saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot2 ||
-                saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot3)
+            Offsets offsets = null;
+            if (saveStateDto.SaveFileType == SaveFileTypeEnum.Snes9xSaveState16)
             {
-                int baseOffset = 0;
-                if (saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot2)
-                    baseOffset = OffsetFactory.SRM_SLOT_SIZE;
-                else if (saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot3)
-                    baseOffset = OffsetFactory.SRM_SLOT_SIZE * 2;
-                
-                uint newchecksum = 0;
+                if (!TryFindDynamicOffset(saveStateDto, out int offset, saveStateDto.Characters.getCharacter(CharacterEnum.Terra).Name))
+                    return;
 
-                for (int i = baseOffset; i < baseOffset + OffsetFactory.SRM_SLOT_SIZE - 2; i++)
+                offsets = OffsetFactory.CreateOffsets(offset);
+            }
+            else
+            {
+                offsets = OffsetFactory.CreateOffsets(saveStateDto.SaveFileType);
+            }
+
+            try
+            {
+                SaveCharacters(saveStateDto.Characters, saveStateDto.SaveByteArray, offsets);
+                SaveInventory(saveStateDto.Inventory, saveStateDto.SaveByteArray, offsets);
+                SaveSkills(saveStateDto.Skills, saveStateDto.SaveByteArray, offsets);
+                SaveEspers(saveStateDto.KnownEspers, saveStateDto.SaveByteArray, offsets);
+                SaveOtherStats(saveStateDto.OtherStats, saveStateDto.SaveByteArray, offsets);
+
+                if (saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot1 ||
+                    saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot2 ||
+                    saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot3)
                 {
-                    newchecksum += saveStateDto.SaveByteArray[i];
-                    newchecksum &= 0xFFFF;
+                    int baseOffset = 0;
+                    if (saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot2)
+                        baseOffset = OffsetFactory.SRM_SLOT_SIZE;
+                    else if (saveStateDto.SaveFileType == SaveFileTypeEnum.SRMSlot3)
+                        baseOffset = OffsetFactory.SRM_SLOT_SIZE * 2;
+
+                    uint newchecksum = 0;
+
+                    for (int i = baseOffset; i < baseOffset + OffsetFactory.SRM_SLOT_SIZE - 2; i++)
+                    {
+                        newchecksum += saveStateDto.SaveByteArray[i];
+                        newchecksum &= 0xFFFF;
+                    }
+
+                    byte[] bytes = BitConverter.GetBytes(newchecksum);
+
+                    saveStateDto.SaveByteArray[baseOffset + OffsetFactory.SRM_SLOT_SIZE - 2] = bytes[0];
+                    saveStateDto.SaveByteArray[baseOffset + OffsetFactory.SRM_SLOT_SIZE - 1] = bytes[1];
                 }
-
-                byte[] bytes = BitConverter.GetBytes(newchecksum);
-
-                saveStateDto.SaveByteArray[baseOffset + OffsetFactory.SRM_SLOT_SIZE - 2] = bytes[0];
-                saveStateDto.SaveByteArray[baseOffset + OffsetFactory.SRM_SLOT_SIZE - 1] = bytes[1];
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show($"Failed to save state.\n{e.Message}");
             }
         }
 
@@ -671,6 +708,61 @@ namespace FF6_Save_Editor.Util
             {
                 knownEspers.SetSkillKnown((int)esper.Esper, (bits & esper.Flag) != 0);
             }
+        }
+
+        private static bool TryFindDynamicOffset(SaveDto saveDto, out int offset, string nameOfTerra = "TERRA")
+        {
+            offset = -1;
+            saveDto.NameOfTerra = Interaction.InputBox("Terra's Name", "", nameOfTerra);
+            if (saveDto.NameOfTerra != "")
+            {
+                char[] terraName = saveDto.NameOfTerra.ToCharArray();
+                byte[] name = new byte[terraName.Length];
+                int i = 0;
+                for (; i < terraName.Length; ++i)
+                {
+                    if (terraName[i] == '?')
+                        name[i] = 0xBF;
+                    else
+                        name[i] = (byte)terraName[i];
+                }
+                try
+                {
+                    bool found = false;
+                    byte[] bytes = saveDto.SaveByteArray;
+                    for (i = 0; i < bytes.Length; ++i)
+                    {
+                        if (name[0] == bytes[i])
+                        {
+                            found = true;
+                            for (int j = 0; j < name.Length && i + j < bytes.Length; ++j)
+                            {
+                                if (name[j] != bytes[i + j])
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                            if (found)
+                                break;
+                        }
+                    }
+                    if (found)
+                    {
+                        offset = i;
+                        return true;
+                    }
+                }
+                catch
+                {
+                }
+            }
+            MessageBox.Show(
+                "Failed to find offset based off the given name.\n" +
+                "The name is case sensitive.\n" +
+                "If saving and Terra's name changed use Terra's previous name.");
+            saveDto.NameOfTerra = "";
+            return false;
         }
     }
 }

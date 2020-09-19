@@ -42,6 +42,7 @@ namespace FF6_Save_Editor
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sRMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.snes9xToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.snes9xV16ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -320,7 +321,7 @@ namespace FF6_Save_Editor
             this.slot2ToolStripMenuItem,
             this.slot3ToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(159, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenuItem1.Text = "Open SRM";
             // 
             // slot1ToolStripMenuItem
@@ -348,53 +349,61 @@ namespace FF6_Save_Editor
             // 
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sRMToolStripMenuItem,
-            this.snes9xToolStripMenuItem});
+            this.snes9xToolStripMenuItem,
+            this.snes9xV16ToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Save State";
             // 
             // sRMToolStripMenuItem
             // 
             this.sRMToolStripMenuItem.Name = "sRMToolStripMenuItem";
-            this.sRMToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.sRMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sRMToolStripMenuItem.Text = "ZNES";
             this.sRMToolStripMenuItem.Click += new System.EventHandler(this.openZnesSaveState_Click);
             // 
             // snes9xToolStripMenuItem
             // 
             this.snes9xToolStripMenuItem.Name = "snes9xToolStripMenuItem";
-            this.snes9xToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.snes9xToolStripMenuItem.Text = "Snes9x";
-            this.snes9xToolStripMenuItem.Click += new System.EventHandler(this.openSnes9xSaveState_Click);
+            this.snes9xToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.snes9xToolStripMenuItem.Text = "Snes9x v1.5";
+            this.snes9xToolStripMenuItem.Click += new System.EventHandler(this.openSnes9xSaveStatev15_Click);
+            // 
+            // snes9xV16ToolStripMenuItem
+            // 
+            this.snes9xV16ToolStripMenuItem.Name = "snes9xV16ToolStripMenuItem";
+            this.snes9xV16ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.snes9xV16ToolStripMenuItem.Text = "Snes9x v1.6";
+            this.snes9xV16ToolStripMenuItem.Click += new System.EventHandler(this.openSnes9xSaveStatev16_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(156, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.save_click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAs_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(156, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exit_Click);
             // 
@@ -2702,6 +2711,7 @@ namespace FF6_Save_Editor
         private System.Windows.Forms.GroupBox groupBoxASX;
         private System.Windows.Forms.NumericUpDown airshipYAxis;
         private System.Windows.Forms.CheckBox isAirshipVisible;
+        private System.Windows.Forms.ToolStripMenuItem snes9xV16ToolStripMenuItem;
     }
 }
 

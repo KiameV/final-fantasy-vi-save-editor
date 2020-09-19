@@ -1283,11 +1283,19 @@ namespace FF6_Save_Editor
         }
 
         /// <summary>
-        /// Called when the user selectes Open Snes9x from the UI
+        /// Called when the user selectes Open Snes9x v1.5 from the UI
         /// </summary>
-        private void openSnes9xSaveState_Click(object sender, EventArgs e)
+        private void openSnes9xSaveStatev15_Click(object sender, EventArgs e)
         {
-            this.LoadFile(SaveFileTypeEnum.Snes9xSaveState);
+            this.LoadFile(SaveFileTypeEnum.Snes9xSaveState15);
+        }
+
+        /// <summary>
+        /// Called when the user selectes Open Snes9x v1.6 Offset 1 from the UI
+        /// </summary>
+        private void openSnes9xSaveStatev16_Click(object sender, EventArgs e)
+        {
+            this.LoadFile(SaveFileTypeEnum.Snes9xSaveState16);
         }
 
         /// <summary>

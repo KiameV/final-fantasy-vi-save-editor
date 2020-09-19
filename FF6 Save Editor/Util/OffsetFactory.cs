@@ -217,8 +217,10 @@ namespace FF6_Save_State_Editor.Util
         {
             switch (saveFileType)
             {
-                case SaveFileTypeEnum.Snes9xSaveState:
+                case SaveFileTypeEnum.Snes9xSaveState15:
                     return new Offsets(0x121CF);
+                case SaveFileTypeEnum.Snes9xSaveState16:
+                    return new Offsets(0x121DB);
                 case SaveFileTypeEnum.SRMSlot1:
                     return new Offsets(0 * SRM_SLOT_SIZE);
                 case SaveFileTypeEnum.SRMSlot2:
@@ -229,6 +231,16 @@ namespace FF6_Save_State_Editor.Util
                     return new Offsets(0x2213);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Create an Offset from the given offset
+        /// </summary>
+        /// <param name="offset">The base offset</param>
+        /// <returns>An Offset instance applicable for the given base offset</returns>
+        public static Offsets CreateOffsets(int offset)
+        {
+            return new Offsets(offset - 2);
         }
     }
 

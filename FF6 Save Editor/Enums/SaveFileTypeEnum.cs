@@ -18,9 +18,13 @@
         /// </summary>
         SRMSlot3,
         /// <summary>
-        /// Snes9x save state
+        /// Snes9x v1.5 save state
         /// </summary>
-        Snes9xSaveState,
+        Snes9xSaveState15,
+        /// <summary>
+        /// Snes9x v1.6 save state offset 1
+        /// </summary>
+        Snes9xSaveState16,
         /// <summary>
         /// ZNES save state
         /// </summary>

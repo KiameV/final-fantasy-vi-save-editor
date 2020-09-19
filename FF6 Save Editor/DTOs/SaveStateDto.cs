@@ -11,6 +11,11 @@ namespace FF6_Save_Editor.DTOs
     class SaveDto
     {
         /// <summary>
+        /// Used to find the beginning offset of the save
+        /// </summary>
+        public string NameOfTerra = "";
+
+        /// <summary>
         /// The Character-specific data
         /// </summary>
         public readonly CharacterContainer Characters;

@@ -37,7 +37,8 @@ namespace FF6_Save_Editor.Util
         /// <returns>True if the parsing was successful. False if there was a problem.</returns>
         public static bool OpenFile(SaveFileTypeEnum saveFileType, out Byte[] byteStream)
         {
-            if (saveFileType == SaveFileTypeEnum.Snes9xSaveState)
+            if (saveFileType == SaveFileTypeEnum.Snes9xSaveState15 ||
+                saveFileType == SaveFileTypeEnum.Snes9xSaveState16)
             {
                 return OpenGzipHexFile(out byteStream);
             }
@@ -52,7 +53,8 @@ namespace FF6_Save_Editor.Util
         /// <returns>True if the save was successful. False if there was a problem.</returns>
         public static bool SaveFile(SaveFileTypeEnum saveFileType, Byte[] byteStream)
         {
-            if (saveFileType == SaveFileTypeEnum.Snes9xSaveState)
+            if (saveFileType == SaveFileTypeEnum.Snes9xSaveState15 ||
+                saveFileType == SaveFileTypeEnum.Snes9xSaveState16)
             {
                 return SaveGzipHexFile(byteStream);
             }
@@ -109,7 +111,8 @@ namespace FF6_Save_Editor.Util
         {
             switch(saveFileType)
             {
-                case SaveFileTypeEnum.Snes9xSaveState:
+                case SaveFileTypeEnum.Snes9xSaveState15:
+                case SaveFileTypeEnum.Snes9xSaveState16:
                     dialog.Title = "Select the Save State";
                     dialog.DefaultExt = "*.000";
                     dialog.Filter = "Snes9x Save State Files|*.0*";
