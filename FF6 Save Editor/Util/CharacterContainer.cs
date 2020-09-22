@@ -50,5 +50,9 @@ namespace FF6_Save_Editor.DTOs
         {
             return this.characters[(uint)character];
         }
+
+        public CharacterDto this[int i] => this.characters[i];
+
+        public int Count => this.characters.Length;
     }
 }

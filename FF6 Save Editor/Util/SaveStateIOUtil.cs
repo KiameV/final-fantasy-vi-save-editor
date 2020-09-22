@@ -70,6 +70,34 @@ namespace FF6_Save_Editor.Util
                 offsets = OffsetFactory.CreateOffsets(saveStateDto.SaveFileType);
             }
 
+            for (int i = 0; i < saveStateDto.Characters.Count; ++i)
+            {
+                string name = saveStateDto.Characters[i].Name;
+                for (int j = 0; j < name?.Length; ++j)
+                {
+                    int c = name[j];
+                    if ((c >= 'a' && c <= 'z') ||
+                        (c >= 'A' && c <= 'Z') ||
+                        (c >= '0' && c <= '9') ||
+                        c == '!' ||
+                        c == '?' ||
+                        c == '~' ||
+                        c == ':' ||
+                        c == '"' ||
+                        c == '\'' ||
+                        c == '-' ||
+                        c == '.')
+                    {
+                        // Ok
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Invalid character name {name}.\nAllowable characters:\nA-Z, a-z, 0-9, !, ?, ~, :, \", ', -, .");
+                        return;
+                    }
+                }
+            }
+
             try
             {
                 SaveCharacters(saveStateDto.Characters, saveStateDto.SaveByteArray, offsets);
@@ -133,15 +161,7 @@ namespace FF6_Save_Editor.Util
                     {
                         break;
                     }
-
-                    if (b == 191)
-                    {
-                        name.Append('?');
-                    }
-                    else
-                    {
-                        name.Append((char)(b - 63));
-                    }
+                    name.Append(ByteToUnicode(b));
                 }
                 i += 6;
                 character.Name = name.ToString();
@@ -372,19 +392,7 @@ namespace FF6_Save_Editor.Util
                 char[] nameChars = character.Name.ToCharArray();
                 for (uint n = 0; n < nameChars.Length; ++n)
                 {
-                    if (nameChars[n] == '?')
-                    {
-                        chars[n] = 191;
-                    }
-                    else
-                    {
-                        int c = (int)(Convert.ToInt32(nameChars[n]) + 63);
-                        if (c > 255)
-                            c = 255;
-                        if (c < 0)
-                            c = 0;
-                        chars[n] = (byte)c;
-                    }
+                    chars[n] = UnicodeToByte(nameChars[n]);
                 }
                 for (uint n = 0; n < 6; ++n, ++i)
                 {
@@ -721,10 +729,7 @@ namespace FF6_Save_Editor.Util
                 int i = 0;
                 for (; i < terraName.Length; ++i)
                 {
-                    if (terraName[i] == '?')
-                        name[i] = 0xBF;
-                    else
-                        name[i] = (byte)(terraName[i] + 63);
+                    name[i] = UnicodeToByte(terraName[i]);
                 }
                 try
                 {
@@ -763,6 +768,79 @@ namespace FF6_Save_Editor.Util
                 "If saving and Terra's name changed use Terra's previous name.");
             saveDto.NameOfTerra = "";
             return false;
+        }
+
+        private static byte UnicodeToByte(char c)
+        {
+            if (c >= 'a' && c <= 'z')
+            {
+                // Lower case characters
+                return (byte)((c - 'a') + 154);
+            }
+            else if (c >= '0' && c <= '9')
+            {
+                // numbers
+                return (byte)((c - '0') + 180);
+            }
+
+            switch (c)
+            {
+                case '!':
+                    return 190;
+                case '?':
+                    return 191;
+                case '~':
+                    return 192;
+                case ':':
+                    return 193;
+                case '"':
+                    return 194;
+                case '\'':
+                    return 195;
+                case '-':
+                    return 196;
+                case '.':
+                    return 197;
+            }
+            return (byte)(c + 63);
+        }
+
+        private static char ByteToUnicode(byte b)
+        {
+            if (b >= 154 && b <= 179)
+            {
+                // Lower case characters
+                return (char)((byte)'a' + (b - 154));
+            }
+            else if (b >= 180 && b <= 189)
+            {
+                // numbers
+                return (char)((byte)'0' + (b - 180));
+            }
+            else if (b >= 190 || b <= 197)
+            {
+                switch (b)
+                {
+                    case 190:
+                        return '!';
+                    case 191:
+                        return '?';
+                    case 192:
+                        return '~';
+                    case 193:
+                        return ':';
+                    case 194:
+                        return '"';
+                    case 195:
+                        return '\'';
+                    case 196:
+                        return '-';
+                    case 197:
+                        return '.';
+                }
+            }
+            // Upper case characters
+            return (char)(b - 63);
         }
     }
 }

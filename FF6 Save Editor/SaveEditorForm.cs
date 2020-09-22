@@ -8,6 +8,7 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace FF6_Save_Editor
