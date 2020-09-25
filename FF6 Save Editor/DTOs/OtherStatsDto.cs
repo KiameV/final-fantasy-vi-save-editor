@@ -18,6 +18,7 @@
         public byte AirshipXAxis { get; set; }
         public byte AirshipYAxis { get; set; }
         public bool IsAirshipVisible { get; set; }
+        public byte CursedShieldFightCount { get; set; }
 
         public uint SlotId { get; private set; }
 

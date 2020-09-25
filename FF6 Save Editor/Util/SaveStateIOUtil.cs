@@ -350,6 +350,9 @@ namespace FF6_Save_Editor.Util
 
             // Airship Visible
             otherStats.IsAirshipVisible = (saveState[offsets.AirshipSettingsOffset] & (1 << 1)) != 0;
+
+            // Cursed Shield
+            otherStats.CursedShieldFightCount = saveState[offsets.CursedShieldFightOffset];
         }
 
         /// <summary>
@@ -579,6 +582,9 @@ namespace FF6_Save_Editor.Util
                 saveState[offsets.AirshipSettingsOffset] |= 1 << 1;
             else
                 saveState[offsets.AirshipSettingsOffset] = (byte)(saveState[offsets.AirshipSettingsOffset] & ~(1 << 1));
+
+            // Cursed Shield Fight Count
+            saveState[offsets.CursedShieldFightOffset] = otherStats.CursedShieldFightCount;
         }
 
         /// <summary>

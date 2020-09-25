@@ -347,6 +347,7 @@ namespace FF6_Save_Editor
             this.airshipXAxis.Value = otherStats.AirshipXAxis;
             this.airshipYAxis.Value = otherStats.AirshipYAxis;
             this.isAirshipVisible.Checked = otherStats.IsAirshipVisible;
+            this.cursedShieldFightCount.Value = otherStats.CursedShieldFightCount;
         }
 
         /// <summary>
@@ -484,6 +485,7 @@ namespace FF6_Save_Editor
             otherStats.AirshipXAxis = (byte)this.airshipXAxis.Value;
             otherStats.AirshipYAxis = (byte)this.airshipYAxis.Value;
             otherStats.IsAirshipVisible = this.isAirshipVisible.Checked;
+            otherStats.CursedShieldFightCount = (byte)this.cursedShieldFightCount.Value;
         }
 
         /// <summary>

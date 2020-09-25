@@ -91,6 +91,10 @@ namespace FF6_Save_State_Editor.Util
         /// Offset to the Airship X/Y Axis definition
         /// </summary>
         private const int AIRSHIP_XY_OFFSET = 0x962;
+        /// <summary>
+        /// Offset to the Cursed Shield fight counter
+        /// </summary>
+        private const int CURSED_SHIELD_FIGHTS_OFFSET = 0x7D5;
 
         // Todo
         /// <summary>
@@ -179,6 +183,10 @@ namespace FF6_Save_State_Editor.Util
             /// </summary>
             public readonly int AirshipSettingsOffset;
             /// <summary>
+            /// Offset to the Cursed Shield fight count
+            /// </summary>
+            public readonly int CursedShieldFightOffset;
+            /// <summary>
             /// Offset to the Number of Saves definition
             /// </summary>
             public readonly int NumberOfSaves;
@@ -204,6 +212,7 @@ namespace FF6_Save_State_Editor.Util
                 MapXYOffset = MAP_XY_OFFSET + baseOffset;
                 AirshipXYOffset = AIRSHIP_XY_OFFSET + baseOffset;
                 AirshipSettingsOffset = AIRSHIP_SETTINGS_OFFSET + baseOffset;
+                CursedShieldFightOffset = CURSED_SHIELD_FIGHTS_OFFSET + baseOffset;
                 NumberOfSaves = NUMBER_OF_SAVE_OFFSET + baseOffset;
             }
         }

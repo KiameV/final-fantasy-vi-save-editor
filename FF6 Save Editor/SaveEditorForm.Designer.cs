@@ -87,11 +87,17 @@ namespace FF6_Save_Editor
             this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox25 = new System.Windows.Forms.GroupBox();
+            this.armorId = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.groupBox23 = new System.Windows.Forms.GroupBox();
+            this.helmitId = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.shieldId = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.weaponId = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.groupBox29 = new System.Windows.Forms.GroupBox();
+            this.relic2Id = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.groupBox27 = new System.Windows.Forms.GroupBox();
+            this.relic1Id = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox28 = new System.Windows.Forms.GroupBox();
             this.weaponShieldRTB = new System.Windows.Forms.RichTextBox();
@@ -126,6 +132,7 @@ namespace FF6_Save_Editor
             this.inventoryRTB = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel18 = new System.Windows.Forms.TableLayoutPanel();
+            this.findByHex = new FF6_Save_Editor.UI.HexNumericUpDown();
             this.resultByHex = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -176,13 +183,8 @@ namespace FF6_Save_Editor
             this.airshipYAxis = new System.Windows.Forms.NumericUpDown();
             this.isAirshipVisible = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.armorId = new FF6_Save_Editor.UI.HexNumericUpDown();
-            this.helmitId = new FF6_Save_Editor.UI.HexNumericUpDown();
-            this.shieldId = new FF6_Save_Editor.UI.HexNumericUpDown();
-            this.weaponId = new FF6_Save_Editor.UI.HexNumericUpDown();
-            this.relic2Id = new FF6_Save_Editor.UI.HexNumericUpDown();
-            this.relic1Id = new FF6_Save_Editor.UI.HexNumericUpDown();
-            this.findByHex = new FF6_Save_Editor.UI.HexNumericUpDown();
+            this.groupBox40 = new System.Windows.Forms.GroupBox();
+            this.cursedShieldFightCount = new System.Windows.Forms.NumericUpDown();
             this.menuStrip1.SuspendLayout();
             this.mainTabs.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -219,11 +221,17 @@ namespace FF6_Save_Editor
             this.tableLayoutPanel13.SuspendLayout();
             this.tableLayoutPanel8.SuspendLayout();
             this.groupBox25.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.armorId)).BeginInit();
             this.groupBox23.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.helmitId)).BeginInit();
             this.groupBox21.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.shieldId)).BeginInit();
             this.groupBox19.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.weaponId)).BeginInit();
             this.groupBox29.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.relic2Id)).BeginInit();
             this.groupBox27.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.relic1Id)).BeginInit();
             this.tableLayoutPanel14.SuspendLayout();
             this.groupBox28.SuspendLayout();
             this.groupBox30.SuspendLayout();
@@ -246,6 +254,7 @@ namespace FF6_Save_Editor
             this.tableLayoutPanel19.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tableLayoutPanel18.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.findByHex)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel23.SuspendLayout();
@@ -281,13 +290,8 @@ namespace FF6_Save_Editor
             ((System.ComponentModel.ISupportInitialize)(this.mapXAxis)).BeginInit();
             this.groupBoxASX.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.airshipYAxis)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.armorId)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.helmitId)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.shieldId)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.weaponId)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.relic2Id)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.relic1Id)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.findByHex)).BeginInit();
+            this.groupBox40.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cursedShieldFightCount)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -971,6 +975,22 @@ namespace FF6_Save_Editor
             this.groupBox25.TabStop = false;
             this.groupBox25.Text = "Armor Id";
             // 
+            // armorId
+            // 
+            this.armorId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armorId.Hexadecimal = true;
+            this.armorId.HexLength = 2;
+            this.armorId.Location = new System.Drawing.Point(3, 16);
+            this.armorId.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.armorId.Name = "armorId";
+            this.armorId.Size = new System.Drawing.Size(138, 20);
+            this.armorId.TabIndex = 1;
+            this.armorId.Value = ((long)(0));
+            // 
             // groupBox23
             // 
             this.groupBox23.Controls.Add(this.helmitId);
@@ -981,6 +1001,22 @@ namespace FF6_Save_Editor
             this.groupBox23.TabIndex = 3;
             this.groupBox23.TabStop = false;
             this.groupBox23.Text = "Helmet Id";
+            // 
+            // helmitId
+            // 
+            this.helmitId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.helmitId.Hexadecimal = true;
+            this.helmitId.HexLength = 2;
+            this.helmitId.Location = new System.Drawing.Point(3, 16);
+            this.helmitId.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.helmitId.Name = "helmitId";
+            this.helmitId.Size = new System.Drawing.Size(138, 20);
+            this.helmitId.TabIndex = 1;
+            this.helmitId.Value = ((long)(0));
             // 
             // groupBox21
             // 
@@ -993,6 +1029,22 @@ namespace FF6_Save_Editor
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Shield Id";
             // 
+            // shieldId
+            // 
+            this.shieldId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.shieldId.Hexadecimal = true;
+            this.shieldId.HexLength = 2;
+            this.shieldId.Location = new System.Drawing.Point(3, 16);
+            this.shieldId.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.shieldId.Name = "shieldId";
+            this.shieldId.Size = new System.Drawing.Size(138, 20);
+            this.shieldId.TabIndex = 1;
+            this.shieldId.Value = ((long)(0));
+            // 
             // groupBox19
             // 
             this.groupBox19.Controls.Add(this.weaponId);
@@ -1003,6 +1055,22 @@ namespace FF6_Save_Editor
             this.groupBox19.TabIndex = 1;
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Weapon Id";
+            // 
+            // weaponId
+            // 
+            this.weaponId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.weaponId.Hexadecimal = true;
+            this.weaponId.HexLength = 2;
+            this.weaponId.Location = new System.Drawing.Point(3, 16);
+            this.weaponId.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.weaponId.Name = "weaponId";
+            this.weaponId.Size = new System.Drawing.Size(138, 20);
+            this.weaponId.TabIndex = 0;
+            this.weaponId.Value = ((long)(0));
             // 
             // groupBox29
             // 
@@ -1015,6 +1083,22 @@ namespace FF6_Save_Editor
             this.groupBox29.TabStop = false;
             this.groupBox29.Text = "Relic 2 Id";
             // 
+            // relic2Id
+            // 
+            this.relic2Id.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.relic2Id.Hexadecimal = true;
+            this.relic2Id.HexLength = 2;
+            this.relic2Id.Location = new System.Drawing.Point(3, 16);
+            this.relic2Id.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.relic2Id.Name = "relic2Id";
+            this.relic2Id.Size = new System.Drawing.Size(138, 20);
+            this.relic2Id.TabIndex = 1;
+            this.relic2Id.Value = ((long)(0));
+            // 
             // groupBox27
             // 
             this.groupBox27.Controls.Add(this.relic1Id);
@@ -1025,6 +1109,22 @@ namespace FF6_Save_Editor
             this.groupBox27.TabIndex = 5;
             this.groupBox27.TabStop = false;
             this.groupBox27.Text = "Relic 1 Id";
+            // 
+            // relic1Id
+            // 
+            this.relic1Id.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.relic1Id.Hexadecimal = true;
+            this.relic1Id.HexLength = 2;
+            this.relic1Id.Location = new System.Drawing.Point(3, 16);
+            this.relic1Id.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.relic1Id.Name = "relic1Id";
+            this.relic1Id.Size = new System.Drawing.Size(138, 20);
+            this.relic1Id.TabIndex = 1;
+            this.relic1Id.Value = ((long)(0));
             // 
             // tableLayoutPanel14
             // 
@@ -1664,6 +1764,23 @@ namespace FF6_Save_Editor
             this.tableLayoutPanel18.Size = new System.Drawing.Size(133, 25);
             this.tableLayoutPanel18.TabIndex = 0;
             // 
+            // findByHex
+            // 
+            this.findByHex.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.findByHex.Hexadecimal = true;
+            this.findByHex.HexLength = 2;
+            this.findByHex.Location = new System.Drawing.Point(3, 3);
+            this.findByHex.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.findByHex.Name = "findByHex";
+            this.findByHex.Size = new System.Drawing.Size(60, 20);
+            this.findByHex.TabIndex = 0;
+            this.findByHex.Value = ((long)(0));
+            this.findByHex.ValueChanged += new System.EventHandler(this.findByHex_ValueChanged);
+            // 
             // resultByHex
             // 
             this.resultByHex.AutoSize = true;
@@ -2100,6 +2217,7 @@ namespace FF6_Save_Editor
             this.tableLayoutPanel1.Controls.Add(this.groupBox8, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.groupBoxASX, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.isAirshipVisible, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox40, 0, 6);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -2321,118 +2439,28 @@ namespace FF6_Save_Editor
             this.isAirshipVisible.Text = "Is Airship Visible";
             this.isAirshipVisible.UseVisualStyleBackColor = true;
             // 
-            // armorId
+            // groupBox40
             // 
-            this.armorId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.armorId.Hexadecimal = true;
-            this.armorId.HexLength = 2;
-            this.armorId.Location = new System.Drawing.Point(3, 16);
-            this.armorId.Maximum = new decimal(new int[] {
+            this.groupBox40.Controls.Add(this.cursedShieldFightCount);
+            this.groupBox40.Location = new System.Drawing.Point(3, 303);
+            this.groupBox40.Name = "groupBox40";
+            this.groupBox40.Size = new System.Drawing.Size(144, 44);
+            this.groupBox40.TabIndex = 8;
+            this.groupBox40.TabStop = false;
+            this.groupBox40.Text = "Cursed Shield Fight Count";
+            // 
+            // cursedShieldFightCount
+            // 
+            this.cursedShieldFightCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cursedShieldFightCount.Location = new System.Drawing.Point(3, 16);
+            this.cursedShieldFightCount.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.armorId.Name = "armorId";
-            this.armorId.Size = new System.Drawing.Size(138, 20);
-            this.armorId.TabIndex = 1;
-            this.armorId.Value = ((long)(0));
-            // 
-            // helmitId
-            // 
-            this.helmitId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.helmitId.Hexadecimal = true;
-            this.helmitId.HexLength = 2;
-            this.helmitId.Location = new System.Drawing.Point(3, 16);
-            this.helmitId.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.helmitId.Name = "helmitId";
-            this.helmitId.Size = new System.Drawing.Size(138, 20);
-            this.helmitId.TabIndex = 1;
-            this.helmitId.Value = ((long)(0));
-            // 
-            // shieldId
-            // 
-            this.shieldId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.shieldId.Hexadecimal = true;
-            this.shieldId.HexLength = 2;
-            this.shieldId.Location = new System.Drawing.Point(3, 16);
-            this.shieldId.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.shieldId.Name = "shieldId";
-            this.shieldId.Size = new System.Drawing.Size(138, 20);
-            this.shieldId.TabIndex = 1;
-            this.shieldId.Value = ((long)(0));
-            // 
-            // weaponId
-            // 
-            this.weaponId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.weaponId.Hexadecimal = true;
-            this.weaponId.HexLength = 2;
-            this.weaponId.Location = new System.Drawing.Point(3, 16);
-            this.weaponId.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.weaponId.Name = "weaponId";
-            this.weaponId.Size = new System.Drawing.Size(138, 20);
-            this.weaponId.TabIndex = 0;
-            this.weaponId.Value = ((long)(0));
-            // 
-            // relic2Id
-            // 
-            this.relic2Id.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.relic2Id.Hexadecimal = true;
-            this.relic2Id.HexLength = 2;
-            this.relic2Id.Location = new System.Drawing.Point(3, 16);
-            this.relic2Id.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.relic2Id.Name = "relic2Id";
-            this.relic2Id.Size = new System.Drawing.Size(138, 20);
-            this.relic2Id.TabIndex = 1;
-            this.relic2Id.Value = ((long)(0));
-            // 
-            // relic1Id
-            // 
-            this.relic1Id.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.relic1Id.Hexadecimal = true;
-            this.relic1Id.HexLength = 2;
-            this.relic1Id.Location = new System.Drawing.Point(3, 16);
-            this.relic1Id.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.relic1Id.Name = "relic1Id";
-            this.relic1Id.Size = new System.Drawing.Size(138, 20);
-            this.relic1Id.TabIndex = 1;
-            this.relic1Id.Value = ((long)(0));
-            // 
-            // findByHex
-            // 
-            this.findByHex.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.findByHex.Hexadecimal = true;
-            this.findByHex.HexLength = 2;
-            this.findByHex.Location = new System.Drawing.Point(3, 3);
-            this.findByHex.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.findByHex.Name = "findByHex";
-            this.findByHex.Size = new System.Drawing.Size(60, 20);
-            this.findByHex.TabIndex = 0;
-            this.findByHex.Value = ((long)(0));
-            this.findByHex.ValueChanged += new System.EventHandler(this.findByHex_ValueChanged);
+            this.cursedShieldFightCount.Name = "cursedShieldFightCount";
+            this.cursedShieldFightCount.Size = new System.Drawing.Size(138, 20);
+            this.cursedShieldFightCount.TabIndex = 6;
             // 
             // SaveEditorForm
             // 
@@ -2483,11 +2511,17 @@ namespace FF6_Save_Editor
             this.tableLayoutPanel13.ResumeLayout(false);
             this.tableLayoutPanel8.ResumeLayout(false);
             this.groupBox25.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.armorId)).EndInit();
             this.groupBox23.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.helmitId)).EndInit();
             this.groupBox21.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.shieldId)).EndInit();
             this.groupBox19.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.weaponId)).EndInit();
             this.groupBox29.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.relic2Id)).EndInit();
             this.groupBox27.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.relic1Id)).EndInit();
             this.tableLayoutPanel14.ResumeLayout(false);
             this.groupBox28.ResumeLayout(false);
             this.groupBox30.ResumeLayout(false);
@@ -2512,6 +2546,7 @@ namespace FF6_Save_Editor
             this.groupBox3.ResumeLayout(false);
             this.tableLayoutPanel18.ResumeLayout(false);
             this.tableLayoutPanel18.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.findByHex)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel23.ResumeLayout(false);
@@ -2548,13 +2583,8 @@ namespace FF6_Save_Editor
             ((System.ComponentModel.ISupportInitialize)(this.mapXAxis)).EndInit();
             this.groupBoxASX.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.airshipYAxis)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.armorId)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.helmitId)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.shieldId)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.weaponId)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.relic2Id)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.relic1Id)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.findByHex)).EndInit();
+            this.groupBox40.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.cursedShieldFightCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2712,6 +2742,8 @@ namespace FF6_Save_Editor
         private System.Windows.Forms.NumericUpDown airshipYAxis;
         private System.Windows.Forms.CheckBox isAirshipVisible;
         private System.Windows.Forms.ToolStripMenuItem snes9xV16ToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox40;
+        private System.Windows.Forms.NumericUpDown cursedShieldFightCount;
     }
 }
 
