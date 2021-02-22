@@ -361,7 +361,7 @@ namespace FF6_Save_State_Editor.Util
             rages.Add(new RageDto(RageEnum.TapDancer, 30, 0x1));
             rages.Add(new RageDto(RageEnum.Necromancer, 30, 0x2));
             rages.Add(new RageDto(RageEnum.Borras, 30, 0x4));
-            rages.Add(new RageDto(RageEnum.MagRoaderC, 4, 0x8));
+            rages.Add(new RageDto(RageEnum.MagRoaderC, 30, 0x8));
             rages.Add(new RageDto(RageEnum.WildRat, 30, 0x10));
             rages.Add(new RageDto(RageEnum.GoldBear, 30, 0x20));
             rages.Add(new RageDto(RageEnum.Innoc, 30, 0x40));
