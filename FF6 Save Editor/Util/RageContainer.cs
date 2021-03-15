@@ -127,8 +127,7 @@ namespace FF6_Save_State_Editor.Util
             rages.Add(new RageDto(RageEnum.Behemoth, 4, 0x1));
             rages.Add(new RageDto(RageEnum.Mesosaur, 4, 0x2));
             rages.Add(new RageDto(RageEnum.Pterodon, 4, 0x4));
-            rages.Add(new RageDto(RageEnum.MagRoaderA, 4, 0x8));
-            rages.Add(new RageDto(RageEnum.FossilFang, 4, 0x80));
+            rages.Add(new RageDto(RageEnum.FossilFang, 4, 0x8));
             rages.Add(new RageDto(RageEnum.WhiteDrgn, 4, 0x10));
             rages.Add(new RageDto(RageEnum.DoomDrgn, 4, 0x20));
             rages.Add(new RageDto(RageEnum.Brachosaur, 4, 0x40));
@@ -285,7 +284,7 @@ namespace FF6_Save_State_Editor.Util
             rages.Add(new RageDto(RageEnum.PanDora, 21, 0x10));
             rages.Add(new RageDto(RageEnum.SoulDancer, 21, 0x20));
             rages.Add(new RageDto(RageEnum.Gigantos, 21, 0x40));
-            rages.Add(new RageDto(RageEnum.MagRoaderB, 21, 0x80));
+            rages.Add(new RageDto(RageEnum.MagRoaderA, 21, 0x80));
 
             rages.Add(new RageDto(RageEnum.SpekTor, 22, 0x1));
             rages.Add(new RageDto(RageEnum.Parasite, 22, 0x2));
@@ -348,7 +347,7 @@ namespace FF6_Save_State_Editor.Util
             rages.Add(new RageDto(RageEnum.Vectagoyle, 28, 0x10));
             rages.Add(new RageDto(RageEnum.Lick, 28, 0x20));
             rages.Add(new RageDto(RageEnum.Osprey, 28, 0x40));
-            rages.Add(new RageDto(RageEnum.MagRoaderC, 28, 0x40));
+            rages.Add(new RageDto(RageEnum.MagRoaderB, 28, 0x80));
 
             rages.Add(new RageDto(RageEnum.Bug, 29, 0x1));
             rages.Add(new RageDto(RageEnum.SeaFlower, 29, 0x2));
@@ -362,6 +361,7 @@ namespace FF6_Save_State_Editor.Util
             rages.Add(new RageDto(RageEnum.TapDancer, 30, 0x1));
             rages.Add(new RageDto(RageEnum.Necromancer, 30, 0x2));
             rages.Add(new RageDto(RageEnum.Borras, 30, 0x4));
+            rages.Add(new RageDto(RageEnum.MagRoaderC, 30, 0x8));
             rages.Add(new RageDto(RageEnum.WildRat, 30, 0x10));
             rages.Add(new RageDto(RageEnum.GoldBear, 30, 0x20));
             rages.Add(new RageDto(RageEnum.Innoc, 30, 0x40));

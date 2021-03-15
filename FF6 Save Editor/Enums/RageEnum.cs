@@ -13,6 +13,7 @@
         Orog,
         MagRoader,
         Retainer,
+
         Hazer,
         Dahling,
         RainMan,
@@ -21,6 +22,7 @@
         DarkForce,
         Whisper,
         OverMind,
+
         Osteosaur,
         Commander,
         Rhodox,
@@ -42,7 +44,6 @@
         Behemoth,
         Mesosaur,
         Pterodon,
-        MagRoaderA,
         FossilFang,
         WhiteDrgn,
         DoomDrgn,
@@ -200,7 +201,7 @@
         PanDora,
         SoulDancer,
         Gigantos,
-        MagRoaderB,
+        MagRoaderA,
 
         SpekTor,
         Parasite,
@@ -263,7 +264,7 @@
         Vectagoyle,
         Lick,
         Osprey,
-        MagRoaderC,
+        MagRoaderB,
 
         Bug,
         SeaFlower,
@@ -277,6 +278,7 @@
         TapDancer,
         Necromancer,
         Borras,
+        MagRoaderC,
         WildRat,
         GoldBear,
         Innoc,
