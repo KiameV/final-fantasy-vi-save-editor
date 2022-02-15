@@ -6,23 +6,24 @@ import (
 
 type Character struct {
 	Name    string
-	Level   uint8
-	Exp     uint32
+	Level   int
+	Exp     int
 	HP      CurrentMax
 	MP      CurrentMax
-	Vigor   uint8
-	Stamina uint8
-	Speed   uint8
-	Magic   uint8
+	Vigor   int
+	Stamina int
+	Speed   int
+	Magic   int
 
 	SpellsByIndex []*Spell
+	SpellsSorted  []*Spell
 	SpellsLookup  map[string]*Spell
 	Equipment     Equipment
 
-	CommandOne    consts.NameValue
-	CommandTwo    consts.NameValue
-	CommandThree  consts.NameValue
-	CommandFour   consts.NameValue
+	Command1      *consts.Command
+	Command2      *consts.Command
+	Command3      *consts.Command
+	Command4      *consts.Command
 	StatusEffects []uint8
 }
 
@@ -33,9 +34,16 @@ func init() {
 	for i, name := range consts.Characters {
 		c := &Character{
 			Name: name,
+
+			// TODO Remove
+			Command1: consts.CommandsLookupBySortedIndex[1],
+			Command2: consts.CommandsLookupBySortedIndex[1],
+			Command3: consts.CommandsLookupBySortedIndex[1],
+			Command4: consts.CommandsLookupBySortedIndex[1],
 		}
-		c.SpellsByIndex, c.SpellsLookup = NewSpells()
+		c.SpellsByIndex, c.SpellsSorted, c.SpellsLookup = NewSpells()
 		Characters[i] = c
+
 	}
 }
 

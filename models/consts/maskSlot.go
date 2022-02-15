@@ -2,10 +2,10 @@ package consts
 
 type NameValue struct {
 	Name  string
-	Value uint8
+	Value int
 }
 
-func NewNameValue(name string, value uint8) NameValue {
+func NewNameValue(name string, value int) NameValue {
 	return NameValue{Name: name, Value: value}
 }
 

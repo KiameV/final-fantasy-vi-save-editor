@@ -1,6 +1,12 @@
 package models
 
 type CurrentMax struct {
-	Current uint32
-	Max     uint32
+	Current int
+	Max     int
+}
+
+func (m *CurrentMax) Fix() {
+	if m.Current > m.Max {
+		m.Current = m.Max
+	}
 }

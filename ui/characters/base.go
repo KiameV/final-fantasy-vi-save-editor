@@ -3,39 +3,64 @@ package characters
 import (
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
-	f "ffvi_editor/ui/factory"
-	"github.com/therecipe/qt/widgets"
+	"ffvi_editor/ui"
+	"github.com/aarzilli/nucular"
 )
 
-var (
-	selectedCharacter *models.Character
-	statsLayout       *widgets.QWidget
-)
+var character *models.Character
 
-func CreateCharactersLayout(window *widgets.QMainWindow) widgets.QWidget_ITF {
-	g := widgets.NewQVBoxLayout()
+type widget interface {
+	Draw(w *nucular.Window)
+	Update()
+}
 
-	selectedCharacter = models.GetCharacter(consts.Characters[0])
-	sl := createStatsLayout()
-	ml := createMagicLayout()
-	updateStats()
+type characterUI struct {
+	characterIndex int
+	stats          widget
+	magic          widget
+	equipment      widget
+	commands       widget
+	statusEffects  widget
+}
 
-	g.AddWidget(f.CreateComboInput("Character", consts.Characters, func(name string) {
-		selectedCharacter = models.GetCharacter(name)
-		updateStats()
-		updateMagic()
-	}), 0, 0)
+func NewCharacterUI() ui.UI {
+	character = models.GetCharacter(consts.Characters[0])
+	return &characterUI{
+		characterIndex: 0,
+		stats:          newStatsUI(),
+		magic:          newMagicUI(),
+		equipment:      newEquipmentUI(),
+		commands:       newCommandUI(),
+		statusEffects:  newStatusEffectsUI(),
+	}
+}
 
-	t := widgets.NewQTabWidget(nil)
-	t.AddTab(sl, "Stats")
-	t.AddTab(ml, "Magic")
-	//t.AddTab(el, "Equipment")
-	//t.AddTab(cl, "Commands")
-	//t.AddTab(sel, "Status Effects")
+func (u *characterUI) Draw(w *nucular.Window) {
+	w.Row(18).Static(100)
+	if i := w.ComboSimple(consts.Characters, u.characterIndex, 12); i != u.characterIndex {
+		u.characterIndex = i
+		character = models.GetCharacter(consts.Characters[u.characterIndex])
+		u.stats.Update()
+	}
 
-	g.AddWidget(t, 0, 0)
-
-	w := widgets.NewQWidget(window, 0)
-	w.SetLayout(g)
-	return w
+	if w.TreePush(nucular.TreeTab, "Stats - "+character.Name, true) {
+		u.stats.Draw(w)
+		w.TreePop()
+	}
+	if w.TreePush(nucular.TreeTab, "Magic - "+character.Name, false) {
+		u.magic.Draw(w)
+		w.TreePop()
+	}
+	if w.TreePush(nucular.TreeTab, "Equipment - "+character.Name, false) {
+		u.equipment.Draw(w)
+		w.TreePop()
+	}
+	if w.TreePush(nucular.TreeTab, "Commands - "+character.Name, false) {
+		u.commands.Draw(w)
+		w.TreePop()
+	}
+	if w.TreePush(nucular.TreeTab, "Status Effects - "+character.Name, false) {
+		u.statusEffects.Draw(w)
+		w.TreePop()
+	}
 }

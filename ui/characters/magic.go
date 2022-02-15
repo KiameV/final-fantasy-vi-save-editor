@@ -1,65 +1,106 @@
 package characters
 
 import (
-	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
-	f "ffvi_editor/ui/factory"
-	"github.com/therecipe/qt/widgets"
+	"ffvi_editor/ui"
+	"github.com/aarzilli/nucular"
+	"github.com/aarzilli/nucular/rect"
+	"strings"
 )
 
-var spells []*spellInput
-
-type spellInput struct {
-	*widgets.QSpinBox
-	Name  string
-	Spell *models.Spell
+type magicUI struct {
+	searchTB  nucular.TextEditor
+	helpTB    nucular.TextEditor
+	yLast     int
+	lastCount int
 }
 
-func (s *spellInput) OnChange(value int) {
-	s.Spell.Value = uint8(value)
+func newMagicUI() widget {
+	u := &magicUI{}
+
+	u.searchTB.Flags = nucular.EditField
+	u.searchTB.Maxlen = 10
+	u.searchTB.SingleLine = true
+
+	ui.InitReadOnlyText(&u.helpTB, helpText)
+	return u
 }
 
-func createMagicLayout() widgets.QWidget_ITF {
+func (u *magicUI) Draw(w *nucular.Window) {
 	var (
-		split = widgets.NewQHBoxLayout()
-		left  = widgets.NewQWidget(nil, 0)
-		sa    = widgets.NewQScrollArea(nil)
-		ll    = widgets.NewQVBoxLayout()
-		gr    *widgets.QGroupBox
-		input *spellInput
+		x = 0
+		y = 0
 	)
+	u.lastCount = 3
+	w.Row(u.yLast).SpaceBegin(len(consts.Spells) + 3)
 
-	sa.SetWidgetResizable(true)
-	sa.SetWidget(left)
-	sa.SetLayout(ll)
-	left.SetLayout(ll)
+	w.LayoutSpacePush(rect.Rect{
+		X: 0,
+		Y: 0,
+		W: 50,
+		H: 22,
+	})
+	w.Label("Search:", "LC")
+	w.LayoutSpacePush(rect.Rect{
+		X: 60,
+		Y: 0,
+		W: 100,
+		H: 22,
+	})
+	u.searchTB.Edit(w)
+	y += 24
 
-	spells = make([]*spellInput, len(consts.SortedSpells))
-	for i, s := range consts.SortedSpells {
-		input = &spellInput{
-			Name: s,
+	search := strings.ToLower(strings.TrimSpace(string(u.searchTB.Buffer)))
+	for _, s := range character.SpellsSorted {
+		if search == "" || strings.Contains(strings.ToLower(s.Name), search) {
+			u.addMagicPropertyInt(w, x*180, y, s.Name, &s.Value)
+			x++
+			u.lastCount++
+			if x == 2 {
+				x = 0
+				y += 26
+			}
 		}
-		spells[i] = input
-
-		input.QSpinBox, gr = f.CreateUint8Input(s, input.OnChange, 0, 255)
-		ll.AddWidget(gr, 0, 0)
 	}
 
-	split.AddWidget(sa, 0, 0)
-	split.AddWidget(f.CreateReadOnlyTextBox(magicText), 0, 0)
+	w.LayoutSpacePush(rect.Rect{
+		X: 360,
+		Y: 0,
+		W: 200,
+		H: y,
+	})
+	u.helpTB.Edit(w)
 
-	w := widgets.NewQWidget(nil, 0)
-	w.SetLayout(split)
-	return w
+	u.yLast = y
 }
 
-func updateMagic() {
-	for _, s := range spells {
-		s.Spell = selectedCharacter.SpellsLookup[s.Name]
+func (u *magicUI) Update() {
+
+}
+
+func (u *magicUI) addMagicPropertyInt(w *nucular.Window, x int, y int, name string, value *int) {
+	w.LayoutSpacePush(rect.Rect{
+		X: x,
+		Y: y,
+		W: 160,
+		H: 24,
+	})
+	o := *value
+	w.PropertyInt(name, 0, value, 255, 1, 0)
+	n := *value
+	if o != n {
+		if o == 255 {
+			if n > 99 {
+				*value = 99
+			}
+		} else if o >= 0 || o <= 99 {
+			if n > 99 && n < 255 {
+				*value = 255
+			}
+		}
 	}
 }
 
-const magicText = `
-<b>Values:</b><br>
-- 0 - 100 is the 'percent learned'<br>
-- 255 means the spell is learned and can be used.`
+const helpText = `Values:
+- 0-99: percent learned
+- 255: spell is known`

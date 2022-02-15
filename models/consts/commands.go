@@ -1,48 +1,70 @@
 package consts
 
-type Command NameValue
+import "sort"
+
+type Command struct {
+	NameValue
+	SortedIndex int
+}
 
 var (
 	Commands = []Command{
-		Command(NewNameValue("Fight", 0x0)),
-		Command(NewNameValue("Item", 0x1)),
-		Command(NewNameValue("Magic", 0x2)),
-		Command(NewNameValue("Morph", 0x3)),
-		Command(NewNameValue("Revert", 0x4)),
-		Command(NewNameValue("Steal", 0x5)),
-		Command(NewNameValue("Capture", 0x6)),
-		Command(NewNameValue("SwdTech", 0x7)),
-		Command(NewNameValue("Throw", 0x8)),
-		Command(NewNameValue("Tools", 0x9)),
-		Command(NewNameValue("Blitz", 0x0A)),
-		Command(NewNameValue("Runic", 0x0B)),
-		Command(NewNameValue("Lore", 0x0C)),
-		Command(NewNameValue("Sketch", 0x0D)),
-		Command(NewNameValue("Control", 0x0E)),
-		Command(NewNameValue("Slot", 0x0F)),
-		Command(NewNameValue("Rage", 0x10)),
-		Command(NewNameValue("Leap", 0x11)),
-		Command(NewNameValue("Mimic", 0x12)),
-		Command(NewNameValue("Dance", 0x13)),
-		Command(NewNameValue("Row", 0x14)),
-		Command(NewNameValue("Def", 0x15)),
-		Command(NewNameValue("Jump", 0x16)),
-		Command(NewNameValue("XMagic", 0x17)),
-		Command(NewNameValue("GPRain", 0x18)),
-		Command(NewNameValue("Summon", 0x19)),
-		Command(NewNameValue("Health", 0x1A)),
-		Command(NewNameValue("Shock", 0x1B)),
-		Command(NewNameValue("Possess", 0x1C)),
-		Command(NewNameValue("Magitek", 0x1D)),
-		Command(NewNameValue("Blank", 0x1E)),
-		Command(NewNameValue("Unassigned", 0xFF)),
+		{NameValue: NewNameValue("Fight", 0x0)},
+		{NameValue: NewNameValue("Item", 0x1)},
+		{NameValue: NewNameValue("Magic", 0x2)},
+		{NameValue: NewNameValue("Morph", 0x3)},
+		{NameValue: NewNameValue("Revert", 0x4)},
+		{NameValue: NewNameValue("Steal", 0x5)},
+		{NameValue: NewNameValue("Capture", 0x6)},
+		{NameValue: NewNameValue("SwdTech", 0x7)},
+		{NameValue: NewNameValue("Throw", 0x8)},
+		{NameValue: NewNameValue("Tools", 0x9)},
+		{NameValue: NewNameValue("Blitz", 0x0A)},
+		{NameValue: NewNameValue("Runic", 0x0B)},
+		{NameValue: NewNameValue("Lore", 0x0C)},
+		{NameValue: NewNameValue("Sketch", 0x0D)},
+		{NameValue: NewNameValue("Control", 0x0E)},
+		{NameValue: NewNameValue("Slot", 0x0F)},
+		{NameValue: NewNameValue("Rage", 0x10)},
+		{NameValue: NewNameValue("Leap", 0x11)},
+		{NameValue: NewNameValue("Mimic", 0x12)},
+		{NameValue: NewNameValue("Dance", 0x13)},
+		{NameValue: NewNameValue("Row", 0x14)},
+		{NameValue: NewNameValue("Def", 0x15)},
+		{NameValue: NewNameValue("Jump", 0x16)},
+		{NameValue: NewNameValue("XMagic", 0x17)},
+		{NameValue: NewNameValue("GPRain", 0x18)},
+		{NameValue: NewNameValue("Summon", 0x19)},
+		{NameValue: NewNameValue("Health", 0x1A)},
+		{NameValue: NewNameValue("Shock", 0x1B)},
+		{NameValue: NewNameValue("Possess", 0x1C)},
+		{NameValue: NewNameValue("Magitek", 0x1D)},
+		{NameValue: NewNameValue("Blank", 0x1E)},
+		{NameValue: NewNameValue("Unassigned", 0xFF)},
 	}
-	commandLookupByValue map[uint8]*Command
+	CommandsSorted              []string
+	CommandsLookupBySortedIndex []*Command
+	CommandLookupByName         map[string]*Command
+	CommandLookupByValue        map[int]*Command
 )
 
 func init() {
-	commandLookupByValue = make(map[uint8]*Command)
-	for _, c := range Commands {
-		commandLookupByValue[c.Value] = &c
+	CommandLookupByValue = make(map[int]*Command)
+	CommandLookupByName = make(map[string]*Command)
+	CommandsSorted = make([]string, len(Commands))
+	CommandsLookupBySortedIndex = make([]*Command, len(Commands))
+
+	for i, c := range Commands {
+		p := c
+		CommandLookupByValue[c.Value] = &p
+		CommandLookupByName[c.Name] = &p
+		CommandsSorted[i] = c.Name
+	}
+	sort.Strings(CommandsSorted)
+
+	for i, c := range CommandsSorted {
+		command := CommandLookupByName[c]
+		command.SortedIndex = i
+		CommandsLookupBySortedIndex[i] = command
 	}
 }
