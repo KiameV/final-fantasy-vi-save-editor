@@ -1,4 +1,4 @@
-package characters
+package character
 
 import (
 	"ffvi_editor/models"
@@ -16,6 +16,7 @@ type widget interface {
 
 type characterUI struct {
 	characterIndex int
+	expandAll      bool
 	stats          widget
 	magic          widget
 	equipment      widget
@@ -27,6 +28,7 @@ func NewCharacterUI() ui.UI {
 	character = models.GetCharacter(consts.Characters[0])
 	return &characterUI{
 		characterIndex: 0,
+		expandAll:      false,
 		stats:          newStatsUI(),
 		magic:          newMagicUI(),
 		equipment:      newEquipmentUI(),
@@ -36,30 +38,32 @@ func NewCharacterUI() ui.UI {
 }
 
 func (u *characterUI) Draw(w *nucular.Window) {
-	w.Row(18).Static(100)
+	w.Row(18).Static(100, 10, 100)
 	if i := w.ComboSimple(consts.Characters, u.characterIndex, 12); i != u.characterIndex {
 		u.characterIndex = i
 		character = models.GetCharacter(consts.Characters[u.characterIndex])
 		u.stats.Update()
 	}
+	w.Spacing(1)
+	w.CheckboxText("Auto-Expand All", &u.expandAll)
 
 	if w.TreePush(nucular.TreeTab, "Stats - "+character.Name, true) {
 		u.stats.Draw(w)
 		w.TreePop()
 	}
-	if w.TreePush(nucular.TreeTab, "Magic - "+character.Name, false) {
+	if w.TreePush(nucular.TreeTab, "Magic - "+character.Name, u.expandAll) {
 		u.magic.Draw(w)
 		w.TreePop()
 	}
-	if w.TreePush(nucular.TreeTab, "Equipment - "+character.Name, false) {
+	if w.TreePush(nucular.TreeTab, "Equipment - "+character.Name, u.expandAll) {
 		u.equipment.Draw(w)
 		w.TreePop()
 	}
-	if w.TreePush(nucular.TreeTab, "Commands - "+character.Name, false) {
+	if w.TreePush(nucular.TreeTab, "Commands - "+character.Name, u.expandAll) {
 		u.commands.Draw(w)
 		w.TreePop()
 	}
-	if w.TreePush(nucular.TreeTab, "Status Effects - "+character.Name, false) {
+	if w.TreePush(nucular.TreeTab, "Status Effects - "+character.Name, u.expandAll) {
 		u.statusEffects.Draw(w)
 		w.TreePop()
 	}

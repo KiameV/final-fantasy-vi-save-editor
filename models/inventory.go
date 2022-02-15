@@ -1,16 +1,29 @@
 package models
 
 type Row struct {
-	ItemID uint16
-	Count  uint8
+	ItemID string
+	Count  int
 }
 
 type Inventory struct {
 	Rows []Row
 }
 
-func NewInventory() Inventory {
-	return Inventory{
+func newInventory() *Inventory {
+	inv := &Inventory{
 		Rows: make([]Row, 255),
 	}
+	for i := 0; i < 255; i++ {
+		inv.Rows[i] = Row{ItemID: "FF", Count: 0}
+	}
+	return inv
+}
+
+var inventory *Inventory
+
+func GetInventory() *Inventory {
+	if inventory == nil {
+		inventory = newInventory()
+	}
+	return inventory
 }
