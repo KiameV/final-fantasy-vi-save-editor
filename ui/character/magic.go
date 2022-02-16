@@ -2,7 +2,7 @@ package character
 
 import (
 	"ffvi_editor/models/consts"
-	"ffvi_editor/ui"
+	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
 	"strings"
@@ -22,7 +22,7 @@ func newMagicUI() widget {
 	u.searchTB.Maxlen = 10
 	u.searchTB.SingleLine = true
 
-	ui.InitReadOnlyText(&u.helpTB, helpText)
+	widgets.InitReadOnlyText(&u.helpTB, helpText)
 	return u
 }
 

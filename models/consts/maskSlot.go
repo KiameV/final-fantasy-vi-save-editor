@@ -20,15 +20,15 @@ func NewNameSlotMask8(name string, slot uint8, mask uint8) NameSlotMask8 {
 	return NameSlotMask8{Name: name, Slot: slot, Mask: mask}
 }
 
-func NewNameSlotMask8s(names ...string) []NameSlotMask8 {
+func NewNameSlotMask8s(names ...string) []*NameSlotMask8 {
 	var (
-		result       = make([]NameSlotMask8, len(names))
+		result       = make([]*NameSlotMask8, len(names))
 		slot   uint8 = 0
 		mask   uint8 = 0x1
 	)
 
 	for i, n := range names {
-		result[i] = NameSlotMask8{
+		result[i] = &NameSlotMask8{
 			Name: n,
 			Slot: slot,
 			Mask: mask,

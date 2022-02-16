@@ -33,8 +33,7 @@ func NewStatusEffects() (result []*StatusEffect) {
 	s := NewNameSlotMask8s(StatusEffects...)
 	result = make([]*StatusEffect, len(StatusEffects))
 	for i, se := range s {
-		t := StatusEffect(se)
-		result[i] = &t
+		result[i] = (*StatusEffect)(se)
 	}
 	return
 }

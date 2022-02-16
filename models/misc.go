@@ -1,14 +1,23 @@
 package models
 
 type Misc struct {
-	GP                     uint32
-	Steps                  uint32
-	NumberOfSaves          uint32
-	SaveCountRollOver      uint32
-	MapXAxis               uint32
-	MapYAxis               uint32
-	AirshipXAxis           uint32
-	AirshipYAxis           uint32
+	GP                     int
+	Steps                  int
+	NumberOfSaves          int
+	SaveCountRollOver      int
+	MapXAxis               int
+	MapYAxis               int
+	AirshipXAxis           int
+	AirshipYAxis           int
 	IsAirshipVisible       bool
-	CursedShieldFightCount uint8
+	CursedShieldFightCount int
+}
+
+var misc *Misc
+
+func GetMisc() *Misc {
+	if misc == nil {
+		misc = &Misc{}
+	}
+	return misc
 }

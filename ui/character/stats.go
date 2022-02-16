@@ -2,7 +2,7 @@ package character
 
 import (
 	"ffvi_editor/models/consts"
-	"ffvi_editor/ui"
+	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
 )
@@ -21,7 +21,7 @@ func newStatsUI() widget {
 	u.name.SingleLine = true
 	u.name.Text([]rune(consts.Characters[0]))
 
-	ui.InitReadOnlyText(&u.levelExpTB, levelText)
+	widgets.InitReadOnlyText(&u.levelExpTB, levelText)
 	return u
 }
 

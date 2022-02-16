@@ -31,29 +31,36 @@ const (
 	Exploder   Lore = 0x800000
 )*/
 
-var Lores = NewNameSlotMask8s(
-	"Condemned",
-	"Roulette",
-	"CleanSweep",
-	"AquaRake",
-	"Aero",
-	"BlowFish",
-	"BigGuard",
-	"Revenge",
-	"PearlWind",
-	"L5Doom",
-	"L4Flare",
-	"L3Muddle",
-	"Reflect",
-	"LPearl",
-	"StepMine",
-	"ForceField",
-	"Dischord",
-	"SourMouth",
-	"PepUp",
-	"Rippler",
-	"Stone",
-	"Quasar",
-	"GrandTrain",
-	"Exploder",
+var (
+	Lores = NewNameSlotMask8s(
+		"Condemned",
+		"Roulette",
+		"CleanSweep",
+		"AquaRake",
+		"Aero",
+		"BlowFish",
+		"BigGuard",
+		"Revenge",
+		"PearlWind",
+		"L5Doom",
+		"L4Flare",
+		"L3Muddle",
+		"Reflect",
+		"LPearl",
+		"StepMine",
+		"ForceField",
+		"Dischord",
+		"SourMouth",
+		"PepUp",
+		"Rippler",
+		"Stone",
+		"Quasar",
+		"GrandTrain",
+		"Exploder",
+	)
+	SortedLores []*NameSlotMask8
 )
+
+func init() {
+	SortedLores = sortByName(Lores)
+}

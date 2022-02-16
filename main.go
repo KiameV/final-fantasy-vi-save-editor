@@ -2,19 +2,28 @@ package main
 
 import (
 	"ffvi_editor/ui/character"
+	"ffvi_editor/ui/espers"
+	"ffvi_editor/ui/inventory"
+	"ffvi_editor/ui/misc"
+	"ffvi_editor/ui/skills"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/label"
 	"github.com/aarzilli/nucular/style"
+	"image"
 	"image/color"
 )
 
 var (
-	cUI    = character.NewCharacterUI()
+	cUI    = character.NewUI()
+	iUI    = inventory.NewUI()
+	sUI    = skills.NewUI()
+	eUI    = espers.NewUI()
+	mUI    = misc.NewUI()
 	loaded = true
 )
 
 func main() {
-	wnd := nucular.NewMasterWindow(0, "Final Fantasy VI Editor", updateWindow)
+	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor", image.Point{X: 725, Y: 500}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
 	wnd.Main()
 }
@@ -44,23 +53,22 @@ func updateWindow(w *nucular.Window) {
 			w.TreePop()
 		}
 		if w.TreePush(nucular.TreeTab, "Inventory", false) {
+			iUI.Draw(w)
 			w.TreePop()
 		}
 		if w.TreePush(nucular.TreeTab, "Skills", false) {
+			sUI.Draw(w)
 			w.TreePop()
 		}
 		if w.TreePush(nucular.TreeTab, "Espers", false) {
+			eUI.Draw(w)
 			w.TreePop()
 		}
 		if w.TreePush(nucular.TreeTab, "Misc", false) {
+			mUI.Draw(w)
 			w.TreePop()
 		}
 	}
-
-	//w.Row(32).Dynamic(1)
-	//if w.ButtonText(fmt.Sprintf("increment: %d", count)) {
-	//	count++
-	//}
 }
 
 var customTheme = style.ColorTable{

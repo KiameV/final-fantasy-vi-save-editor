@@ -15,15 +15,8 @@ func newStatusEffectsUI() widget {
 }
 
 func (u *statusEffectsUI) Draw(w *nucular.Window) {
-	w.Row(u.yLast).SpaceBegin(len(consts.StatusEffects) + 1)
-	w.LayoutSpacePush(rect.Rect{
-		X: 0,
-		Y: 0,
-		W: 100,
-		H: 22,
-	})
-	y := 24
-	w.Label("Status Effects:", "LC")
+	w.Row(u.yLast).SpaceBegin(len(consts.StatusEffects))
+	y := 0
 	for _, se := range character.StatusEffects {
 		w.LayoutSpacePush(rect.Rect{
 			X: 5,

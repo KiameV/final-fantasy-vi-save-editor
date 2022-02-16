@@ -24,7 +24,7 @@ type characterUI struct {
 	statusEffects  widget
 }
 
-func NewCharacterUI() ui.UI {
+func NewUI() ui.UI {
 	character = models.GetCharacter(consts.Characters[0])
 	return &characterUI{
 		characterIndex: 0,
