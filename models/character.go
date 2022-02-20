@@ -5,15 +5,17 @@ import (
 )
 
 type Character struct {
-	Name    string
-	Level   int
-	Exp     int
-	HP      CurrentMax
-	MP      CurrentMax
-	Vigor   int
-	Stamina int
-	Speed   int
-	Magic   int
+	RootName string
+	Name     string
+	Level    int
+	Exp      int
+	HP       CurrentMax
+	MP       CurrentMax
+	Vigor    int
+	Stamina  int
+	Speed    int
+	Magic    int
+	//Esper   *Esper
 
 	SpellsByIndex []*Spell
 	SpellsSorted  []*Spell
@@ -33,6 +35,7 @@ func init() {
 	Characters = make([]*Character, len(consts.Characters))
 	for i, name := range consts.Characters {
 		c := &Character{
+			RootName:      name,
 			Name:          name,
 			StatusEffects: consts.NewStatusEffects(),
 
@@ -49,7 +52,7 @@ func init() {
 
 func GetCharacter(name string) (c *Character) {
 	for _, c = range Characters {
-		if c.Name == name {
+		if c.RootName == name {
 			break
 		}
 	}

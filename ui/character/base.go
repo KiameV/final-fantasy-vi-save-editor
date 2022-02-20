@@ -11,7 +11,7 @@ var character *models.Character
 
 type widget interface {
 	Draw(w *nucular.Window)
-	Update()
+	Update(character *models.Character)
 }
 
 type characterUI struct {
@@ -41,8 +41,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 	w.Row(18).Static(100, 10, 100)
 	if i := w.ComboSimple(consts.Characters, u.characterIndex, 12); i != u.characterIndex {
 		u.characterIndex = i
-		character = models.GetCharacter(consts.Characters[u.characterIndex])
-		u.stats.Update()
+		u.refreshWithCharacter(models.GetCharacter(consts.Characters[u.characterIndex]))
 	}
 	w.Spacing(1)
 	w.CheckboxText("Auto-Expand All", &u.expandAll)
@@ -67,4 +66,18 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		u.statusEffects.Draw(w)
 		w.TreePop()
 	}
+}
+
+func (u *characterUI) Refresh() {
+	u.refreshWithCharacter(models.GetCharacter(consts.Characters[0]))
+}
+
+func (u *characterUI) refreshWithCharacter(c *models.Character) {
+	character = &models.Character{}
+	u.stats.Update(c)
+	u.magic.Update(c)
+	u.equipment.Update(c)
+	u.commands.Update(c)
+	u.statusEffects.Update(c)
+	character = c
 }

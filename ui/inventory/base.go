@@ -2,6 +2,7 @@ package inventory
 
 import (
 	"ffvi_editor/models"
+	"ffvi_editor/models/consts"
 	"ffvi_editor/ui"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
@@ -78,6 +79,17 @@ func (u *inventoryUI) Draw(w *nucular.Window) {
 		w.PropertyInt("", 0, &r.Count, 99, 1, 0)
 		y += 24
 		count += 2
+		if item, found := consts.ItemsByID[string(u.ids[i].Buffer)]; found && item != "Empty" {
+			w.LayoutSpacePush(rect.Rect{
+				X: 0,
+				Y: y,
+				W: 160,
+				H: 22,
+			})
+			w.Label(item, "LC")
+			count++
+			y += 30
+		}
 	}
 	u.yLast = y
 
@@ -141,4 +153,10 @@ func (u *inventoryUI) Draw(w *nucular.Window) {
 
 	// Finder
 	u.countLast = count + widgets.DrawItemFinder(w, 540, 0)
+}
+
+func (u *inventoryUI) Refresh() {
+	for i, row := range models.GetInventoryRows() {
+		u.ids[i].Text([]rune(row.ItemID))
+	}
 }

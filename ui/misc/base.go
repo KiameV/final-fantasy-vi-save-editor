@@ -46,3 +46,7 @@ func (u *miscUI) Draw(w *nucular.Window) {
 	w.Spacing(1)
 	w.PropertyInt("Airship Y Loc:", 0, &models.GetMisc().AirshipYAxis, 255, 1, 0)
 }
+
+func (u *miscUI) Refresh() {
+
+}

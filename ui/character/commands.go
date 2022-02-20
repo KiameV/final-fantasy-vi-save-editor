@@ -1,6 +1,7 @@
 package character
 
 import (
+	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"github.com/aarzilli/nucular"
 )
@@ -35,6 +36,6 @@ func (u *commandUI) Draw(w *nucular.Window) {
 	}
 }
 
-func (u *commandUI) Update() {
+func (u *commandUI) Update(character *models.Character) {
 
 }

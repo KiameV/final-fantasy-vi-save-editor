@@ -9,21 +9,29 @@ func NewNameValue(name string, value int) NameValue {
 	return NameValue{Name: name, Value: value}
 }
 
+func NewNameValues(names ...string) []NameValue {
+	result := make([]NameValue, len(names))
+	for i, n := range names {
+		result[i] = NewNameValue(n, i)
+	}
+	return result
+}
+
 type NameSlotMask8 struct {
 	Name    string
-	Slot    uint8
+	Slot    int
 	Mask    uint8
 	Checked bool
 }
 
-func NewNameSlotMask8(name string, slot uint8, mask uint8) NameSlotMask8 {
+func NewNameSlotMask8(name string, slot int, mask uint8) NameSlotMask8 {
 	return NameSlotMask8{Name: name, Slot: slot, Mask: mask}
 }
 
 func NewNameSlotMask8s(names ...string) []*NameSlotMask8 {
 	var (
 		result       = make([]*NameSlotMask8, len(names))
-		slot   uint8 = 0
+		slot   int   = 0
 		mask   uint8 = 0x1
 	)
 
@@ -54,4 +62,8 @@ func NewNameSlotMask8s(names ...string) []*NameSlotMask8 {
 		}
 	}
 	return result
+}
+
+func (n *NameSlotMask8) SetChecked(b byte) {
+	n.Checked = (n.Mask & b) != 0
 }

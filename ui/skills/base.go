@@ -111,3 +111,7 @@ func (u *skillsUI) Draw(w *nucular.Window) {
 		sw.GroupEnd()
 	}
 }
+
+func (u *skillsUI) Refresh() {
+
+}

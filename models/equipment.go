@@ -1,10 +1,10 @@
 package models
 
 type Equipment struct {
-	WeaponID uint
-	ShieldID uint
-	HelmetID uint
-	ArmorID  uint
-	Relic1ID uint
-	Relic2ID uint
+	WeaponID int
+	ShieldID int
+	HelmetID int
+	ArmorID  int
+	Relic1ID int
+	Relic2ID int
 }

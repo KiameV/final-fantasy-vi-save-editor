@@ -1,6 +1,8 @@
 package main
 
 import (
+	"ffvi_editor/io"
+	"ffvi_editor/io/save"
 	"ffvi_editor/ui/character"
 	"ffvi_editor/ui/espers"
 	"ffvi_editor/ui/inventory"
@@ -35,8 +37,22 @@ func updateWindow(w *nucular.Window) {
 	w.Row(12).Static(45)
 	if w := w.Menu(label.TA("File", "LC"), 120, nil); w != nil {
 		w.Row(12).Dynamic(1)
-		if w.MenuItem(label.TA("Open", "LC")) {
-			loaded = true
+		if w.MenuItem(label.TA("Open SRM Slot 1", "LC")) {
+			if err := io.OpenFile(save.SRMSlot1); err == nil {
+				refresh()
+			}
+		} else if w.MenuItem(label.TA("Open SRM Slot 2", "LC")) {
+			if err := io.OpenFile(save.SRMSlot2); err == nil {
+				refresh()
+			}
+		} else if w.MenuItem(label.TA("Open SRM Slot 3", "LC")) {
+			if err := io.OpenFile(save.SRMSlot3); err == nil {
+				refresh()
+			}
+		} else if w.MenuItem(label.TA("Open ZNES State", "LC")) {
+			if err := io.OpenFile(save.ZnesSaveState); err == nil {
+				refresh()
+			}
 		}
 		w.Row(12).Dynamic(1)
 		if w.MenuItem(label.TA("Exit", "LC")) {
@@ -69,6 +85,14 @@ func updateWindow(w *nucular.Window) {
 			w.TreePop()
 		}
 	}
+}
+
+func refresh() {
+	cUI.Refresh()
+	iUI.Refresh()
+	sUI.Refresh()
+	eUI.Refresh()
+	mUI.Refresh()
 }
 
 var customTheme = style.ColorTable{

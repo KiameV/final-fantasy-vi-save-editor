@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	id       nucular.TextEditor
-	idResult string
+	//id       nucular.TextEditor
+	//idResult string
 
 	name       nucular.TextEditor
 	prevName   string
@@ -19,18 +19,18 @@ var (
 )
 
 func init() {
-	id.Flags = nucular.EditField
+	/*id.Flags = nucular.EditField
 	id.Maxlen = 2
-	id.SingleLine = true
+	id.SingleLine = true*/
 
-	id.Flags = nucular.EditField
-	id.Maxlen = 8
-	id.SingleLine = true
+	name.Flags = nucular.EditField
+	name.Maxlen = 8
+	name.SingleLine = true
 }
 
 func DrawItemFinder(w *nucular.Window, x, y int) (count int) {
 	count = 6
-	w.LayoutSpacePush(rect.Rect{
+	/*w.LayoutSpacePush(rect.Rect{
 		X: x,
 		Y: y,
 		W: 80,
@@ -60,6 +60,7 @@ func DrawItemFinder(w *nucular.Window, x, y int) (count int) {
 	})
 	w.Label(idResult, "LC")
 	y += 24
+	*/
 
 	w.LayoutSpacePush(rect.Rect{
 		X: x,

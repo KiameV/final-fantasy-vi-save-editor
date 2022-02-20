@@ -1,6 +1,7 @@
 package character
 
 import (
+	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
@@ -30,6 +31,6 @@ func (u *statusEffectsUI) Draw(w *nucular.Window) {
 	u.yLast = y
 }
 
-func (u *statusEffectsUI) Update() {
+func (u *statusEffectsUI) Update(character *models.Character) {
 
 }

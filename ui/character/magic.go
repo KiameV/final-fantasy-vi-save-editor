@@ -1,6 +1,7 @@
 package character
 
 import (
+	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
@@ -74,8 +75,8 @@ func (u *magicUI) Draw(w *nucular.Window) {
 	u.yLast = y
 }
 
-func (u *magicUI) Update() {
-
+func (u *magicUI) Update(character *models.Character) {
+	u.searchTB.Text([]rune(""))
 }
 
 func (u *magicUI) addMagicPropertyInt(w *nucular.Window, x int, y int, name string, value *int) {

@@ -1,6 +1,7 @@
 package character
 
 import (
+	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
@@ -82,7 +83,7 @@ func (u *statsUI) Draw(w *nucular.Window) {
 	u.yLast = y
 }
 
-func (u *statsUI) Update() {
+func (u *statsUI) Update(character *models.Character) {
 	u.name.SelectAll()
 	u.name.DeleteSelection()
 	u.name.Text([]rune(character.Name))

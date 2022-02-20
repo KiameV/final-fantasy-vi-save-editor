@@ -48,13 +48,13 @@ AF - Shadow Edge`
 
 	WeaponShieldText1 = `Dirk
 00 - Dirk
-01 - MithrilKnife
+01 - Mithril Knife
 02 - Guardian
 03 - Air Lancet
 04 - ThiefKnife
 05 - Assassin
 06 - Man Eater
-07 - SwordBreaker
+07 - Sword Breaker
 08 - Graedus
 09 - ValiantKnife
 
@@ -64,7 +64,7 @@ Sword
 0C - Rune Edge
 0D - Flame Sabre
 0E - Blizzard
-0F - ThunderBlade
+0F - Thunder Blade
 10 - Epee
 11 - Break Blade
 12 - Drainer
@@ -150,7 +150,7 @@ Gambler
 52 - Fixed Dice
 
 Claw
-53 - MetalKnuckle
+53 - Metal Knuckle
 54 - Mithril Claw
 55 - Kaiser
 56 - Poison Claw
@@ -170,7 +170,7 @@ Claw
 62 - Thunder Shield
 63 - Crystal Shield
 64 - Genji Shield
-65 - TortoiseShield
+65 - Tortoise Shield
 66 - Cursed Shield
 67 - Paladin Shield
 68 - Force Shield`
@@ -205,7 +205,7 @@ Claw
 83 - Titanium`
 
 	HelmetArmorText2 = `Armor
-84 - LeatherArmor
+84 - Leather Armor
 85 - Cotton Robe
 86 - Kung Fu Suit
 87 - Iron Armor
@@ -222,7 +222,7 @@ Claw
 92 - Diamond Vest
 93 - Red Jacket
 94 - Force Armor
-95 - DiamondArmor
+95 - Diamond Armor
 96 - Dark Gear
 97 - Tao Robe
 98 - Crystal Mail
@@ -246,9 +246,9 @@ B4 - White Cape
 B5 - Jewel Ring
 B6 - Fair Ring
 B7 - Barrier Ring
-B8 - MithrilGlove
+B8 - Mithril Glove
 B9 - Guard Ring
-BA - RunningShoes
+BA - Running Shoes
 BB - Wall Ring
 BC - Cherub Down
 BD - Cure Ring
@@ -259,7 +259,7 @@ C1 - Czarina Ring
 C2 - Cursed Cing
 C3 - Earrings
 C4 - Atlas Armlet
-C5 - BlizzardRing
+C5 - Blizzard Ring
 C6 - Rage Ring
 C7 - Sneak Ring
 `
@@ -280,7 +280,7 @@ D3 - Offering
 D4 - Beads
 D5 - Black Belt
 D6 - Coin Toss
-D7 - FakeMustache
+D7 - Fake Mustache
 D8 - Gem Box
 D9 - Dragon Horn
 DA - Merit Award
@@ -305,18 +305,18 @@ var (
 		"01": "MithrilKnife",
 		"02": "Guardian",
 		"03": "Air Lancet",
-		"04": "ThiefKnife",
+		"04": "Thief Knife",
 		"05": "Assassin",
 		"06": "Man Eater",
-		"07": "SwordBreaker",
+		"07": "Sword Breaker",
 		"08": "Graedus",
-		"09": "ValiantKnife",
-		"0A": "MithrilBlade",
-		"0B": "RegalCutlass",
+		"09": "Valiant Knife",
+		"0A": "Mithril Blade",
+		"0B": "Regal Cutlass",
 		"0C": "Rune Edge",
 		"0D": "Flame Sabre",
 		"0E": "Blizzard",
-		"0F": "ThunderBlade",
+		"0F": "Thunder Blade",
 		"10": "Epee",
 		"11": "Break Blade",
 		"12": "Drainer",
@@ -384,7 +384,7 @@ var (
 		"50": "Trump",
 		"51": "Dice",
 		"52": "Fixed Dice",
-		"53": "MetalKnuckle",
+		"53": "Metal Knuckle",
 		"54": "Mithril Claw",
 		"55": "Kaiser",
 		"56": "Poison Claw",
@@ -402,7 +402,7 @@ var (
 		"62": "Thunder Shield",
 		"63": "Crystal Shield",
 		"64": "Genji Shield",
-		"65": "TortoiseShield",
+		"65": "Tortoise Shield",
 		"66": "Cursed Shield",
 		"67": "Paladin Shield",
 		"68": "Force Shield",
@@ -433,7 +433,7 @@ var (
 		"81": "Genji Helmet",
 		"82": "Thornlet",
 		"83": "Titanium",
-		"84": "LeatherArmor",
+		"84": "Leather Armor",
 		"85": "Cotton Robe",
 		"86": "Kung Fu Suit",
 		"87": "Iron Armor",
@@ -472,14 +472,14 @@ var (
 		"B5": "Jewel Ring",
 		"B6": "Fair Ring",
 		"B7": "Barrier Ring",
-		"B8": "MithrilGlove",
+		"B8": "Mithril Glove",
 		"B9": "Guard Ring",
-		"BA": "RunningShoes",
+		"BA": "Running Shoes",
 		"BB": "Wall Ring",
 		"BC": "Cherub Down",
 		"BD": "Cure Ring",
 		"BE": "True Knight",
-		"BF": "DragoonBoots",
+		"BF": "Dragoon Boots",
 		"C0": "Zephyr Cape",
 		"C1": "Czarina Ring",
 		"C2": "Cursed Cing",
@@ -503,7 +503,7 @@ var (
 		"D4": "Beads",
 		"D5": "Black Belt",
 		"D6": "Coin Toss",
-		"D7": "FakeMustache",
+		"D7": "Fake Mustache",
 		"D8": "Gem Box",
 		"D9": "Dragon Horn",
 		"DA": "Merit Award",

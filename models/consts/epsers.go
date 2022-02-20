@@ -1,36 +1,34 @@
 package consts
 
-type Esper uint16
-
 var (
 	Espers = NewNameSlotMask8s(
 		"Ramuh",
-		"Stray",
-		"Ragnarok",
-		"Fenrir",
 		"Ifrit",
-		"Palidor",
-		"Kirin",
-		"Startlet",
 		"Shiva",
-		"Tritoch",
-		"Zoneseek",
-		"Phoenix",
 		"Siren",
-		"Odin",
-		"Carbunkl",
 		"Terrato",
-		"Raiden",
-		"Phantom",
 		"Maduin",
-		"Bahamut",
-		"Sraphim",
 		"Shoat",
-		"Alexandr",
-		"Golem",
 		"Bismark",
+		"Stray",
+		"Palidor",
+		"Tritoch",
+		"Odin",
+		"Raiden",
+		"Bahamut",
+		"Alexander",
 		"Crusader",
+		"Ragnarok",
+		"Kirin",
+		"Zoneseek",
+		"Carbunkl",
+		"Phantom",
+		"Sraphim",
+		"Golem",
 		"Unicorn",
+		"Fenrir",
+		"Startlet",
+		"Phoenix",
 	)
 	SortedEspers []*NameSlotMask8
 )

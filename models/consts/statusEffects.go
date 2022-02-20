@@ -15,7 +15,9 @@ const (
 	Float     StatusEffect = 0x100 // This is in another byte and will not 'flag' with the others, this is here for better code flow to the UI
 )*/
 
-type StatusEffect NameSlotMask8
+type StatusEffect struct {
+	*NameSlotMask8
+}
 
 var StatusEffects = []string{
 	"Darkness",
@@ -33,7 +35,7 @@ func NewStatusEffects() (result []*StatusEffect) {
 	s := NewNameSlotMask8s(StatusEffects...)
 	result = make([]*StatusEffect, len(StatusEffects))
 	for i, se := range s {
-		result[i] = (*StatusEffect)(se)
+		result[i] = &StatusEffect{NameSlotMask8: se}
 	}
 	return
 }

@@ -50,3 +50,7 @@ func (u *espersUI) Draw(w *nucular.Window) {
 	}
 	u.yLast = y + 24
 }
+
+func (u *espersUI) Refresh() {
+	//TODO implement me
+}
