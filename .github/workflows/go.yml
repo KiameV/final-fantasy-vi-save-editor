@@ -25,17 +25,19 @@ jobs:
           xgo_version: latest
           go_version: ${{ matrix.go_version }}
           dest: build
-          prefix: myapp
+          prefix: final-fantasy-vi-save-editor
           targets: windows/386,windows/amd64,linux/386,linux/amd64,darwin/386,darwin/amd64
           v: true
           x: false
           race: false
           ldflags: -s -w
           buildmode: default
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/*
-          tag: ${{ github.ref }}
-          overwrite: true
+          files: |
+            ./build/final-fantasy-vi-save-editor-windows-4.0-386.exe
+            ./build/final-fantasy-vi-save-editor-windows-4.0-amd64.exe
+            ./build/final-fantasy-vi-save-editor-linux-386
+            ./build/final-fantasy-vi-save-editor-linux-amd64
+            ./build/final-fantasy-vi-save-editor-darwin-10.16-amd64
