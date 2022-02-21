@@ -52,5 +52,5 @@ func (u *espersUI) Draw(w *nucular.Window) {
 }
 
 func (u *espersUI) Refresh() {
-	//TODO implement me
+	
 }

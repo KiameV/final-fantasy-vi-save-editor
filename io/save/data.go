@@ -12,6 +12,8 @@ const (
 	SRMSlot3
 	// ZnesSaveState ZNES save state
 	ZnesSaveState
+	// SteamRemastered Steam Remastered
+	SteamRemastered
 
 	/* Snes9xSaveState15 Snes9x v1.5 save state
 	//Snes9xSaveState15
@@ -79,8 +81,8 @@ func SetAt(i int, b byte) {
 	data[i] = b
 }
 
-func SetIntAt(i int, j int) {
-	data[i] = byte(j)
+func SetIntAt(i int, v int) {
+	data[i] = byte(v)
 }
 
 func SetRuneAt(i int, r rune) {

@@ -63,6 +63,9 @@ func (u *magicUI) Draw(w *nucular.Window) {
 			}
 		}
 	}
+	if search != "" {
+		y += 26
+	}
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,

@@ -67,3 +67,13 @@ func NewNameSlotMask8s(names ...string) []*NameSlotMask8 {
 func (n *NameSlotMask8) SetChecked(b byte) {
 	n.Checked = (n.Mask & b) != 0
 }
+
+func GenerateBytes(v []*NameSlotMask8) []byte {
+	result := make([]byte, v[len(v)-1].Slot+1)
+	for _, n := range v {
+		if n.Checked {
+			result[n.Slot] |= n.Mask
+		}
+	}
+	return result
+}

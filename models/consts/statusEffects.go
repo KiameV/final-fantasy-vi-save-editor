@@ -15,10 +15,6 @@ const (
 	Float     StatusEffect = 0x100 // This is in another byte and will not 'flag' with the others, this is here for better code flow to the UI
 )*/
 
-type StatusEffect struct {
-	*NameSlotMask8
-}
-
 var StatusEffects = []string{
 	"Darkness",
 	"Zombie",
@@ -31,11 +27,11 @@ var StatusEffects = []string{
 	"Float",
 }
 
-func NewStatusEffects() (result []*StatusEffect) {
+func NewStatusEffects() (result []*NameSlotMask8) {
 	s := NewNameSlotMask8s(StatusEffects...)
-	result = make([]*StatusEffect, len(StatusEffects))
+	result = make([]*NameSlotMask8, len(StatusEffects))
 	for i, se := range s {
-		result[i] = &StatusEffect{NameSlotMask8: se}
+		result[i] = se
 	}
 	return
 }

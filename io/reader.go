@@ -3,6 +3,7 @@ package io
 import (
 	"ffvi_editor/io/offsets"
 	"ffvi_editor/io/save"
+	"github.com/aarzilli/nucular"
 	"os"
 	"path/filepath"
 )
@@ -13,9 +14,15 @@ func init() {
 	appDir, _ = os.Getwd()
 }
 
-func OpenFile(fileType save.SaveFileType) (err error) {
-	var file string
-	if file, err = createDialog(fileType).Load(); err != nil {
+func OpenFile(w *nucular.Window, fileType save.SaveFileType) (fileName string, err error) {
+	if fileType == save.SteamRemastered {
+		// TODO
+	}
+	if fileName, err = createDialog(fileType).Load(); err != nil {
+		if err.Error() == "Cancelled" {
+			w.Close()
+			return "", nil
+		}
 		return
 	}
 
@@ -23,7 +30,8 @@ func OpenFile(fileType save.SaveFileType) (err error) {
 		fileType == offsets.Snes9xSaveState16 {
 		return openGzipFile(file)
 	}*/
-	return openFile(file, fileType)
+	err = openFile(fileName, fileType)
+	return
 }
 
 /*func openGzipFile(file string) error {

@@ -140,7 +140,6 @@ func (o *Offsets) loadEspers() {
 
 func (o *Offsets) loadMiscStats() {
 	m := models.GetMisc()
-
 	m.GP = o.reverseAndCombine(o.GoldOffset, o.GoldOffset+2)
 	m.Steps = o.reverseAndCombine(o.StepsOffset, o.StepsOffset+2)
 	m.NumberOfSaves = save.GetIntAt(o.NumberOfSaves)

@@ -27,7 +27,7 @@ func createDialog(fileType save.SaveFileType) *dialog.FileBuilder {
 	case save.SRMSlot1, save.SRMSlot2, save.SRMSlot3:
 		d = d.Title("Select the Save File").Filter("SRM File", "srm")
 	case save.ZnesSaveState:
-		d = d.Title("Select the Save State").Filter("ZST File", "zst")
+		d = d.Title("Select the Save State").Filter("ZST File", "zs*").Filter("All", "*")
 	}
 	return d
 }

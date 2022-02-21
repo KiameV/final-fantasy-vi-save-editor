@@ -1,30 +1,26 @@
 package io
 
 import (
+	"ffvi_editor/io/offsets"
 	"ffvi_editor/io/save"
+	"github.com/aarzilli/nucular"
 	"os"
 )
 
-func SaveFile(fileType save.SaveFileType) (err error) {
-	var file string
-	if file, err = createDialog(fileType).Save(); err != nil {
+func SaveFile(w *nucular.Window, fileType save.SaveFileType) (fileName string, err error) {
+	if fileName, err = createDialog(fileType).Save(); err != nil {
+		if err.Error() == "Cancelled" {
+			w.Close()
+			return "", nil
+		}
 		return
 	}
-
-	/*if fileType == offsets.Snes9xSaveState15 ||
-		fileType == offsets.Snes9xSaveState16 {
-		return openGzipFile(file)
-	}*/
-	return saveFile(file)
+	err = SaveFileNoDialog(fileName, fileType)
+	return
 }
 
-/*func openGzipFile(file string) error {
-	archive.
-	return nil
-}*/
-
-func saveFile(file string) error {
-	// TODO Update save
+func SaveFileNoDialog(file string, fileType save.SaveFileType) error {
+	offsets.Create(fileType).Save()
 	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		return err

@@ -4,6 +4,8 @@ import (
 	"ffvi_editor/io/save"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
+	"strconv"
+	"unsafe"
 )
 
 func (o *Offsets) Save() {
@@ -33,94 +35,126 @@ func (o *Offsets) saveCharacters() {
 		save.SetIntAt(i, c.Level)
 		i++
 
-		save.SetMultiple(i, i+1, c.HP.Current)
+		o.setMultiple(c.HP.Current, i, i+1)
 		i += 2
 
-		save.SetMultiple(i, i+1, c.HP.Max)
+		o.setMultiple(c.HP.Max, i, i+1)
 		i += 2
 
-		save.SetMultiple(i, i+1, c.MP.Current)
+		o.setMultiple(c.MP.Current, i, i+1)
 		i += 2
 
-		save.SetMultiple(i, i+1, c.MP.Max)
+		o.setMultiple(c.MP.Max, i, i+1)
 		i += 2
 
-		save.SetMultiple(i, i+3, c.Exp)
+		o.setMultiple(c.Exp, i, i+1, i+2)
 		i += 3
 
-		// Darkness
-		c.StatusEffects[0].SetChecked(save.GetAt(i))
-		// Imp
-		c.StatusEffects[1].SetChecked(save.GetAt(i))
-		// Invisible
-		c.StatusEffects[2].SetChecked(save.GetAt(i))
-		// Magitek
-		c.StatusEffects[3].SetChecked(save.GetAt(i))
-		// Poison
-		c.StatusEffects[4].SetChecked(save.GetAt(i))
-		// Stone
-		c.StatusEffects[5].SetChecked(save.GetAt(i))
-		// Wounded
-		c.StatusEffects[6].SetChecked(save.GetAt(i))
-		// Zombie
-		c.StatusEffects[7].SetChecked(save.GetAt(i))
-		i++
+		i = o.setFromNameSlotMasks(i, c.StatusEffects)
 		// Float
-		c.StatusEffects[8].Checked = save.GetAt(i) >= 128
+		if c.StatusEffects[8].Checked {
+			save.SetAt(i-1, 0xFF)
+		} else {
+			save.SetAt(i-1, 0)
+		}
+
+		save.SetIntAt(i, c.Command1.Value)
+		i++
+		save.SetIntAt(i, c.Command2.Value)
+		i++
+		save.SetIntAt(i, c.Command3.Value)
+		i++
+		save.SetIntAt(i, c.Command4.Value)
 		i++
 
-		cmd := save.GetIntAt(i)
-		c.Command1 = consts.CommandLookupByValue[cmd]
+		save.SetIntAt(i, c.Vigor)
 		i++
-		c.Command2 = consts.CommandLookupByValue[save.GetIntAt(i)]
+		save.SetIntAt(i, c.Speed)
 		i++
-		c.Command3 = consts.CommandLookupByValue[save.GetIntAt(i)]
+		save.SetIntAt(i, c.Stamina)
 		i++
-		c.Command4 = consts.CommandLookupByValue[save.GetIntAt(i)]
+		save.SetIntAt(i, c.Magic)
 		i++
-
-		c.Vigor = save.GetIntAt(i)
+		// Skip Esper
 		i++
-		c.Speed = save.GetIntAt(i)
+		save.SetIntAt(i, c.Equipment.WeaponID)
 		i++
-		c.Stamina = save.GetIntAt(i)
+		save.SetIntAt(i, c.Equipment.ShieldID)
 		i++
-		c.Magic = save.GetIntAt(i)
+		save.SetIntAt(i, c.Equipment.HelmetID)
 		i++
-		//c.Esper = consts.EspersByValue[save.GetIntAt(i)]
+		save.SetIntAt(i, c.Equipment.ArmorID)
 		i++
-		c.Equipment.WeaponID = save.GetIntAt(i)
+		save.SetIntAt(i, c.Equipment.Relic1ID)
 		i++
-		c.Equipment.ShieldID = save.GetIntAt(i)
-		i++
-		c.Equipment.HelmetID = save.GetIntAt(i)
-		i++
-		c.Equipment.ArmorID = save.GetIntAt(i)
-		i++
-		c.Equipment.Relic1ID = save.GetIntAt(i)
-		i++
-		c.Equipment.Relic2ID = save.GetIntAt(i)
+		save.SetIntAt(i, c.Equipment.Relic2ID)
 		i++
 
 		i = nextCharacterMagicOffset*ci + o.KnownMagicOffset
 		for _, s := range c.SpellsByIndex {
-			s.Value = save.GetIntAt(i + s.Index)
+			save.SetIntAt(i+s.Index, s.Value)
 		}
 	}
 }
 
 func (o *Offsets) saveSkills() {
-
+	o.setFromNameSlotMasks(o.SwdTechOffset, consts.SwordTech)
+	o.setFromNameSlotMasks(o.LoreOffset, consts.Lores)
+	o.setFromNameSlotMasks(o.BlitzOffset, consts.Blitzes)
+	o.setFromNameSlotMasks(o.DanceOffset, consts.Dances)
 }
 
 func (o *Offsets) saveEspers() {
-
+	o.setFromNameSlotMasks(o.EsperOffset, consts.Espers)
 }
 
 func (o *Offsets) saveMiscStats() {
-
+	m := models.GetMisc()
+	o.setMultiple(m.GP, o.GoldOffset, o.GoldOffset+1, o.GoldOffset+2)
+	o.setMultiple(m.Steps, o.StepsOffset, o.StepsOffset+1, o.StepsOffset+2)
+	save.SetIntAt(o.NumberOfSaves, m.NumberOfSaves)
+	save.SetIntAt(o.NumberOfSaves+1, m.SaveCountRollOver)
+	save.SetIntAt(o.MapXYOffset, m.MapXAxis)
+	save.SetIntAt(o.MapXYOffset+1, m.MapYAxis)
+	save.SetIntAt(o.AirshipXYOffset, m.AirshipXAxis)
+	save.SetIntAt(o.AirshipXYOffset+1, m.AirshipYAxis)
+	s := save.GetIntAt(o.AirshipSettingsOffset)
+	if m.IsAirshipVisible {
+		s |= 1 << 1
+	} else {
+		mask := ^(1 << 1)
+		s &= mask
+	}
+	save.SetIntAt(o.AirshipSettingsOffset, s)
+	save.SetIntAt(o.CursedShieldFightOffset, m.CursedShieldFightCount)
 }
 
 func (o *Offsets) saveInventory() {
+	for i, r := range models.GetInventoryRows() {
+		save.SetIntAt(i+o.InventoryItemIdOffset, fromHex(r.ItemID))
+		save.SetIntAt(i+o.InventoryItemCountOffset, r.Count)
+	}
+}
 
+func (o *Offsets) setMultiple(value int, indexes ...int) {
+	for i := 0; i < len(indexes) && i < int(unsafe.Sizeof(value)); i++ {
+		b := *(*uint8)(unsafe.Pointer(uintptr(unsafe.Pointer(&value)) + uintptr(i)))
+		save.SetAt(indexes[i], b)
+	}
+}
+
+func (o *Offsets) setFromNameSlotMasks(index int, nsms []*consts.NameSlotMask8) int {
+	for _, v := range consts.GenerateBytes(nsms) {
+		save.SetAt(index, v)
+		index++
+	}
+	return index
+}
+
+func fromHex(hex string) int {
+	if value, err := strconv.ParseInt(hex, 16, 32); err != nil {
+		return 0xFF
+	} else {
+		return int(value)
+	}
 }

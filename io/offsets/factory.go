@@ -57,8 +57,7 @@ const (
 	// cursedShieldFightsOffset Offset to the Cursed Shield fight counter
 	cursedShieldFightsOffset = 0x7D5
 
-	// Todo
-
+	// TODO - Investigate Airship Settings Further
 	// airshipSettingsOffset Offset to Airship settings flag
 	//  bit 0: WoR: 0=sad song, 1=norm.song
 	//  bit 1: airship visibility
