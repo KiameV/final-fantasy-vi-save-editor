@@ -6,6 +6,7 @@ on:
   release:
     types:
       - created
+      - edited
 
 # workflow tasks
 jobs:
