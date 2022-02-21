@@ -35,9 +35,4 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ./build/final-fantasy-vi-save-editor-windows-4.0-386.exe
-            ./build/final-fantasy-vi-save-editor-windows-4.0-amd64.exe
-            ./build/final-fantasy-vi-save-editor-linux-386
-            ./build/final-fantasy-vi-save-editor-linux-amd64
-            ./build/final-fantasy-vi-save-editor-darwin-10.16-amd64
+          files: ./build/*
