@@ -49,7 +49,7 @@ func updateWindow(w *nucular.Window) {
 	//mw := w.Master()
 	w.MenubarBegin()
 	w.Row(12).Static(100, 100, 75, 50, 100)
-	if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
+	/*if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
 		if fn, err = io.OpenFile(w, save.SteamRemastered); err != nil {
 			popupErr(w, err)
 			w.Close()
@@ -59,7 +59,7 @@ func updateWindow(w *nucular.Window) {
 			fileType = SteamRemastered
 			refresh()
 		}
-	}
+	} else */
 	if w := w.Menu(label.TA("Load SNES", "CC"), 100, nil); w != nil {
 		w.Row(12).Dynamic(1)
 		if w.MenuItem(label.TA("SRM Slot 1", "LC")) {
