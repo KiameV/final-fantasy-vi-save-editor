@@ -40,6 +40,9 @@ var (
 )
 
 func main() {
+	io.ParsePixelRemasteredSave(`C:\Users\travis\Desktop\bu\start\uhHNR4g5QL5twqCc+IhexaltjtBjJnzzcxh5RBSy4G4=`)
+	return
+
 	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor", image.Point{X: 725, Y: 500}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
 	wnd.Main()
@@ -248,3 +251,28 @@ var customTheme = style.ColorTable{
 	ColorScrollbarCursorActive: color.RGBA{160, 160, 160, 255},
 	ColorTabHeader:             color.RGBA{210, 210, 210, 255},
 }
+
+/*
+Slots:
+b'ookrbATYovG3tEOXIH4HqWnsv8TrUlRWzM8AlCmW2mk=' :  slot1.sav
+b'vgU2wnuaPje2Or53Iqs8Mp/Al6sdM+GM04Iymv229Ow=' :  slot2.sav
+b'uhHNR4g5QL5twqCc+IhexaltjtBjJnzzcxh5RBSy4G4=' :  slot3.sav
+b'fmsBRQ+D6YzdjCbBbl7BQuagHyg/7iX3I/EnhccyGDM=' :  slot4.sav
+b'NXa+MQ+hiHKlPAHJ6GiVWi2Wk5JR2xQQaQxzhyCbK2E=' :  slot5.sav
+b'UWtRedIOaeA6ig/8r6DIvxg33X92oMM9P8JBwiag4d0=' :  slot6.sav
+b'e1gfNt2iCE2I3yucQ8zfXn0ou+P2/lREb2q7Lqm04Gc=' :  slot7.sav
+b'6Pf6Ky7e4QBPuKH9EFJ1Iu+BUEz0zNrXdaS8866Gcq0=' :  slot8.sav
+b'9dHjN5+9JJWfJ9xoprXo/ehwoEwJwKRYL1Hlc92UNQk=' :  slot9.sav
+b'oY6N7KlcC4jscZnfa4ea6Nr/TUSR+I/29kwPNZe2NAo=' :  slot10.sav
+b'NKQ3ux2pea/DqE/vXPKb8+oix5Lt467opYaG0p0brgU=' :  slot11.sav
+b'HyhjsKWa/tCVf3TWB3qRy7NyrJbc8orciJCntDpqT/I=' :  slot12.sav
+b'hl9YCUf633k79xePC9PiKAEOq1ajUcSZkLofQuNw2OM=' :  slot13.sav
+b'C/ozNkSxgKEoLCgOPLJakAUUhnL820LbGlpMz0irQFI=' :  slot14.sav
+b'z2837SldCS+oIV8y4w5LrnJK9URKYy1QrnoA9bvCg5o=' :  slot15.sav
+b'CnvUyfaDeqDg3XbVpVWJOj/sPKcGMCV3dR/xM8Ze5jE=' :  slot16.sav
+b'eQ9Km3NT1WoE4h0hFD90ggFIZayYxfHkIVntc7akYVo=' :  slot17.sav
+b'Lnbq+GaFOc4ybPZaCf/llI0arXo06rJL32Eu+mCwsLg=' :  slot18.sav
+b'9GkO1xc52WAzswcEtJxs963MkuCohOHgYj0Fhio/fPE=' :  slot19.sav
+b'mkYfUr4Mtg0zUmF/6lw+bxRLnbnBYp9ayg1KgploDpQ=' :  slot20.sav
+b'7nCxyzTwG31W3Zlg70mo751W8ETH1n+Km0dWOzRU84Y=' :  slot21.sav
+*/
