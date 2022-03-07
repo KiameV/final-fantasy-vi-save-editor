@@ -1,12 +1,11 @@
 package io
 
 import (
-	"ffvi_editor/io/save"
 	"github.com/sqweek/dialog"
 	"os"
 )
 
-func createDialog(fileType save.SaveFileType) *dialog.FileBuilder {
+func createDialog(fileType SaveFileType) *dialog.FileBuilder {
 	d := dialog.File()
 	if appDir != "" {
 		if dir, e1 := os.ReadFile(appDir + "/ff6editor.config"); e1 != nil {
@@ -24,9 +23,9 @@ func createDialog(fileType save.SaveFileType) *dialog.FileBuilder {
 		Desc:       "Snes9x Save State File",
 		Extensions: []string{"*.0*"},
 	}}*/
-	case save.SRMSlot1, save.SRMSlot2, save.SRMSlot3:
+	case SRMSlot1, SRMSlot2, SRMSlot3:
 		d = d.Title("Select the Save File").Filter("SRM File", "srm")
-	case save.ZnesSaveState:
+	case ZnesSaveState:
 		d = d.Title("Select the Save State").Filter("ZST File", "zs*").Filter("All", "*")
 	}
 	return d

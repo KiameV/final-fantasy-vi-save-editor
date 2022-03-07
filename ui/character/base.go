@@ -51,19 +51,39 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Magic - "+character.Name, u.expandAll) {
-		u.magic.Draw(w)
+		if !ui.IsPR {
+			u.magic.Draw(w)
+		} else {
+			w.Row(30).Dynamic(1)
+			w.Label("Coming soon for Pixel Remastered", "LC")
+		}
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Equipment - "+character.Name, u.expandAll) {
-		u.equipment.Draw(w)
+		if !ui.IsPR {
+			u.equipment.Draw(w)
+		} else {
+			w.Row(30).Dynamic(1)
+			w.Label("Coming soon for Pixel Remastered", "LC")
+		}
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Commands - "+character.Name, u.expandAll) {
-		u.commands.Draw(w)
+		if !ui.IsPR {
+			u.commands.Draw(w)
+		} else {
+			w.Row(30).Dynamic(1)
+			w.Label("Coming soon for Pixel Remastered", "LC")
+		}
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Status Effects - "+character.Name, u.expandAll) {
-		u.statusEffects.Draw(w)
+		if !ui.IsPR {
+			u.statusEffects.Draw(w)
+		} else {
+			w.Row(30).Dynamic(1)
+			w.Label("Coming soon for Pixel Remastered", "LC")
+		}
 		w.TreePop()
 	}
 }

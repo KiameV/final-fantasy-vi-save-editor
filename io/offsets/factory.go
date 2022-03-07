@@ -1,7 +1,5 @@
 package offsets
 
-import "ffvi_editor/io/save"
-
 const (
 	// srmSlotSize Size of the SRM's save slot
 	srmSlotSize = 0xA00
@@ -71,32 +69,18 @@ const (
 	gameTimeOffset = 0x263
 )
 
-// Create an Offset for the given save file type
-func Create(saveFileType save.SaveFileType) *Offsets {
-	switch saveFileType {
-	//case Snes9xSaveState15:
-	//	return create(0x121CF)
-	//case Snes9xSaveState16:
-	//	return create(0x121DB)
-	case save.SRMSlot1:
-		return create(0 * srmSlotSize)
-	case save.SRMSlot2:
-		return create(1 * srmSlotSize)
-	case save.SRMSlot3:
-		return create(2 * srmSlotSize)
-	case save.ZnesSaveState:
-		return create(0x2213)
-	}
-	return nil
+// CreateFromOffset an Offset for the given save file type (snes)
+//func CreateFromSnesOffset(offset int) *Offsets {
+//	return Create(offset - 2)
+//}
+
+// NewOffsetsFromSrmSlot an Offset for the given save slot
+func NewOffsetsFromSrmSlot(offset int) *Offsets {
+	return NewOffsets(offset * srmSlotSize)
 }
 
-// CreateFromOffset an Offset for the given save file type
-func CreateFromOffset(offset int) *Offsets {
-	return create(offset - 2)
-}
-
-// create an Offset instance with the given base offset for each defined offset
-func create(baseOffset int) *Offsets {
+// NewOffsets an Offset instance with the given base offset for each defined offset
+func NewOffsets(baseOffset int) *Offsets {
 	return &Offsets{
 		CharacterOffset:          characterOffset + baseOffset,
 		KnownMagicOffset:         knownMagicOffset + baseOffset,

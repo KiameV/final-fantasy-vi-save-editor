@@ -1,19 +1,19 @@
 package offsets
 
 import (
-	"ffvi_editor/io/save"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"strconv"
 	"unsafe"
 )
 
-func (o *Offsets) Save() {
+func (o *Offsets) Save() error {
 	o.saveCharacters()
 	o.saveSkills()
 	o.saveEspers()
 	o.saveMiscStats()
 	o.saveInventory()
+	return nil
 }
 
 func (o *Offsets) saveCharacters() {
@@ -25,14 +25,14 @@ func (o *Offsets) saveCharacters() {
 
 		for j := 0; j < 6; j++ {
 			if j < len(name) {
-				save.SetRuneAt(i+j, name[j])
+				SetRuneAt(i+j, name[j])
 			} else {
-				save.SetRuneAt(i+j, 0)
+				SetRuneAt(i+j, 0)
 			}
 		}
 		i += 6
 
-		save.SetIntAt(i, c.Level)
+		SetIntAt(i, c.Level)
 		i++
 
 		o.setMultiple(c.HP.Current, i, i+1)
@@ -53,46 +53,46 @@ func (o *Offsets) saveCharacters() {
 		i = o.setFromNameSlotMasks(i, c.StatusEffects)
 		// Float
 		if c.StatusEffects[8].Checked {
-			save.SetAt(i-1, 0xFF)
+			SetAt(i-1, 0xFF)
 		} else {
-			save.SetAt(i-1, 0)
+			SetAt(i-1, 0)
 		}
 
-		save.SetIntAt(i, c.Command1.Value)
+		SetIntAt(i, c.Command1.Value)
 		i++
-		save.SetIntAt(i, c.Command2.Value)
+		SetIntAt(i, c.Command2.Value)
 		i++
-		save.SetIntAt(i, c.Command3.Value)
+		SetIntAt(i, c.Command3.Value)
 		i++
-		save.SetIntAt(i, c.Command4.Value)
+		SetIntAt(i, c.Command4.Value)
 		i++
 
-		save.SetIntAt(i, c.Vigor)
+		SetIntAt(i, c.Vigor)
 		i++
-		save.SetIntAt(i, c.Speed)
+		SetIntAt(i, c.Speed)
 		i++
-		save.SetIntAt(i, c.Stamina)
+		SetIntAt(i, c.Stamina)
 		i++
-		save.SetIntAt(i, c.Magic)
+		SetIntAt(i, c.Magic)
 		i++
 		// Skip Esper
 		i++
-		save.SetIntAt(i, c.Equipment.WeaponID)
+		SetIntAt(i, c.Equipment.WeaponID)
 		i++
-		save.SetIntAt(i, c.Equipment.ShieldID)
+		SetIntAt(i, c.Equipment.ShieldID)
 		i++
-		save.SetIntAt(i, c.Equipment.HelmetID)
+		SetIntAt(i, c.Equipment.HelmetID)
 		i++
-		save.SetIntAt(i, c.Equipment.ArmorID)
+		SetIntAt(i, c.Equipment.ArmorID)
 		i++
-		save.SetIntAt(i, c.Equipment.Relic1ID)
+		SetIntAt(i, c.Equipment.Relic1ID)
 		i++
-		save.SetIntAt(i, c.Equipment.Relic2ID)
+		SetIntAt(i, c.Equipment.Relic2ID)
 		i++
 
 		i = nextCharacterMagicOffset*ci + o.KnownMagicOffset
 		for _, s := range c.SpellsByIndex {
-			save.SetIntAt(i+s.Index, s.Value)
+			SetIntAt(i+s.Index, s.Value)
 		}
 	}
 }
@@ -112,40 +112,40 @@ func (o *Offsets) saveMiscStats() {
 	m := models.GetMisc()
 	o.setMultiple(m.GP, o.GoldOffset, o.GoldOffset+1, o.GoldOffset+2)
 	o.setMultiple(m.Steps, o.StepsOffset, o.StepsOffset+1, o.StepsOffset+2)
-	save.SetIntAt(o.NumberOfSaves, m.NumberOfSaves)
-	save.SetIntAt(o.NumberOfSaves+1, m.SaveCountRollOver)
-	save.SetIntAt(o.MapXYOffset, m.MapXAxis)
-	save.SetIntAt(o.MapXYOffset+1, m.MapYAxis)
-	save.SetIntAt(o.AirshipXYOffset, m.AirshipXAxis)
-	save.SetIntAt(o.AirshipXYOffset+1, m.AirshipYAxis)
-	s := save.GetIntAt(o.AirshipSettingsOffset)
+	SetIntAt(o.NumberOfSaves, m.NumberOfSaves)
+	SetIntAt(o.NumberOfSaves+1, m.SaveCountRollOver)
+	SetIntAt(o.MapXYOffset, m.MapXAxis)
+	SetIntAt(o.MapXYOffset+1, m.MapYAxis)
+	SetIntAt(o.AirshipXYOffset, m.AirshipXAxis)
+	SetIntAt(o.AirshipXYOffset+1, m.AirshipYAxis)
+	s := GetIntAt(o.AirshipSettingsOffset)
 	if m.IsAirshipVisible {
 		s |= 1 << 1
 	} else {
 		mask := ^(1 << 1)
 		s &= mask
 	}
-	save.SetIntAt(o.AirshipSettingsOffset, s)
-	save.SetIntAt(o.CursedShieldFightOffset, m.CursedShieldFightCount)
+	SetIntAt(o.AirshipSettingsOffset, s)
+	SetIntAt(o.CursedShieldFightOffset, m.CursedShieldFightCount)
 }
 
 func (o *Offsets) saveInventory() {
 	for i, r := range models.GetInventoryRows() {
-		save.SetIntAt(i+o.InventoryItemIdOffset, fromHex(r.ItemID))
-		save.SetIntAt(i+o.InventoryItemCountOffset, r.Count)
+		SetIntAt(i+o.InventoryItemIdOffset, fromHex(r.ItemID))
+		SetIntAt(i+o.InventoryItemCountOffset, r.Count)
 	}
 }
 
 func (o *Offsets) setMultiple(value int, indexes ...int) {
 	for i := 0; i < len(indexes) && i < int(unsafe.Sizeof(value)); i++ {
 		b := *(*uint8)(unsafe.Pointer(uintptr(unsafe.Pointer(&value)) + uintptr(i)))
-		save.SetAt(indexes[i], b)
+		SetAt(indexes[i], b)
 	}
 }
 
 func (o *Offsets) setFromNameSlotMasks(index int, nsms []*consts.NameSlotMask8) int {
 	for _, v := range consts.GenerateBytes(nsms) {
-		save.SetAt(index, v)
+		SetAt(index, v)
 		index++
 	}
 	return index

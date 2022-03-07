@@ -1,9 +1,10 @@
 package io
 
 import (
-	"ffvi_editor/io/offsets"
-	"ffvi_editor/io/save"
 	"github.com/aarzilli/nucular"
+	"github.com/sqweek/dialog"
+	"io/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -14,10 +15,30 @@ func init() {
 	appDir, _ = os.Getwd()
 }
 
-func OpenFile(w *nucular.Window, fileType save.SaveFileType) (fileName string, err error) {
-	if fileType == save.SteamRemastered {
-		// TODO
+func OpenDirAndFileDialog(w *nucular.Window) (dir string, files []fs.FileInfo, err error) {
+	d := dialog.Directory()
+	if appDir != "" {
+		if b, e1 := os.ReadFile(appDir + "/ff6editor.config"); e1 != nil {
+			d = d.SetStartDir(".")
+		} else {
+			d = d.SetStartDir(string(b))
+		}
+	} else {
+		d = d.SetStartDir(".")
 	}
+	d = d.Title("Select Save Directory")
+
+	if dir, err = d.Browse(); err != nil {
+		if err.Error() == "Cancelled" {
+			w.Close()
+			return
+		}
+	}
+	files, err = ioutil.ReadDir(dir)
+	return
+}
+
+func OpenFileDialog(w *nucular.Window, fileType SaveFileType) (fileName string, err error) {
 	if fileName, err = createDialog(fileType).Load(); err != nil {
 		if err.Error() == "Cancelled" {
 			w.Close()
@@ -26,28 +47,17 @@ func OpenFile(w *nucular.Window, fileType save.SaveFileType) (fileName string, e
 		return
 	}
 
-	/*if fileType == offsets.Snes9xSaveState15 ||
-		fileType == offsets.Snes9xSaveState16 {
-		return openGzipFile(file)
-	}*/
-	err = openFile(fileName, fileType)
+	err = OpenFile(fileName, fileType)
 	return
 }
 
-/*func openGzipFile(file string) error {
-	archive.
-	return nil
-}*/
-
-func openFile(file string, fileType save.SaveFileType) (err error) {
-	var data []byte
-	data, err = os.ReadFile(file)
-	if appDir != "" {
-		if f, e1 := os.Create(appDir + "/ff6editor.config"); e1 == nil {
-			_, _ = f.Write([]byte(filepath.Dir(file)))
+func OpenFile(file string, fileType SaveFileType) (err error) {
+	if err = Create(fileType).Load(file); err == nil {
+		if appDir != "" {
+			if f, e1 := os.Create(appDir + "/ff6editor.config"); e1 == nil {
+				_, _ = f.Write([]byte(filepath.Dir(file)))
+			}
 		}
 	}
-	save.Set(data)
-	offsets.Create(fileType).Load()
 	return
 }
