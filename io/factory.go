@@ -2,6 +2,7 @@ package io
 
 import (
 	"ffvi_editor/io/offsets"
+	"ffvi_editor/io/pr"
 )
 
 // SaveFileType Defines the supported File Types
@@ -41,8 +42,7 @@ func Create(saveFileType SaveFileType) IOer {
 	case ZnesSaveState:
 		return offsets.NewOffsets(0x2213)
 	case PixelRemastered:
-		panic("Pixel Remastered not supported")
-		//return pr.NewPR()
+		return pr.NewPR()
 	}
 	return nil
 }

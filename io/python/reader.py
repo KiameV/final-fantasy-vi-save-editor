@@ -24,22 +24,39 @@ def inflate(data):
 def deobfuscateFile(fileName):
     inFile = open(fileName,'r')
     buffer = inFile.read()
+    end = len(buffer) - 1
+    for i in range(end, 0, -1):
+        if buffer[i] != '=':
+            end = i - 1
+            break
     buffer = buffer[3:-2]
     while (len(buffer) % 4) != 0:
         buffer += '='
-    #print(buffer[0])
     encBytes = base64.b64decode(buffer,validate=False)
-    #print(len(encBytes))
     encBytes = bytearray(encBytes)
     while(len(encBytes) % 32) != 0:
         encBytes.append(0)
-    #print("encBytes")
     decBytes = getCipher().decrypt(bytes(encBytes))
-    r = ""
-    for b in decBytes:
-        r = r + str(b) + ","
-    #print(r)
-    print(inflate(decBytes))
+    print(buffer[:3], inflate(decBytes))
+
+def deflate(data):
+    compress = zlib.compressobj(-1, zlib.DEFLATED, -15)
+    deflated = compress.compress(bytes(data, "utf-8"))
+    deflated += compress.flush()
+    return deflated
+
+def obfuscateFile(outFile, prefix, dataFile):
+    df = open(dataFile,'r')
+    data = df.read()
+    deflated = deflate(data)
+    encBytes = getCipher().encrypt(deflated)
+    encoded = base64.b64encode(encBytes)
+    outFile = open(outFile,'wb')
+    result = str.encode(prefix) + encoded
+    outFile.write(result)
 
 if __name__ == '__main__':
-    globals()[sys.argv[1]](sys.argv[2])
+    if len(sys.argv) == 3:
+        globals()[sys.argv[1]](sys.argv[2])
+    else:
+        globals()[sys.argv[1]](sys.argv[2], sys.argv[3], sys.argv[4])

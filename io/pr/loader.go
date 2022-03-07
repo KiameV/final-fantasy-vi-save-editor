@@ -20,7 +20,12 @@ func (p *PR) Load(fileName string) (err error) {
 		return
 	}
 
-	s := string(out[2 : len(out)-3])
+	p.prefix = string(out[0:3])
+	var end int
+	end = len(out)
+	for end = len(out) - 1; end > 0 && out[end-1] != '}'; end-- {
+	}
+	s := string(out[6:end])
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = strings.ReplaceAll(s, `\\"`, `\"`)
 	if err = json.Unmarshal([]byte(s), &p.Base); err != nil {

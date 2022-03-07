@@ -5,17 +5,24 @@ import (
 	"os"
 )
 
+var Dir = ""
+
+func init() {
+	if Dir == "" {
+		if dir, err := os.ReadFile("./ff6editor.config"); err == nil {
+			Dir = string(dir)
+		}
+	}
+}
+
 func createDialog(fileType SaveFileType) *dialog.FileBuilder {
 	d := dialog.File()
-	if appDir != "" {
-		if dir, e1 := os.ReadFile(appDir + "/ff6editor.config"); e1 != nil {
-			d = d.SetStartDir(".")
-		} else {
-			d = d.SetStartDir(string(dir))
-		}
-	} else {
+	if Dir == "" {
 		d = d.SetStartDir(".")
+	} else {
+		d = d.SetStartDir(Dir)
 	}
+
 	switch fileType {
 	/*case offsets.Snes9xSaveState15, offsets.Snes9xSaveState16:
 	d.Title("Select the Save State")

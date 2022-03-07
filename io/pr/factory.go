@@ -4,6 +4,7 @@ type PR struct {
 	Base       map[string]interface{}
 	UserData   map[string]interface{}
 	Characters []map[string]interface{}
+	prefix     string
 }
 
 func NewPR() *PR {

@@ -9,20 +9,10 @@ import (
 	"path/filepath"
 )
 
-var appDir string
-
-func init() {
-	appDir, _ = os.Getwd()
-}
-
 func OpenDirAndFileDialog(w *nucular.Window) (dir string, files []fs.FileInfo, err error) {
 	d := dialog.Directory()
-	if appDir != "" {
-		if b, e1 := os.ReadFile(appDir + "/ff6editor.config"); e1 != nil {
-			d = d.SetStartDir(".")
-		} else {
-			d = d.SetStartDir(string(b))
-		}
+	if Dir != "" {
+		d = d.SetStartDir(Dir)
 	} else {
 		d = d.SetStartDir(".")
 	}
@@ -53,10 +43,8 @@ func OpenFileDialog(w *nucular.Window, fileType SaveFileType) (fileName string, 
 
 func OpenFile(file string, fileType SaveFileType) (err error) {
 	if err = Create(fileType).Load(file); err == nil {
-		if appDir != "" {
-			if f, e1 := os.Create(appDir + "/ff6editor.config"); e1 == nil {
-				_, _ = f.Write([]byte(filepath.Dir(file)))
-			}
+		if f, e1 := os.Create("./ff6editor.config"); e1 == nil {
+			_, _ = f.Write([]byte(filepath.Dir(file)))
 		}
 	}
 	return

@@ -16,6 +16,7 @@ import (
 	"image"
 	"image/color"
 	"io/fs"
+	"io/ioutil"
 	"path"
 	"time"
 )
@@ -37,7 +38,6 @@ var (
 	fileType     = Unknown
 	saveFileType io.SaveFileType
 	fn           string
-	dir          string
 	dirFiles     []fs.FileInfo
 	fileName     string
 	status       string
@@ -45,6 +45,10 @@ var (
 )
 
 func main() {
+	if io.Dir != "" {
+		dirFiles, _ = ioutil.ReadDir(io.Dir)
+	}
+
 	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor", image.Point{X: 725, Y: 500}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
 	wnd.Main()
@@ -55,12 +59,13 @@ func updateWindow(w *nucular.Window) {
 	w.MenubarBegin()
 	w.Row(12).Static(100, 100, 75, 50, 100)
 	if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
-		if dir != "" && len(dirFiles) > 0 {
+		if io.Dir != "" && len(dirFiles) > 0 {
 			loadPRDir(w)
-		} else if dir, dirFiles, err = io.OpenDirAndFileDialog(w); err != nil {
+			w.Close()
+		} else if io.Dir, dirFiles, err = io.OpenDirAndFileDialog(w); err != nil {
 			popupErr(w, err)
 			w.Close()
-		} else if dir != "" && dirFiles != nil {
+		} else if io.Dir != "" && dirFiles != nil {
 			loadPRDir(w)
 			w.Close()
 		}
@@ -72,7 +77,7 @@ func updateWindow(w *nucular.Window) {
 				popupErr(w, err)
 				w.Close()
 			} else if fn != "" {
-				dir = ""
+				io.Dir = ""
 				dirFiles = nil
 				fileName = fn
 				setFileType(io.SRMSlot1)
@@ -175,13 +180,20 @@ func updateWindow(w *nucular.Window) {
 	}
 	w.MenubarEnd()
 
-	if fileType == PixelRemastered && dir != "" && len(dirFiles) > 0 && fileName == "" {
-		w.Row(30).Static(300)
+	if fileType == PixelRemastered && io.Dir != "" && len(dirFiles) > 0 && fileName == "" {
+		w.Row(30).Static(400, 100)
+		w.Label(io.Dir, "LC")
+		if w.ButtonText("Change") {
+			if d, f, e1 := io.OpenDirAndFileDialog(w); e1 == nil {
+				io.Dir = d
+				dirFiles = f
+			}
+		}
 		for _, s := range prSlots {
 			if s.File != nil {
 				w.Row(30).Static(300)
 				if w.ButtonText("Load " + s.Name) {
-					if err = io.OpenFile(path.Join(dir, s.File.Name()), io.PixelRemastered); err != nil {
+					if err = io.OpenFile(path.Join(io.Dir, s.File.Name()), io.PixelRemastered); err != nil {
 						popupErr(w, err)
 					} else {
 						fileName = s.File.Name()
@@ -248,7 +260,7 @@ func loadPRDir(w *nucular.Window) {
 	}
 	if !found {
 		fileType = Unknown
-		dir = ""
+		io.Dir = ""
 		dirFiles = nil
 		popupErr(w, errors.New("no save files found in that directory"))
 	}
