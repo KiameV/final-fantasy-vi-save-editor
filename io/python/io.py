@@ -21,18 +21,18 @@ def inflate(data):
     inflated += decompress.flush()
     return inflated
 
-def deobfuscateFile(fileName):
-    in_file = open(fileName,'r')
+def deobfuscateFile(file_name):
+    in_file = open(file_name,'r')
     buffer = in_file.read()
     end = len(buffer) - 1
     for i in range(end, 0, -1):
         if buffer[i] != '=':
             end = i - 1
             break
-    buffer = buffer[3:-2]
+    buffer = buffer[3:end]
     while (len(buffer) % 4) != 0:
         buffer += '='
-    enc_bytes = base64.b64decode(buffer,validate=False)
+    enc_bytes = base64.b64decode(buffer, validate=False)
     enc_bytes = bytearray(enc_bytes)
     while(len(enc_bytes) % 32) != 0:
         enc_bytes.append(0)
@@ -53,8 +53,10 @@ def obfuscateFile(out_file, data_file):
     enc_bytes = getCipher().encrypt(deflated)
     encoded = base64.b64encode(enc_bytes)
     f = open(out_file, 'wb')
+    f.write(b'\xaf\xbb\xbf')
     f.write(encoded)
-    f.write(b"\r")
+    f.write(b"\r\n")
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
