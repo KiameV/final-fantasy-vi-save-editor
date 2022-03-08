@@ -115,3 +115,11 @@ func (u *skillsUI) Draw(w *nucular.Window) {
 func (u *skillsUI) Refresh() {
 
 }
+
+func (u *skillsUI) Name() string {
+	return "Skills"
+}
+
+func (u *skillsUI) IsPRSupported() bool {
+	return false
+}

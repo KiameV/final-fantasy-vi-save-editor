@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"os/exec"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 func (p *PR) Load(fileName string) (err error) {
 	var (
-		cmd      = exec.Command("python", "./io/python/reader.py", "deobfuscateFile", fileName)
+		cmd      = exec.Command("python", "./io/python/io.py", "deobfuscateFile", fileName)
 		out      []byte
 		slTarget = map[string]interface{}{}
 	)
@@ -20,14 +21,20 @@ func (p *PR) Load(fileName string) (err error) {
 		return
 	}
 
-	p.prefix = string(out[0:3])
 	var end int
 	end = len(out)
 	for end = len(out) - 1; end > 0 && out[end-1] != '}'; end-- {
 	}
-	s := string(out[6:end])
+	p.data = make([]byte, len(out))
+	for a := 2; a < end; a++ {
+		p.data[a] = out[a]
+	}
+	//p.data = out[2:end]
+	s := string(out[2:end])
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
-	s = strings.ReplaceAll(s, `\\"`, `\"`)
+	//s = strings.ReplaceAll(s, `\\"`, `\"`)
+	s = p.fixEscapeCharsForLoad(s)
+	p.data = []byte(s)
 	if err = json.Unmarshal([]byte(s), &p.Base); err != nil {
 		return
 	}
@@ -205,15 +212,15 @@ func (p *PR) UnmarshalFrom(from map[string]interface{}, key string, m *map[strin
 }
 
 func (p *PR) Unmarshal(i interface{}, m *map[string]interface{}) error {
-	s := strings.ReplaceAll(i.(string), `\\"`, `\"`)
-	return json.Unmarshal([]byte(s), m)
+	//s := strings.ReplaceAll(i.(string), `\\"`, `\"`)
+	return json.Unmarshal([]byte(i.(string)), m)
 }
 
 func (p *PR) unmarshalEquipment(m map[string]interface{}) (idCounts []idCount, err error) {
 	i, _ := m[EquipmentList]
 	eq := &equipment{}
-	s := strings.ReplaceAll(i.(string), `\\`, `\`)
-	if err = json.Unmarshal([]byte(s), eq); err != nil {
+	//s := strings.ReplaceAll(i.(string), `\\`, `\`)
+	if err = json.Unmarshal([]byte(i.(string)), eq); err != nil {
 		return
 	}
 	idCounts = make([]idCount, len(eq.Values))
@@ -223,6 +230,66 @@ func (p *PR) unmarshalEquipment(m map[string]interface{}) (idCounts []idCount, e
 		}
 	}
 	return
+}
+
+func (p *PR) fixEscapeCharsForLoad(s string) string {
+	var (
+		sb    strings.Builder
+		going = false
+		count int
+		found = make(map[int]string)
+	)
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\\' {
+			if !going {
+				going = true
+			}
+			sb.WriteByte('\\')
+			count++
+		} else {
+			if going {
+				going = false
+				sb.WriteByte('"')
+				found[count] = sb.String()
+				count = 0
+				sb.Reset()
+			}
+		}
+	}
+
+	sorted := make([]int, 0, len(found))
+	for k, _ := range found {
+		sorted = append(sorted, k)
+	}
+	sort.Ints(sorted)
+
+	for i := len(sorted) - 1; i >= 0; i-- {
+		count = sorted[i]
+		v, _ := found[count]
+		sb.Reset()
+		for j := 0; j < count; j++ {
+			sb.WriteByte('~')
+		}
+		sb.WriteByte('"')
+		found[count] = sb.String()
+		s = strings.ReplaceAll(s, v, sb.String())
+	}
+
+	for i := len(sorted) - 1; i >= 0; i-- {
+		count = sorted[i]
+		v, _ := found[count]
+		sb.Reset()
+		half := (len(v) - 1) / 2
+		for j := 0; j < half; j++ {
+			sb.WriteByte('\\')
+		}
+		if sb.Len() == 0 {
+			sb.WriteByte('\\')
+		}
+		sb.WriteByte('"')
+		s = strings.ReplaceAll(s, v, sb.String())
+	}
+	return s
 }
 
 // {"keys":[1,2,3,4,5,6],"values":["{\\"contentId\\":113,\\"count\\":2}","{\\"contentId\\":214,\\"count\\":1}","{\\"contentId\\":268,\\"count\\":1}","{\\"contentId\\":233,\\"count\\":8}","{\\"contentId\\":200,\\"count\\":67}","{\\"contentId\\":315,\\"count\\":1}"]}

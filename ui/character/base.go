@@ -1,6 +1,7 @@
 package character
 
 import (
+	"ffvi_editor/global"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/ui"
@@ -51,7 +52,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Magic - "+character.Name, u.expandAll) {
-		if !ui.IsPR {
+		if !global.IsShowingPR() {
 			u.magic.Draw(w)
 		} else {
 			w.Row(30).Dynamic(1)
@@ -60,7 +61,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Equipment - "+character.Name, u.expandAll) {
-		if !ui.IsPR {
+		if !global.IsShowingPR() {
 			u.equipment.Draw(w)
 		} else {
 			w.Row(30).Dynamic(1)
@@ -69,7 +70,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Commands - "+character.Name, u.expandAll) {
-		if !ui.IsPR {
+		if !global.IsShowingPR() {
 			u.commands.Draw(w)
 		} else {
 			w.Row(30).Dynamic(1)
@@ -78,7 +79,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, "Status Effects - "+character.Name, u.expandAll) {
-		if !ui.IsPR {
+		if !global.IsShowingPR() {
 			u.statusEffects.Draw(w)
 		} else {
 			w.Row(30).Dynamic(1)
@@ -100,4 +101,12 @@ func (u *characterUI) refreshWithCharacter(c *models.Character) {
 	u.commands.Update(c)
 	u.statusEffects.Update(c)
 	character = c
+}
+
+func (u *characterUI) Name() string {
+	return "Characters"
+}
+
+func (u *characterUI) IsPRSupported() bool {
+	return true
 }

@@ -1,10 +1,10 @@
 package pr
 
 type PR struct {
+	data       []byte
 	Base       map[string]interface{}
 	UserData   map[string]interface{}
 	Characters []map[string]interface{}
-	prefix     string
 }
 
 func NewPR() *PR {

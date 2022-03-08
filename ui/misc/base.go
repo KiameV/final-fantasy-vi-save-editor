@@ -50,3 +50,11 @@ func (u *miscUI) Draw(w *nucular.Window) {
 func (u *miscUI) Refresh() {
 
 }
+
+func (u *miscUI) Name() string {
+	return "Misc"
+}
+
+func (u *miscUI) IsPRSupported() bool {
+	return true
+}

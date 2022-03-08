@@ -22,8 +22,8 @@ def inflate(data):
     return inflated
 
 def deobfuscateFile(fileName):
-    inFile = open(fileName,'r')
-    buffer = inFile.read()
+    in_file = open(fileName,'r')
+    buffer = in_file.read()
     end = len(buffer) - 1
     for i in range(end, 0, -1):
         if buffer[i] != '=':
@@ -32,12 +32,12 @@ def deobfuscateFile(fileName):
     buffer = buffer[3:-2]
     while (len(buffer) % 4) != 0:
         buffer += '='
-    encBytes = base64.b64decode(buffer,validate=False)
-    encBytes = bytearray(encBytes)
-    while(len(encBytes) % 32) != 0:
-        encBytes.append(0)
-    decBytes = getCipher().decrypt(bytes(encBytes))
-    print(buffer[:3], inflate(decBytes))
+    enc_bytes = base64.b64decode(buffer,validate=False)
+    enc_bytes = bytearray(enc_bytes)
+    while(len(enc_bytes) % 32) != 0:
+        enc_bytes.append(0)
+    enc_bytes = getCipher().decrypt(bytes(enc_bytes))
+    print(inflate(enc_bytes))
 
 def deflate(data):
     compress = zlib.compressobj(-1, zlib.DEFLATED, -15)
@@ -45,18 +45,19 @@ def deflate(data):
     deflated += compress.flush()
     return deflated
 
-def obfuscateFile(outFile, prefix, dataFile):
-    df = open(dataFile,'r')
+def obfuscateFile(out_file, data_file):
+    df = open(data_file, 'r')
     data = df.read()
+    print(data)
     deflated = deflate(data)
-    encBytes = getCipher().encrypt(deflated)
-    encoded = base64.b64encode(encBytes)
-    outFile = open(outFile,'wb')
-    result = str.encode(prefix) + encoded
-    outFile.write(result)
+    enc_bytes = getCipher().encrypt(deflated)
+    encoded = base64.b64encode(enc_bytes)
+    f = open(out_file, 'wb')
+    f.write(encoded)
+    f.write(b"\r")
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         globals()[sys.argv[1]](sys.argv[2])
     else:
-        globals()[sys.argv[1]](sys.argv[2], sys.argv[3], sys.argv[4])
+        globals()[sys.argv[1]](sys.argv[2], sys.argv[3])

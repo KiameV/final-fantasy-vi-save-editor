@@ -160,3 +160,11 @@ func (u *inventoryUI) Refresh() {
 		u.ids[i].Text([]rune(row.ItemID))
 	}
 }
+
+func (u *inventoryUI) Name() string {
+	return "Inventory"
+}
+
+func (u *inventoryUI) IsPRSupported() bool {
+	return false
+}
