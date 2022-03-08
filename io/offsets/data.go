@@ -1,25 +1,4 @@
-package save
-
-// SaveFileType Defines the supported File Types
-type SaveFileType byte
-
-const (
-	// SRMSlot1 Save file slot 1
-	SRMSlot1 SaveFileType = iota
-	// SRMSlot2 Save file slot 2
-	SRMSlot2
-	// SRMSlot3 Save file slot 3
-	SRMSlot3
-	// ZnesSaveState ZNES save state
-	ZnesSaveState
-	// SteamRemastered Steam Remastered
-	SteamRemastered
-
-	/* Snes9xSaveState15 Snes9x v1.5 save state
-	//Snes9xSaveState15
-	// Snes9xSaveState16 Snes9x v1.6 save state offset 1
-	//Snes9xSaveState16*/
-)
+package offsets
 
 var data []byte
 
@@ -71,10 +50,6 @@ func GetRuneAt(i int) rune {
 		return 0
 	}
 	return rune(data[i] - 63)
-}
-
-func Set(b []byte) {
-	data = b
 }
 
 func SetAt(i int, b byte) {

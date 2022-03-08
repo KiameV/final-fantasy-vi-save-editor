@@ -1,20 +1,26 @@
 package main
 
 import (
+	"ffvi_editor/global"
 	"ffvi_editor/io"
-	"ffvi_editor/io/save"
-	"ffvi_editor/ui/character"
-	"ffvi_editor/ui/espers"
-	"ffvi_editor/ui/inventory"
-	"ffvi_editor/ui/misc"
-	"ffvi_editor/ui/skills"
+	"ffvi_editor/ui"
+	"ffvi_editor/ui/file"
+	mm "ffvi_editor/ui/mainMenu"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/label"
 	"github.com/aarzilli/nucular/rect"
 	"github.com/aarzilli/nucular/style"
 	"image"
 	"image/color"
+	"io/ioutil"
 	"time"
+)
+
+var (
+	mainMenu     ui.UI
+	status       string
+	err          error
+	fileSelector *file.FileSelector
 )
 
 type FileType byte
@@ -22,24 +28,14 @@ type FileType byte
 const (
 	Unknown FileType = iota
 	SNES
-	SteamRemastered
-)
-
-var (
-	cUI          = character.NewUI()
-	iUI          = inventory.NewUI()
-	sUI          = skills.NewUI()
-	eUI          = espers.NewUI()
-	mUI          = misc.NewUI()
-	fileType     = Unknown
-	saveFileType save.SaveFileType
-	fn           string
-	fileName     string
-	status       string
-	err          error
+	PixelRemastered
 )
 
 func main() {
+	if global.Dir != "" {
+		global.DirFiles, _ = ioutil.ReadDir(global.Dir)
+	}
+	mainMenu = mm.NewUI()
 	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor", image.Point{X: 725, Y: 500}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
 	wnd.Main()
@@ -47,122 +43,58 @@ func main() {
 
 func updateWindow(w *nucular.Window) {
 	//mw := w.Master()
+	var fn string
+	var ft global.SaveFileType
 	w.MenubarBegin()
 	w.Row(12).Static(100, 100, 75, 50, 100)
-	/*if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
-		if fn, err = io.OpenFile(w, save.SteamRemastered); err != nil {
-			popupErr(w, err)
-			w.Close()
-		} else if fn != "" {
-			fileName = fn
-			saveFileType = save.SteamRemastered
-			fileType = SteamRemastered
-			refresh()
-		}
-	} else */
+	if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
+		global.SetShowing(global.LoadPR)
+		fileSelector = file.NewFileSelector()
+		w.Close()
+	}
 	if w := w.Menu(label.TA("Load SNES", "CC"), 100, nil); w != nil {
 		w.Row(12).Dynamic(1)
 		if w.MenuItem(label.TA("SRM Slot 1", "LC")) {
-			if fn, err = io.OpenFile(w, save.SRMSlot1); err != nil {
-				popupErr(w, err)
-				w.Close()
-			} else if fn != "" {
-				fileName = fn
-				saveFileType = save.SRMSlot1
-				fileType = SNES
-				refresh()
-			}
+			global.SetShowing(global.LoadSnes)
+			ft = global.SRMSlot1
+			w.Close()
 		} else if w.MenuItem(label.TA("SRM Slot 2", "LC")) {
-			if fn, err = io.OpenFile(w, save.SRMSlot2); err != nil {
-				popupErr(w, err)
-				w.Close()
-			} else if fn != "" {
-				fileName = fn
-				saveFileType = save.SRMSlot2
-				fileType = SNES
-				refresh()
-			}
+			global.SetShowing(global.LoadSnes)
+			ft = global.SRMSlot2
+			w.Close()
 		} else if w.MenuItem(label.TA("SRM Slot 3", "LC")) {
-			if fn, err = io.OpenFile(w, save.SRMSlot3); err != nil {
-				popupErr(w, err)
-				w.Close()
-			} else if fn != "" {
-				fileName = fn
-				saveFileType = save.SRMSlot3
-				fileType = SNES
-				refresh()
-			}
+			global.SetShowing(global.LoadSnes)
+			ft = global.SRMSlot3
+			w.Close()
 		} else if w.MenuItem(label.TA("ZNES State", "LC")) {
-			if fn, err = io.OpenFile(w, save.ZnesSaveState); err != nil {
-				popupErr(w, err)
-				w.Close()
-			} else if fn != "" {
-				fileName = fn
-				saveFileType = save.ZnesSaveState
-				fileType = SNES
-				refresh()
-			}
-		}
-	}
-	if fileType != Unknown && fileName != "" {
-		if w := w.Menu(label.TA("Save", "CC"), 100, nil); w != nil {
-			if err = io.SaveFileNoDialog(fileName, saveFileType); err != nil {
-				popupErr(w, err)
-				w.Close()
-			}
-			status = "Saved"
-			time.AfterFunc(2*time.Second, func() {
-				status = ""
-			})
+			global.SetShowing(global.LoadSnes)
+			ft = global.ZnesSaveState
 			w.Close()
 		}
 	}
-	/* else if fileType == SNES {
-		if w := w.Menu(label.TA("Save As...", "LC"), 100, nil); w != nil {
-			w.Row(12).Dynamic(1)
-			if fileName != "" {
-				if w.MenuItem(label.TA("Save", "LC")) {
-					if err = io.SaveFileNoDialog(fileName, saveFileType); err != nil {
-				popupErr(w, err)
-				w.Close()
+	if global.IsShowing(global.ShowPR) || global.IsShowing(global.ShowSnes) {
+		if w := w.Menu(label.TA("Save", "CC"), 100, nil); w != nil {
+			w.Close()
+			if global.IsShowing(global.ShowPR) {
+				fileSelector = file.NewFileSelector()
+				global.SetShowing(global.SavePR)
+			} else { // Snes
+				if err = io.SaveFileSnesNoDialog(global.FileName); err != nil {
+					if err.Error() == "Cancelled" {
+						err = nil
+					} else {
+						popupErr(w, err)
 					}
+					global.RollbackShowing()
 				}
-			}
-			if w.MenuItem(label.TA("SRM Slot 1", "LC")) {
-				if fileName, err = io.SaveFile(w, save.SRMSlot1); err != nil {
-					popupErr(w, err)
-					w.Close()
-				} else if fileName != "" {
-					fileType = SNES
-					saveFileType = save.SRMSlot1
-				}
-			} else if w.MenuItem(label.TA("SRM Slot 2", "LC")) {
-				if fileName, err = io.SaveFile(w, save.SRMSlot2); err != nil {
-					popupErr(w, err)
-					w.Close()
-				} else if fileName != "" {
-					fileType = SNES
-					saveFileType = save.SRMSlot2
-				}
-			} else if w.MenuItem(label.TA("SRM Slot 3", "LC")) {
-				if fileName, err = io.OpenFile(w, save.SRMSlot3); err != nil {
-					popupErr(w, err)
-					w.Close()
-				} else if fileName != "" {
-					fileType = SNES
-					saveFileType = save.SRMSlot3
-				}
-			} else if w.MenuItem(label.TA("ZNES State", "LC")) {
-				if fileName, err = io.OpenFile(w, save.ZnesSaveState); err != nil {
-					popupErr(w, err)
-					w.Close()
-				} else if fileName != "" {
-					fileType = SNES
-					saveFileType = save.ZnesSaveState
-				}
+				status = "Saved"
+				time.AfterFunc(2*time.Second, func() {
+					status = ""
+				})
 			}
 		}
-	}*/
+	}
+
 	if status != "" {
 		w.Spacing(1)
 		w.Label("Status: "+status, "RC")
@@ -171,50 +103,105 @@ func updateWindow(w *nucular.Window) {
 	}
 	w.MenubarEnd()
 
-	w.Row(5).Static(1)
-	w.Row(12).Static(200, 200)
-	if fileType != Unknown {
-		if w.TreePush(nucular.TreeTab, "Characters", true) {
-			cUI.Draw(w)
-			w.TreePop()
+	switch global.GetCurrentShowing() {
+	case global.LoadPR:
+		var loaded bool
+		if loaded, err = fileSelector.DrawLoad(w); err != nil {
+			if err.Error() == "Cancelled" {
+				err = nil
+			} else {
+				popupErr(w, err)
+			}
+			global.RollbackShowing()
+		} else if loaded {
+			global.SetShowing(global.ShowPR)
+			fileSelector = nil
 		}
-		if w.TreePush(nucular.TreeTab, "Inventory", false) {
-			iUI.Draw(w)
-			w.TreePop()
+	case global.LoadSnes:
+		if fn, err = io.OpenFileDialog(w, ft); err != nil {
+			if err.Error() == "Cancelled" {
+				err = nil
+			} else {
+				popupErr(w, err)
+			}
+			global.RollbackShowing()
+		} else if fn != "" {
+			global.DirFiles = nil
+			global.FileName = fn
+			global.FileType = ft
+			mainMenu.Refresh()
+			global.SetShowing(global.ShowSnes)
 		}
-		if w.TreePush(nucular.TreeTab, "Skills", false) {
-			sUI.Draw(w)
-			w.TreePop()
+	case global.SavePR, global.SaveSnes:
+		var saved bool
+		if saved, err = fileSelector.DrawSave(w); err != nil {
+			popupErr(w, err)
+			fileSelector = nil
+		} else if saved {
+			global.SetShowing(global.ShowPR)
+			fileSelector = nil
 		}
-		if w.TreePush(nucular.TreeTab, "Espers", false) {
-			eUI.Draw(w)
-			w.TreePop()
-		}
-		if w.TreePush(nucular.TreeTab, "Misc", false) {
-			mUI.Draw(w)
-			w.TreePop()
-		}
+	case global.ShowPR, global.ShowSnes:
+		mainMenu.Draw(w)
+		/* else if fileType == SNES {
+			if w := w.Menu(label.TA("Save As...", "LC"), 100, nil); w != nil {
+				w.Row(12).Dynamic(1)
+				if fileName != "" {
+					if w.MenuItem(label.TA("Save", "LC")) {
+						if err = io.SaveFileNoDialog(fileName, saveFileType); err != nil {
+					popupErr(w, err)
+					w.Close()
+						}
+					}
+				}
+				if w.MenuItem(label.TA("SRM Slot 1", "LC")) {
+					if fileName, err = io.SaveFile(w, save.SRMSlot1); err != nil {
+						popupErr(w, err)
+						w.Close()
+					} else if fileName != "" {
+						fileType = SNES
+						saveFileType = save.SRMSlot1
+					}
+				} else if w.MenuItem(label.TA("SRM Slot 2", "LC")) {
+					if fileName, err = io.SaveFile(w, save.SRMSlot2); err != nil {
+						popupErr(w, err)
+						w.Close()
+					} else if fileName != "" {
+						fileType = SNES
+						saveFileType = save.SRMSlot2
+					}
+				} else if w.MenuItem(label.TA("SRM Slot 3", "LC")) {
+					if fileName, err = io.OpenFileDialog(w, save.SRMSlot3); err != nil {
+						popupErr(w, err)
+						w.Close()
+					} else if fileName != "" {
+						fileType = SNES
+						saveFileType = save.SRMSlot3
+					}
+				} else if w.MenuItem(label.TA("ZNES State", "LC")) {
+					if fileName, err = io.OpenFileDialog(w, save.ZnesSaveState); err != nil {
+						popupErr(w, err)
+						w.Close()
+					} else if fileName != "" {
+						fileType = SNES
+						saveFileType = save.ZnesSaveState
+					}
+				}
+			}
+		}*/
 	}
 }
 
 func popupErr(w *nucular.Window, err error) {
-	w.Master().PopupOpen("Error", nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic|nucular.WindowNoScrollbar, rect.Rect{X: 20, Y: 100, W: 230, H: 150}, true,
+	w.Master().PopupOpen("Error", nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic, rect.Rect{X: 20, Y: 100, W: 600, H: 400}, true,
 		func(w *nucular.Window) {
-			w.Row(25).Dynamic(1)
-			w.Label(err.Error(), "LC")
+			w.Row(100).Dynamic(1)
+			w.LabelWrap(err.Error())
 			w.Row(25).Dynamic(1)
 			if w.Button(label.T("OK"), false) {
 				w.Close()
 			}
 		})
-}
-
-func refresh() {
-	cUI.Refresh()
-	iUI.Refresh()
-	sUI.Refresh()
-	eUI.Refresh()
-	mUI.Refresh()
 }
 
 var customTheme = style.ColorTable{

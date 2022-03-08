@@ -52,5 +52,13 @@ func (u *espersUI) Draw(w *nucular.Window) {
 }
 
 func (u *espersUI) Refresh() {
-	
+
+}
+
+func (u *espersUI) Name() string {
+	return "Espers"
+}
+
+func (u *espersUI) IsPRSupported() bool {
+	return false
 }
