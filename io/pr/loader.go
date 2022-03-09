@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"ffvi_editor/models"
 	"fmt"
+	jo "gitlab.com/c0b/go-ordered-json"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -13,12 +14,14 @@ import (
 
 func (p *PR) Load(fileName string) (err error) {
 	var (
-		cmd      = exec.Command("python", "./io/python/io.py", "deobfuscateFile", fileName)
 		out      []byte
-		slTarget = map[string]interface{}{}
+		slTarget = jo.NewOrderedMap()
 	)
-	if out, err = cmd.Output(); err != nil {
-		return
+
+	if out, err = p.execPythonLoad(fileName, true); err != nil {
+		if out, err = p.execPythonLoad(fileName, false); err != nil {
+			return
+		}
 	}
 
 	var end int
@@ -29,27 +32,33 @@ func (p *PR) Load(fileName string) (err error) {
 	for a := 2; a < end; a++ {
 		p.data[a] = out[a]
 	}
-	//p.data = out[2:end]
 	s := string(out[2:end])
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
-	//s = strings.ReplaceAll(s, `\\"`, `\"`)
 	s = p.fixEscapeCharsForLoad(s)
 	p.data = []byte(s)
-	if err = json.Unmarshal([]byte(s), &p.Base); err != nil {
+
+	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
 		return
 	}
 
-	if err = p.UnmarshalFrom(p.Base, UserDatas, &p.UserData); err != nil {
+	if err = p.UnmarshalFrom(p.Base, UserDatas, p.UserData); err != nil {
 		return
 	}
 
-	if err = p.UnmarshalFrom(p.UserData, OwnedCharacterList, &slTarget); err != nil {
+	if err = p.UnmarshalFrom(p.UserData, OwnedCharacterList, slTarget); err != nil {
 		return
 	}
 
-	sl := slTarget[targetKey].([]interface{})
-	for j, c := range sl {
-		if err = p.Unmarshal(c, &p.Characters[j]); err != nil {
+	i, ok := slTarget.GetValue(targetKey)
+	if !ok {
+		return fmt.Errorf("unable to find %s", targetKey)
+	}
+	for j, c := range i.([]interface{}) {
+		if p.Characters[j] == nil {
+			p.Characters[j] = jo.NewOrderedMap()
+		}
+		s = c.(string)
+		if err = p.Characters[j].UnmarshalJSON([]byte(s)); err != nil {
 			return
 		}
 	}
@@ -87,8 +96,8 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		params := make(map[string]interface{})
-		if err = p.UnmarshalFrom(d, Parameter, &params); err != nil {
+		params := jo.NewOrderedMap()
+		if err = p.UnmarshalFrom(d, Parameter, params); err != nil {
 			return
 		}
 
@@ -132,7 +141,7 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		if c.Magic, err = p.getInt(params, AdditionalIntelligence); err != nil {
+		if c.Magic, err = p.getInt(params, AdditionMagic); err != nil {
 			return
 		}
 
@@ -167,8 +176,8 @@ func (p *PR) loadInventory() {
 
 }
 
-func (p *PR) getString(c map[string]interface{}, key string) (s string, err error) {
-	j, ok := c[key]
+func (p *PR) getString(c *jo.OrderedMap, key string) (s string, err error) {
+	j, ok := c.GetValue(key)
 	if !ok {
 		err = fmt.Errorf("unable to find %s", key)
 	}
@@ -178,8 +187,8 @@ func (p *PR) getString(c map[string]interface{}, key string) (s string, err erro
 	return
 }
 
-func (p *PR) getInt(c map[string]interface{}, key string) (i int, err error) {
-	j, ok := c[key]
+func (p *PR) getInt(c *jo.OrderedMap, key string) (i int, err error) {
+	j, ok := c.GetValue(key)
 	if !ok {
 		err = fmt.Errorf("unable to find %s", key)
 	}
@@ -204,9 +213,12 @@ func (p *PR) getInt(c map[string]interface{}, key string) (i int, err error) {
 	return
 }
 
-func (p *PR) UnmarshalFrom(from map[string]interface{}, key string, m *map[string]interface{}) error {
-	i, _ := from[key]
-	return p.Unmarshal(i, m)
+func (p *PR) UnmarshalFrom(from *jo.OrderedMap, key string, m *jo.OrderedMap) (err error) {
+	i, ok := from.GetValue(key)
+	if !ok {
+		err = fmt.Errorf("unable to find %s", key)
+	}
+	return m.UnmarshalJSON([]byte(i.(string)))
 }
 
 func (p *PR) Unmarshal(i interface{}, m *map[string]interface{}) error {
@@ -299,4 +311,13 @@ type equipment struct {
 type idCount struct {
 	ContentID int `json:"contentId"`
 	Count     int `json:"count"`
+}
+
+func (p *PR) execPythonLoad(fileName string, omitFirstBytes bool) ([]byte, error) {
+	s := "0"
+	if omitFirstBytes {
+		s = "1"
+	}
+	cmd := exec.Command("python", "./io/python/io.py", "deobfuscateFile", fileName, s)
+	return cmd.Output()
 }

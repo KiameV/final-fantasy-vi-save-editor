@@ -6,10 +6,13 @@ import (
 	"ffvi_editor/io/pr"
 	"github.com/aarzilli/nucular"
 	"io/fs"
+	"io/ioutil"
 	"path"
 )
 
 type FileSelector struct{}
+
+var prIO *pr.PR
 
 func NewFileSelector() *FileSelector {
 	// Clear slots
@@ -26,7 +29,7 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 		fs.updateSlots()
 	}
 
-	w.Row(30).Static(400, 100)
+	w.Row(30).Static(400, 100, 100, 100)
 	w.Label(global.Dir, "LC")
 	if w.ButtonText("Change") {
 		if d, f, e1 := io.OpenDirAndFileDialog(w); e1 == nil {
@@ -34,6 +37,12 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 			global.DirFiles = f
 			fs.updateSlots()
 		}
+	}
+	if w.ButtonText("Refresh") {
+		fs.updateSlots()
+	}
+	if w.ButtonText("Cancel") {
+		global.RollbackShowing()
 	}
 
 	if len(prSlots) == 0 {
@@ -44,7 +53,9 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 			if s.File != nil {
 				w.Row(30).Static(300)
 				if w.ButtonText("Load " + s.Name) {
-					if err = pr.NewPR().Load(path.Join(global.Dir, s.File.Name())); err == nil {
+					p := pr.NewPR()
+					if err = p.Load(path.Join(global.Dir, s.File.Name())); err == nil {
+						prIO = p
 						global.FileName = s.File.Name()
 						loaded = true
 					}
@@ -56,7 +67,7 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 }
 
 func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
-	w.Row(30).Static(400, 100)
+	w.Row(30).Static(400, 100, 100, 100)
 	w.Label(global.Dir, "LC")
 	if w.ButtonText("Change") {
 		if d, f, e1 := io.OpenDirAndFileDialog(w); e1 == nil {
@@ -64,15 +75,28 @@ func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
 			global.DirFiles = f
 		}
 	}
-	for _, s := range prSlots {
+	if w.ButtonText("Refresh") {
+		fs.updateSlots()
+	}
+	if w.ButtonText("Cancel") {
+		global.RollbackShowing()
+	}
+
+	for i, s := range prSlots {
+		if i == 0 {
+			// Don't save over QS
+			continue
+		}
 		w.Row(30).Static(300)
 		label := "Save " + s.Name
 		if s.File != nil {
 			label += " (replace)"
 		}
 		if w.ButtonText(label) {
-			if err = pr.NewPR().Save(s.UUID); err == nil {
+			slot := i
+			if err = prIO.Save(slot, s.UUID); err == nil {
 				saved = true
+				fs.updateSlots()
 			}
 		}
 	}
@@ -83,6 +107,7 @@ func (fs *FileSelector) updateSlots() {
 	for _, s := range prSlots {
 		s.File = nil
 	}
+	global.DirFiles, _ = ioutil.ReadDir(global.Dir)
 	for _, f := range global.DirFiles {
 		if s, ok := slotLookup[f.Name()]; ok {
 			s.File = f

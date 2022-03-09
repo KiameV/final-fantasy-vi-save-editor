@@ -6,18 +6,19 @@ import (
 	"ffvi_editor/global"
 	"ffvi_editor/models"
 	"fmt"
+	jo "gitlab.com/c0b/go-ordered-json"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
 
-func (p *PR) Save(fileName string) (err error) {
+func (p *PR) Save(slot int, fileName string) (err error) {
 	var (
-		toFile = filepath.Join(global.Dir, fileName)
-		temp   = filepath.Join(global.PWD, "temp")
-		cmd    = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
-		//slTarget = map[string]interface{}{}
+		toFile   = filepath.Join(global.Dir, fileName)
+		temp     = filepath.Join(global.PWD, "temp")
+		cmd      = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
+		slTarget = jo.NewOrderedMap()
 	)
 
 	if err = p.saveCharacters(); err != nil {
@@ -36,18 +37,31 @@ func (p *PR) Save(fileName string) (err error) {
 		return
 	}
 
-	/*sl := slTarget[targetKey].([]interface{})
-	for j, c := range sl {
-		if err = p.Unmarshal(c, &p.Characters[j]); err != nil {
-			return
+	iSlice := make([]interface{}, 0, len(p.Characters))
+	for _, c := range p.Characters {
+		if c != nil {
+			var k []byte
+			if k, err = c.MarshalJSON(); err != nil {
+				return
+			}
+			s := string(k)
+			iSlice = append(iSlice, s)
 		}
-	}*/
+	}
 
-	//if err = p.MarshalTo(p.UserData, OwnedCharacterList, &slTarget); err != nil {
-	//	return
-	//}
+	if err = p.UnmarshalFrom(p.UserData, OwnedCharacterList, slTarget); err != nil {
+		return
+	}
+	slTarget.Set(targetKey, iSlice)
+	if err = p.MarshalTo(p.UserData, OwnedCharacterList, slTarget); err != nil {
+		return
+	}
 
-	if err = p.MarshalTo(p.Base, UserDatas, &p.UserData); err != nil {
+	if err = p.MarshalTo(p.Base, UserDatas, p.UserData); err != nil {
+		return
+	}
+
+	if err = p.setValue(p.Base, "id", slot); err != nil {
 		return
 	}
 
@@ -98,8 +112,8 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		params := make(map[string]interface{})
-		if err = p.UnmarshalFrom(d, Parameter, &params); err != nil {
+		params := jo.NewOrderedMap()
+		if err = p.UnmarshalFrom(d, Parameter, params); err != nil {
 			return
 		}
 
@@ -110,14 +124,14 @@ func (p *PR) saveCharacters() (err error) {
 		if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
 			return
 		}
-		if err = p.setValue(params, AdditionalMaxHp, c.HP.Max-o.HPBase); err != nil {
+		if err = p.setValue(params, AdditionalMaxHp, floor0(c.HP.Max-o.HPBase)); err != nil {
 			return
 		}
 
 		if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
 			return
 		}
-		if err = p.setValue(params, AdditionalMaxMp, c.MP.Max-o.MPBase); err != nil {
+		if err = p.setValue(params, AdditionalMaxMp, floor0(c.MP.Max-o.MPBase)); err != nil {
 			return
 		}
 
@@ -141,13 +155,13 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		if err = p.setValue(params, AdditionalIntelligence, c.Magic); err != nil {
+		if err = p.setValue(params, AdditionMagic, c.Magic); err != nil {
 			return
 		}
 
 		// TODO Equipment
 
-		if err = p.MarshalTo(d, Parameter, &params); err != nil {
+		if err = p.MarshalTo(d, Parameter, params); err != nil {
 			return
 		}
 	}
@@ -174,22 +188,29 @@ func (p *PR) saveMiscStats() (err error) {
 	return
 }
 
-func (p *PR) setValue(m map[string]interface{}, key string, value interface{}) (err error) {
-	if _, ok := m[key]; !ok {
+func (p *PR) setValue(to *jo.OrderedMap, key string, value interface{}) (err error) {
+	if !to.Has(key) {
 		err = fmt.Errorf("unable to find %s", key)
 	}
-	m[key] = value
+	to.Set(key, value)
 	return
 }
 
-func (p *PR) MarshalTo(to map[string]interface{}, key string, value *map[string]interface{}) error {
-	if _, ok := to[key]; !ok {
+func (p *PR) MarshalTo(to *jo.OrderedMap, key string, value *jo.OrderedMap) error {
+	if !to.Has(key) {
 		return fmt.Errorf("unable to find %s", key)
 	}
-	if v, err := json.Marshal(value); err != nil {
+	if v, err := value.MarshalJSON(); err != nil {
 		return err
 	} else {
-		to[key] = string(v)
+		to.Set(key, string(v))
 	}
 	return nil
+}
+
+func floor0(i int) int {
+	if i < 0 {
+		return 0
+	}
+	return i
 }

@@ -9,6 +9,12 @@ import (
 	"github.com/aarzilli/nucular/rect"
 )
 
+var (
+	minValue   = [2]int{0, 1}
+	vigorLabel = [2]string{"Vigor", "Strength"}
+	speedLabel = [2]string{"Speed", "Agility"}
+)
+
 type statsUI struct {
 	name       nucular.TextEditor
 	levelExpTB nucular.TextEditor
@@ -62,16 +68,17 @@ func (u *statsUI) Draw(w *nucular.Window) {
 	addPropertyInt(w, 180, y, "Max MP", &character.MP.Max, 1, 999, 10)
 	y += 26
 
-	min := 1
-	if global.IsShowingPR() {
-		min = 0
+	i := 0
+	if global.IsShowing(global.ShowPR) {
+		i = 1
 	}
-	addPropertyInt(w, 0, y, "Vigor", &character.Vigor, min, 255, 1)
-	addPropertyInt(w, 180, y, "Stamina", &character.Stamina, min, 255, 1)
+
+	addPropertyInt(w, 0, y, vigorLabel[i], &character.Vigor, minValue[i], 255, 1)
+	addPropertyInt(w, 180, y, "Stamina", &character.Stamina, minValue[i], 255, 1)
 	y += 26
 
-	addPropertyInt(w, 0, y, "Speed", &character.Speed, min, 255, 1)
-	addPropertyInt(w, 180, y, "Magic", &character.Magic, min, 255, 1)
+	addPropertyInt(w, 0, y, speedLabel[i], &character.Speed, minValue[i], 255, 1)
+	addPropertyInt(w, 180, y, "Magic", &character.Magic, minValue[i], 255, 1)
 	y += 26
 
 	w.LayoutSpacePush(rect.Rect{
