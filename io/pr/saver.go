@@ -49,7 +49,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		}
 	}
 
-	if err = p.UnmarshalFrom(p.UserData, OwnedCharacterList, slTarget); err != nil {
+	if err = p.unmarshalFrom(p.UserData, OwnedCharacterList, slTarget); err != nil {
 		return
 	}
 	slTarget.Set(targetKey, iSlice)
@@ -68,6 +68,8 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	if p.data, err = json.Marshal(p.Base); err != nil {
 		return
 	}
+
+	p.data = p.unfixFile(p.data)
 
 	if _, err = os.Stat(temp); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create(temp); err != nil {
@@ -113,7 +115,7 @@ func (p *PR) saveCharacters() (err error) {
 		}
 
 		params := jo.NewOrderedMap()
-		if err = p.UnmarshalFrom(d, Parameter, params); err != nil {
+		if err = p.unmarshalFrom(d, Parameter, params); err != nil {
 			return
 		}
 
@@ -121,16 +123,18 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
-			return
-		}
+		// TODO
+		//if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
+		//	return
+		//}
 		if err = p.setValue(params, AdditionalMaxHp, floor0(c.HP.Max-o.HPBase)); err != nil {
 			return
 		}
 
-		if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
-			return
-		}
+		// TODO
+		//if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
+		//	return
+		//}
 		if err = p.setValue(params, AdditionalMaxMp, floor0(c.MP.Max-o.MPBase)); err != nil {
 			return
 		}
@@ -181,6 +185,21 @@ func (p *PR) saveEspers() (err error) {
 func (p *PR) saveInventory() (err error) {
 	// TODO
 	return
+	/*var (
+		rows     = models.GetInventory().GetRowsForPrSave()
+		sl       = make([]interface{}, len(rows))
+		b        []byte
+		slTarget = jo.NewOrderedMap()
+	)
+
+	for i, r := range rows {
+		if b, err = json.Marshal(r); err != nil {
+			return
+		}
+		sl[i] = string(b)
+	}
+	slTarget.Set(targetKey, sl)
+	return p.MarshalTo(p.UserData, NormalOwnedItemList, slTarget)*/
 }
 
 func (p *PR) saveMiscStats() (err error) {
@@ -213,4 +232,15 @@ func floor0(i int) int {
 		return 0
 	}
 	return i
+}
+
+func (p *PR) unfixFile(data []byte) []byte {
+	//if p.fileEnd == "" {
+	return data
+	//}
+
+	//s := string(data)
+	//i := strings.Index(s, "clearFlag")
+	//s = s[:i+9] + p.fileEnd
+	//return []byte(s)
 }

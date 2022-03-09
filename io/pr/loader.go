@@ -14,10 +14,9 @@ import (
 
 func (p *PR) Load(fileName string) (err error) {
 	var (
-		out      []byte
-		slTarget = jo.NewOrderedMap()
+		out []byte
+		i   interface{}
 	)
-
 	if out, err = p.execPythonLoad(fileName, true); err != nil {
 		if out, err = p.execPythonLoad(fileName, false); err != nil {
 			return
@@ -35,24 +34,20 @@ func (p *PR) Load(fileName string) (err error) {
 	s := string(out[2:end])
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = p.fixEscapeCharsForLoad(s)
-	p.data = []byte(s)
+	//s = p.fixFile(s)
 
 	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
 		return
 	}
 
-	if err = p.UnmarshalFrom(p.Base, UserDatas, p.UserData); err != nil {
+	if err = p.unmarshalFrom(p.Base, UserDatas, p.UserData); err != nil {
 		return
 	}
 
-	if err = p.UnmarshalFrom(p.UserData, OwnedCharacterList, slTarget); err != nil {
+	if i, err = p.getFromTarget(p.UserData, OwnedCharacterList); err != nil {
 		return
 	}
 
-	i, ok := slTarget.GetValue(targetKey)
-	if !ok {
-		return fmt.Errorf("unable to find %s", targetKey)
-	}
 	for j, c := range i.([]interface{}) {
 		if p.Characters[j] == nil {
 			p.Characters[j] = jo.NewOrderedMap()
@@ -66,10 +61,18 @@ func (p *PR) Load(fileName string) (err error) {
 	if err = p.loadCharacters(); err != nil {
 		return
 	}
-	p.loadSkills()
-	p.loadEspers()
-	p.loadMiscStats()
-	p.loadInventory()
+	if err = p.loadSkills(); err != nil {
+		return
+	}
+	if err = p.loadEspers(); err != nil {
+		return
+	}
+	if err = p.loadMiscStats(); err != nil {
+		return
+	}
+	if err = p.loadInventory(); err != nil {
+		return
+	}
 
 	return
 }
@@ -97,7 +100,7 @@ func (p *PR) loadCharacters() (err error) {
 		}
 
 		params := jo.NewOrderedMap()
-		if err = p.UnmarshalFrom(d, Parameter, params); err != nil {
+		if err = p.unmarshalFrom(d, Parameter, params); err != nil {
 			return
 		}
 
@@ -160,20 +163,38 @@ func (p *PR) loadCharacters() (err error) {
 	return
 }
 
-func (p *PR) loadSkills() {
-
+func (p *PR) loadSkills() (err error) {
+	return
 }
 
-func (p *PR) loadEspers() {
-
+func (p *PR) loadEspers() (err error) {
+	return
 }
 
-func (p *PR) loadMiscStats() {
-
+func (p *PR) loadMiscStats() (err error) {
+	if models.GetMisc().GP, err = p.getInt(p.UserData, OwnedGil); err != nil {
+		return
+	}
+	return
 }
 
-func (p *PR) loadInventory() {
-
+func (p *PR) loadInventory() (err error) {
+	var (
+		sl  interface{}
+		inv = models.GetInventory()
+		row models.PrRow
+	)
+	if sl, err = p.getFromTarget(p.UserData, NormalOwnedItemList); err != nil {
+		return
+	}
+	inv.Reset()
+	for i, r := range sl.([]interface{}) {
+		if err = json.Unmarshal([]byte(r.(string)), &row); err != nil {
+			return
+		}
+		inv.Set(i, row)
+	}
+	return nil
 }
 
 func (p *PR) getString(c *jo.OrderedMap, key string) (s string, err error) {
@@ -213,7 +234,7 @@ func (p *PR) getInt(c *jo.OrderedMap, key string) (i int, err error) {
 	return
 }
 
-func (p *PR) UnmarshalFrom(from *jo.OrderedMap, key string, m *jo.OrderedMap) (err error) {
+func (p *PR) unmarshalFrom(from *jo.OrderedMap, key string, m *jo.OrderedMap) (err error) {
 	i, ok := from.GetValue(key)
 	if !ok {
 		err = fmt.Errorf("unable to find %s", key)
@@ -221,7 +242,7 @@ func (p *PR) UnmarshalFrom(from *jo.OrderedMap, key string, m *jo.OrderedMap) (e
 	return m.UnmarshalJSON([]byte(i.(string)))
 }
 
-func (p *PR) Unmarshal(i interface{}, m *map[string]interface{}) error {
+func (p *PR) unmarshal(i interface{}, m *map[string]interface{}) error {
 	//s := strings.ReplaceAll(i.(string), `\\"`, `\"`)
 	return json.Unmarshal([]byte(i.(string)), m)
 }
@@ -238,6 +259,20 @@ func (p *PR) unmarshalEquipment(m map[string]interface{}) (idCounts []idCount, e
 		if err = json.Unmarshal([]byte(v), &idCounts[j]); err != nil {
 			return
 		}
+	}
+	return
+}
+
+func (p *PR) getFromTarget(data *jo.OrderedMap, key string) (i interface{}, err error) {
+	var (
+		slTarget = jo.NewOrderedMap()
+		ok       bool
+	)
+	if err = p.unmarshalFrom(p.UserData, key, slTarget); err != nil {
+		return
+	}
+	if i, ok = slTarget.GetValue(targetKey); !ok {
+		err = fmt.Errorf("unable to find %s", targetKey)
 	}
 	return
 }
@@ -320,4 +355,45 @@ func (p *PR) execPythonLoad(fileName string, omitFirstBytes bool) ([]byte, error
 	}
 	cmd := exec.Command("python", "./io/python/io.py", "deobfuscateFile", fileName, s)
 	return cmd.Output()
+}
+
+func (p *PR) loadBase(s string) (err error) {
+	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
+		/*i := strings.Index(s, "clearFlag")
+		if i != -1 {
+			c := s[i+9]
+			if c != ':' {
+				cc := s[i+10]
+				if cc >= 48 && c <= 57 {
+					cc -= 48
+				} else {
+					cc = 0
+				}
+				s = s[:i+9] + fmt.Sprintf(`":%d}`, cc)
+				return p.Base.UnmarshalJSON([]byte(s))
+			}
+		}*/
+		return
+	}
+
+	p.data = []byte(s)
+	return
+}
+
+func (p *PR) fixFile(s string) string {
+	/*	i := strings.Index(s, "clearFlag")
+		if i != -1 {
+			c := s[i+9]
+			if c != ':' {
+				cc := s[i+10]
+				if cc >= 48 && c <= 57 {
+					cc -= 48
+				} else {
+					cc = 0
+				}
+				p.fileEnd = s[i+9:]
+				s = s[:i+9] + fmt.Sprintf(`":%d}`, cc)
+			}
+		}*/
+	return s
 }

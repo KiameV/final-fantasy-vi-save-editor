@@ -9,6 +9,7 @@ type PR struct {
 	Base       *j.OrderedMap
 	UserData   *j.OrderedMap
 	Characters []*j.OrderedMap
+	//fileEnd    string
 }
 
 func NewPR() *PR {

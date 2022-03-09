@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-const version = "1.0.2"
+const version = "1.0.3"
 
 var (
 	mainMenu     ui.UI
@@ -138,6 +138,7 @@ func updateWindow(w *nucular.Window) {
 		} else if loaded {
 			global.SetShowing(global.ShowPR)
 			fileSelector = nil
+			mainMenu.Refresh()
 		}
 	case global.LoadSnes:
 		if fn, err = io.OpenFileDialog(w, ft); err != nil {
