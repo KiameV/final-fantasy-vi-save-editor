@@ -7,10 +7,15 @@ type PR struct {
 	Characters []map[string]interface{}
 }
 
+var pr *PR
+
 func NewPR() *PR {
-	return &PR{
-		Base:       make(map[string]interface{}),
-		UserData:   make(map[string]interface{}),
-		Characters: make([]map[string]interface{}, 40),
+	if pr == nil {
+		pr = &PR{
+			Base:       make(map[string]interface{}),
+			UserData:   make(map[string]interface{}),
+			Characters: make([]map[string]interface{}, 40),
+		}
 	}
+	return pr
 }

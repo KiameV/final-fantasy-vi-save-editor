@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ffvi_editor/browser"
 	"ffvi_editor/global"
 	"ffvi_editor/io"
 	"ffvi_editor/ui"
@@ -16,11 +17,14 @@ import (
 	"time"
 )
 
+const version = "1.0.2"
+
 var (
 	mainMenu     ui.UI
 	status       string
 	err          error
 	fileSelector *file.FileSelector
+	statusTimer  *time.Timer
 )
 
 type FileType byte
@@ -46,7 +50,7 @@ func updateWindow(w *nucular.Window) {
 	var fn string
 	var ft global.SaveFileType
 	w.MenubarBegin()
-	w.Row(12).Static(100, 100, 75, 50, 100)
+	w.Row(12).Static(100, 100, 75, 125, 100, 100)
 	if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
 		global.SetShowing(global.LoadPR)
 		fileSelector = file.NewFileSelector()
@@ -88,18 +92,36 @@ func updateWindow(w *nucular.Window) {
 					global.RollbackShowing()
 				}
 				status = "Saved"
-				time.AfterFunc(2*time.Second, func() {
-					status = ""
-				})
 			}
 		}
+	} else {
+		w.Spacing(1)
+	}
+
+	if w := w.Menu(label.TA("Check For Update", "CC"), 100, nil); w != nil {
+		var hasNewer bool
+		var latest string
+		if hasNewer, latest, err = browser.CheckForUpdate(version); err != nil {
+			popupErr(w, err)
+		}
+		if hasNewer {
+			browser.Update(latest)
+		} else {
+			status = "version is current"
+		}
+		w.Close()
 	}
 
 	if status != "" {
 		w.Spacing(1)
 		w.Label("Status: "+status, "RC")
+		if statusTimer != nil {
+			statusTimer.Stop()
+		}
+		statusTimer = time.AfterFunc(2*time.Second, func() { status = "" })
+
 	} else {
-		w.Spacing(2)
+		w.Spacing(1)
 	}
 	w.MenubarEnd()
 

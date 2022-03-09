@@ -56,5 +56,5 @@ func (u *miscUI) Name() string {
 }
 
 func (u *miscUI) IsPRSupported() bool {
-	return true
+	return false
 }

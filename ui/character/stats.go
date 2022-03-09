@@ -1,6 +1,7 @@
 package character
 
 import (
+	"ffvi_editor/global"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/ui/widgets"
@@ -61,12 +62,16 @@ func (u *statsUI) Draw(w *nucular.Window) {
 	addPropertyInt(w, 180, y, "Max MP", &character.MP.Max, 1, 999, 10)
 	y += 26
 
-	addPropertyInt(w, 0, y, "Vigor", &character.Vigor, 1, 255, 1)
-	addPropertyInt(w, 180, y, "Stamina", &character.Stamina, 1, 255, 1)
+	min := 1
+	if global.IsShowingPR() {
+		min = 0
+	}
+	addPropertyInt(w, 0, y, "Vigor", &character.Vigor, min, 255, 1)
+	addPropertyInt(w, 180, y, "Stamina", &character.Stamina, min, 255, 1)
 	y += 26
 
-	addPropertyInt(w, 0, y, "Speed", &character.Speed, 1, 255, 1)
-	addPropertyInt(w, 180, y, "Magic", &character.Magic, 1, 255, 1)
+	addPropertyInt(w, 0, y, "Speed", &character.Speed, min, 255, 1)
+	addPropertyInt(w, 180, y, "Magic", &character.Magic, min, 255, 1)
 	y += 26
 
 	w.LayoutSpacePush(rect.Rect{

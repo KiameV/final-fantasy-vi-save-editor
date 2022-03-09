@@ -99,7 +99,6 @@ func (p *PR) loadCharacters() (err error) {
 		if c.HP.Current, err = p.getInt(params, CurrentHP); err != nil {
 			return
 		}
-
 		if c.HP.Max, err = p.getInt(params, AdditionalMaxHp); err != nil {
 			return
 		}
@@ -108,7 +107,6 @@ func (p *PR) loadCharacters() (err error) {
 		if c.MP.Current, err = p.getInt(params, CurrentHP); err != nil {
 			return
 		}
-
 		if c.MP.Max, err = p.getInt(params, AdditionalMaxMp); err != nil {
 			return
 		}
@@ -139,7 +137,7 @@ func (p *PR) loadCharacters() (err error) {
 		}
 
 		// TODO
-		var eqIDCounts []idCount
+		/*var eqIDCounts []idCount
 		if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
 			return
 		}
@@ -148,7 +146,7 @@ func (p *PR) loadCharacters() (err error) {
 		c.Equipment.HelmetID = eqIDCounts[2].ContentID
 		c.Equipment.ArmorID = eqIDCounts[3].ContentID
 		c.Equipment.Relic1ID = eqIDCounts[4].ContentID
-		c.Equipment.Relic2ID = eqIDCounts[5].ContentID
+		c.Equipment.Relic2ID = eqIDCounts[5].ContentID*/
 	}
 	return
 }
