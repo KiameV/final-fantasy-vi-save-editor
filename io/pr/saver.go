@@ -66,11 +66,12 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		return
 	}
 
-	if p.data, err = json.Marshal(p.Base); err != nil {
+	var data []byte
+	if data, err = json.Marshal(p.Base); err != nil {
 		return
 	}
 
-	p.data = p.unfixFile(p.data)
+	//p.data = p.unfixFile(p.data)
 
 	if _, err = os.Stat(temp); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create(temp); err != nil {
@@ -96,7 +97,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	}
 	TODO END /*/
 
-	if err = ioutil.WriteFile(temp, p.data, 0644); err != nil {
+	if err = ioutil.WriteFile(temp, data, 0644); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
 	}
 
@@ -223,6 +224,7 @@ func (p *PR) saveEspers() (err error) {
 }
 
 func (p *PR) saveInventory() (err error) {
+	//lookup := map[int]bool{}
 	var (
 		rows     = pri.GetInventory().GetRowsForPrSave()
 		sl       = make([]interface{}, len(rows))
@@ -231,13 +233,53 @@ func (p *PR) saveInventory() (err error) {
 	)
 
 	for i, r := range rows {
+		/*/ TODO remove start
+		r = pri.Row{
+			ItemID: r.ItemID,
+			Count:  r.Count,
+		}
+		if r.ItemID > 101 && r.ItemID <= 199 {
+			r.Count = r.ItemID - 100
+		} else {
+			r.Count = 1
+		}
+		lookup[r.ItemID] = true
+		// TODO remove end */
+
 		if b, err = json.Marshal(r); err != nil {
 			return
 		}
 		sl[i] = string(b)
 	}
+	/*/ TODO Undo start
+	for i := 101; i < 150; i++ {
+		if _, ok := lookup[i]; !ok {
+			r := pri.Row{
+				ItemID: i,
+				Count:  i - 100,
+			}
+			if b, err = json.Marshal(r); err != nil {
+				return
+			}
+			sl[i] = string(b)
+		}
+	}
+	// TODO Remove end */
+
 	slTarget.Set(targetKey, sl)
-	return p.marshalTo(p.UserData, NormalOwnedItemList, slTarget)
+	if err = p.marshalTo(p.UserData, NormalOwnedItemList, slTarget); err != nil {
+		return
+	}
+
+	// TODO Readd
+	//if pri.GetInventory().ResetSortOrder {
+	slTarget = jo.NewOrderedMap()
+	slTarget.Set(targetKey, make([]interface{}, 0))
+	if err = p.marshalTo(p.UserData, NormalOwnedItemSortIdList, slTarget); err != nil {
+		return
+	}
+	//}
+	return
 }
 
 func (p *PR) saveMiscStats() (err error) {

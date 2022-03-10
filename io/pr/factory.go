@@ -5,7 +5,7 @@ import (
 )
 
 type PR struct {
-	data       []byte
+	//data       []byte
 	Base       *j.OrderedMap
 	UserData   *j.OrderedMap
 	Characters []*j.OrderedMap

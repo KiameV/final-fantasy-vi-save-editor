@@ -28,9 +28,9 @@ func (p *PR) Load(fileName string) (err error) {
 	end = len(out)
 	for end = len(out) - 1; end > 0 && out[end-1] != '}'; end-- {
 	}
-	p.data = make([]byte, len(out))
+	data := make([]byte, len(out))
 	for a := 2; a < end; a++ {
-		p.data[a] = out[a]
+		data[a] = out[a]
 	}
 	s := string(out[2:end])
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
@@ -50,9 +50,9 @@ func (p *PR) Load(fileName string) (err error) {
 	if err == nil {
 		err = ioutil.WriteFile("loaded.json", prettyJSON.Bytes(), 0644)
 	}
-	TODO END /*/
+	///TODO END /*/
 
-	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
+	if err = p.loadBase(s); err != nil {
 		return
 	}
 
@@ -404,6 +404,10 @@ func (p *PR) execPythonLoad(fileName string, omitFirstBytes bool) ([]byte, error
 
 func (p *PR) loadBase(s string) (err error) {
 	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
+		var fixed bool
+		if fixed, s = p.fixFile(s); fixed {
+			err = p.Base.UnmarshalJSON([]byte(s))
+		}
 		/*i := strings.Index(s, "clearFlag")
 		if i != -1 {
 			c := s[i+9]
@@ -418,27 +422,26 @@ func (p *PR) loadBase(s string) (err error) {
 				return p.Base.UnmarshalJSON([]byte(s))
 			}
 		}*/
-		return
 	}
-
-	p.data = []byte(s)
 	return
 }
 
-func (p *PR) fixFile(s string) string {
-	/*	i := strings.Index(s, "clearFlag")
-		if i != -1 {
-			c := s[i+9]
-			if c != ':' {
-				cc := s[i+10]
-				if cc >= 48 && c <= 57 {
-					cc -= 48
-				} else {
-					cc = 0
-				}
-				p.fileEnd = s[i+9:]
-				s = s[:i+9] + fmt.Sprintf(`":%d}`, cc)
+func (p *PR) fixFile(s string) (bool, string) {
+	if i := strings.Index(s, "clearFlag"); i != -1 {
+		c := s[i+9]
+		if c != ':' {
+			cc := s[i+10]
+			if cc >= 48 && c <= 57 {
+				cc -= 48
+			} else {
+				cc = 0
 			}
-		}*/
-	return s
+			s = s[:i+9] + fmt.Sprintf(`":%d}`, cc)
+		}
+		return true, s
+	} else if i = strings.Index(s, `"cle`); i != -1 && s[i+4] >= 48 && s[i+4] <= 57 {
+		s = s[0:i] + `"clearFlag":0}`
+		return true, s
+	}
+	return false, s
 }
