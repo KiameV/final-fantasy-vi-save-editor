@@ -2,6 +2,7 @@ package widgets
 
 import (
 	"github.com/aarzilli/nucular"
+	"strconv"
 	"strings"
 )
 
@@ -13,6 +14,25 @@ func DrawAndValidateHexInput(w *nucular.Window, tb *nucular.TextEditor) nucular.
 		tb.SelectAll()
 		tb.DeleteSelection()
 		tb.Text(r)
+	}
+	return e
+}
+
+func DrawAndValidateNumberInput(w *nucular.Window, tb *nucular.TextEditor) nucular.EditEvents {
+	e := tb.Edit(w)
+	if e == nucular.EditActive || e == nucular.EditCommitted {
+		s := string(tb.Buffer)
+		if s != "" {
+			if i, err := strconv.ParseInt(s, 10, 16); err != nil || i < 0 {
+				tb.SelectAll()
+				tb.DeleteSelection()
+				tb.Text([]rune(`0`))
+			} else if i > 999 {
+				tb.SelectAll()
+				tb.DeleteSelection()
+				tb.Text([]rune(`999`))
+			}
+		}
 	}
 	return e
 }

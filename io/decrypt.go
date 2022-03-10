@@ -1,13 +1,6 @@
 package io
 
-import (
-	"bytes"
-	"compress/flate"
-	"crypto/aes"
-	"errors"
-	"strings"
-)
-
+/*
 func decompress(deflated []byte) ([]byte, error) {
 	var b bytes.Buffer
 	r := flate.NewReader(bytes.NewReader(deflated))
@@ -49,3 +42,4 @@ func unpad(src []byte) ([]byte, error) {
 
 	return src[:(length - unpadding)], nil
 }
+*/

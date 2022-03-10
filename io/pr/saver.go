@@ -5,6 +5,7 @@ import (
 	"errors"
 	"ffvi_editor/global"
 	"ffvi_editor/models"
+	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
 	"io/ioutil"
@@ -53,11 +54,11 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		return
 	}
 	slTarget.Set(targetKey, iSlice)
-	if err = p.MarshalTo(p.UserData, OwnedCharacterList, slTarget); err != nil {
+	if err = p.marshalTo(p.UserData, OwnedCharacterList, slTarget); err != nil {
 		return
 	}
 
-	if err = p.MarshalTo(p.Base, UserDatas, p.UserData); err != nil {
+	if err = p.marshalTo(p.Base, UserDatas, p.UserData); err != nil {
 		return
 	}
 
@@ -78,6 +79,23 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	}
 	defer os.Remove(temp)
 
+	/*/ TODO Debug
+	if _, err = os.Stat("saved.json"); errors.Is(err, os.ErrNotExist) {
+		if _, err = os.Create("saved.json"); err != nil {
+			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
+		}
+	}
+	s := string(p.data)
+	s = strings.ReplaceAll(s, `\`, ``)
+	s = strings.ReplaceAll(s, `"{`, `{`)
+	s = strings.ReplaceAll(s, `}"`, `}`)
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, []byte(s), "", "\t")
+	if err != nil {
+		err = ioutil.WriteFile("saved.json", prettyJSON.Bytes(), 0644)
+	}
+	TODO END /*/
+
 	if err = ioutil.WriteFile(temp, p.data, 0644); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
 	}
@@ -88,7 +106,11 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		}
 	}
 
-	_, err = cmd.Output()
+	var out []byte
+	out, err = cmd.Output()
+	if err != nil && len(out) > 0 {
+		err = fmt.Errorf("%s: %v", string(out), err)
+	}
 	return
 }
 
@@ -164,8 +186,26 @@ func (p *PR) saveCharacters() (err error) {
 		}
 
 		// TODO Equipment
+		eq := jo.NewOrderedMap()
+		if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
+			return
+		}
+		invCounts := pri.GetInventory().GetItemLookup()
+		eqIDCounts := []string{
+			p.getInvCount(invCounts, c.Equipment.WeaponID),
+			p.getInvCount(invCounts, c.Equipment.ShieldID),
+			p.getInvCount(invCounts, c.Equipment.HelmetID),
+			p.getInvCount(invCounts, c.Equipment.ArmorID),
+			p.getInvCount(invCounts, c.Equipment.Relic1ID),
+			p.getInvCount(invCounts, c.Equipment.Relic2ID),
+		}
+		eq.Set("values", eqIDCounts)
 
-		if err = p.MarshalTo(d, Parameter, params); err != nil {
+		if err = p.marshalTo(d, EquipmentList, eq); err != nil {
+			return
+		}
+
+		if err = p.marshalTo(d, Parameter, params); err != nil {
 			return
 		}
 	}
@@ -183,10 +223,8 @@ func (p *PR) saveEspers() (err error) {
 }
 
 func (p *PR) saveInventory() (err error) {
-	// TODO
-	return
-	/*var (
-		rows     = models.GetInventory().GetRowsForPrSave()
+	var (
+		rows     = pri.GetInventory().GetRowsForPrSave()
 		sl       = make([]interface{}, len(rows))
 		b        []byte
 		slTarget = jo.NewOrderedMap()
@@ -199,7 +237,7 @@ func (p *PR) saveInventory() (err error) {
 		sl[i] = string(b)
 	}
 	slTarget.Set(targetKey, sl)
-	return p.MarshalTo(p.UserData, NormalOwnedItemList, slTarget)*/
+	return p.marshalTo(p.UserData, NormalOwnedItemList, slTarget)
 }
 
 func (p *PR) saveMiscStats() (err error) {
@@ -215,7 +253,7 @@ func (p *PR) setValue(to *jo.OrderedMap, key string, value interface{}) (err err
 	return
 }
 
-func (p *PR) MarshalTo(to *jo.OrderedMap, key string, value *jo.OrderedMap) error {
+func (p *PR) marshalTo(to *jo.OrderedMap, key string, value *jo.OrderedMap) error {
 	if !to.Has(key) {
 		return fmt.Errorf("unable to find %s", key)
 	}
@@ -232,6 +270,19 @@ func floor0(i int) int {
 		return 0
 	}
 	return i
+}
+
+func (p *PR) getInvCount(counts map[int]int, id int) string {
+	var i idCount
+	if count, ok := counts[id]; ok {
+		i.ContentID = id
+		i.Count = count
+	} else {
+		i.ContentID = 200
+		i.Count = counts[200]
+	}
+	b, _ := json.Marshal(&i)
+	return string(b)
 }
 
 func (p *PR) unfixFile(data []byte) []byte {

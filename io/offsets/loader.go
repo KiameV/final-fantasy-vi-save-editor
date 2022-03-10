@@ -3,6 +3,7 @@ package offsets
 import (
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
+	"ffvi_editor/models/snes"
 	"os"
 	"strconv"
 	"strings"
@@ -156,7 +157,7 @@ func (o *Offsets) loadMiscStats() {
 }
 
 func (o *Offsets) loadInventory() {
-	for i, r := range models.GetInventoryRows() {
+	for i, r := range snes.GetInventoryRows() {
 		r.ItemID = toHex(GetIntAt(i + o.InventoryItemIdOffset))
 		r.Count = GetIntAt(i + o.InventoryItemCountOffset)
 	}

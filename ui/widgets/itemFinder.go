@@ -1,7 +1,7 @@
 package widgets
 
 import (
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/snes"
 	"fmt"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
@@ -84,7 +84,7 @@ func DrawItemFinder(w *nucular.Window, x, y int) (count int) {
 		}
 		if l >= 2 {
 			s := strings.ToLower(string(name.Buffer))
-			for n, v := range consts.ItemsByName {
+			for n, v := range snes.ItemsByName {
 				if strings.Index(strings.ToLower(n), s) != -1 {
 					nameResult = append(nameResult, fmt.Sprintf("%s - %s", v, n))
 					count++

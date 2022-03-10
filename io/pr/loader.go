@@ -3,6 +3,7 @@ package pr
 import (
 	"encoding/json"
 	"ffvi_editor/models"
+	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
 	"os/exec"
@@ -35,6 +36,21 @@ func (p *PR) Load(fileName string) (err error) {
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = p.fixEscapeCharsForLoad(s)
 	//s = p.fixFile(s)
+
+	/*/ TODO Debug
+	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
+		if _, err = os.Create("loaded.json"); err != nil {
+		}
+	}
+	t := strings.ReplaceAll(s, `\`, ``)
+	t = strings.ReplaceAll(t, `"{`, `{`)
+	t = strings.ReplaceAll(t, `}"`, `}`)
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, []byte(t), "", "\t")
+	if err == nil {
+		err = ioutil.WriteFile("loaded.json", prettyJSON.Bytes(), 0644)
+	}
+	TODO END /*/
 
 	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
 		return
@@ -149,16 +165,40 @@ func (p *PR) loadCharacters() (err error) {
 		}
 
 		// TODO
-		/*var eqIDCounts []idCount
+		var eqIDCounts []idCount
 		if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
 			return
 		}
-		c.Equipment.WeaponID = eqIDCounts[0].ContentID
-		c.Equipment.ShieldID = eqIDCounts[1].ContentID
-		c.Equipment.HelmetID = eqIDCounts[2].ContentID
-		c.Equipment.ArmorID = eqIDCounts[3].ContentID
-		c.Equipment.Relic1ID = eqIDCounts[4].ContentID
-		c.Equipment.Relic2ID = eqIDCounts[5].ContentID*/
+		if len(eqIDCounts) > 0 {
+			c.Equipment.WeaponID = eqIDCounts[0].ContentID
+		} else {
+			c.Equipment.WeaponID = 0
+		}
+		if len(eqIDCounts) > 1 {
+			c.Equipment.ShieldID = eqIDCounts[1].ContentID
+		} else {
+			c.Equipment.ShieldID = 0
+		}
+		if len(eqIDCounts) > 2 {
+			c.Equipment.HelmetID = eqIDCounts[2].ContentID
+		} else {
+			c.Equipment.HelmetID = 0
+		}
+		if len(eqIDCounts) > 3 {
+			c.Equipment.ArmorID = eqIDCounts[3].ContentID
+		} else {
+			c.Equipment.ArmorID = 0
+		}
+		if len(eqIDCounts) > 4 {
+			c.Equipment.Relic1ID = eqIDCounts[4].ContentID
+		} else {
+			c.Equipment.Relic1ID = 0
+		}
+		if len(eqIDCounts) > 5 {
+			c.Equipment.Relic2ID = eqIDCounts[5].ContentID
+		} else {
+			c.Equipment.Relic2ID = 0
+		}
 	}
 	return
 }
@@ -181,8 +221,8 @@ func (p *PR) loadMiscStats() (err error) {
 func (p *PR) loadInventory() (err error) {
 	var (
 		sl  interface{}
-		inv = models.GetInventory()
-		row models.PrRow
+		inv = pri.GetInventory()
+		row pri.Row
 	)
 	if sl, err = p.getFromTarget(p.UserData, NormalOwnedItemList); err != nil {
 		return
@@ -247,16 +287,21 @@ func (p *PR) unmarshal(i interface{}, m *map[string]interface{}) error {
 	return json.Unmarshal([]byte(i.(string)), m)
 }
 
-func (p *PR) unmarshalEquipment(m map[string]interface{}) (idCounts []idCount, err error) {
-	i, _ := m[EquipmentList]
-	eq := &equipment{}
-	//s := strings.ReplaceAll(i.(string), `\\`, `\`)
-	if err = json.Unmarshal([]byte(i.(string)), eq); err != nil {
+func (p *PR) unmarshalEquipment(m *jo.OrderedMap) (idCounts []idCount, err error) {
+	i, ok := m.GetValue(EquipmentList)
+	if !ok {
+		return nil, fmt.Errorf("%s not found", EquipmentList)
+	}
+
+	eq := jo.NewOrderedMap()
+	if err = eq.UnmarshalJSON([]byte(i.(string))); err != nil {
 		return
 	}
-	idCounts = make([]idCount, len(eq.Values))
-	for j, v := range eq.Values {
-		if err = json.Unmarshal([]byte(v), &idCounts[j]); err != nil {
+
+	i, _ = eq.GetValue("values")
+	idCounts = make([]idCount, len(i.([]interface{})))
+	for j, v := range i.([]interface{}) {
+		if err = json.Unmarshal([]byte(v.(string)), &idCounts[j]); err != nil {
 			return
 		}
 	}

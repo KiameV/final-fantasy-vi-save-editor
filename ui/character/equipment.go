@@ -1,9 +1,11 @@
 package character
 
 import (
+	"ffvi_editor/global"
 	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/snes"
 	"ffvi_editor/ui/widgets"
+	"fmt"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
 	"strconv"
@@ -45,12 +47,37 @@ func (u *equipmentUI) Draw(w *nucular.Window) {
 }
 
 func (u *equipmentUI) Update(character *models.Character) {
-	u.weaponID.Text(toHex(character.Equipment.WeaponID))
-	u.shieldID.Text(toHex(character.Equipment.ShieldID))
-	u.helmetID.Text(toHex(character.Equipment.HelmetID))
-	u.armorID.Text(toHex(character.Equipment.ArmorID))
-	u.relic1ID.Text(toHex(character.Equipment.Relic1ID))
-	u.relic2ID.Text(toHex(character.Equipment.Relic2ID))
+	if global.IsShowingPR() {
+		u.weaponID.Text(toNum(character.Equipment.WeaponID))
+		u.weaponID.Maxlen = 3
+		u.shieldID.Text(toNum(character.Equipment.ShieldID))
+		u.shieldID.Maxlen = 3
+		u.helmetID.Text(toNum(character.Equipment.HelmetID))
+		u.helmetID.Maxlen = 3
+		u.armorID.Text(toNum(character.Equipment.ArmorID))
+		u.armorID.Maxlen = 3
+		u.relic1ID.Text(toNum(character.Equipment.Relic1ID))
+		u.relic1ID.Maxlen = 3
+		u.relic2ID.Text(toNum(character.Equipment.Relic2ID))
+		u.relic2ID.Maxlen = 3
+	} else {
+		u.weaponID.Text(toHex(character.Equipment.WeaponID))
+		u.weaponID.Maxlen = 2
+		u.shieldID.Text(toHex(character.Equipment.ShieldID))
+		u.shieldID.Maxlen = 2
+		u.helmetID.Text(toHex(character.Equipment.HelmetID))
+		u.helmetID.Maxlen = 2
+		u.armorID.Text(toHex(character.Equipment.ArmorID))
+		u.armorID.Maxlen = 2
+		u.relic1ID.Text(toHex(character.Equipment.Relic1ID))
+		u.relic1ID.Maxlen = 2
+		u.relic2ID.Text(toHex(character.Equipment.Relic2ID))
+		u.relic2ID.Maxlen = 2
+	}
+}
+
+func toNum(i int) []rune {
+	return []rune(fmt.Sprintf("%d", i))
 }
 
 func toHex(i int) []rune {
@@ -74,7 +101,7 @@ func (u *equipmentUI) drawPair(w *nucular.Window, y int, label1 string, tb1 *nuc
 		H: 22,
 	})
 	_ = widgets.DrawAndValidateHexInput(w, tb1)
-	if item, found := consts.ItemsByID[string(tb1.Buffer)]; found {
+	if item, found := snes.ItemsByID[string(tb1.Buffer)]; found {
 		w.LayoutSpacePush(rect.Rect{
 			X: 90,
 			Y: y + 24,
@@ -99,7 +126,7 @@ func (u *equipmentUI) drawPair(w *nucular.Window, y int, label1 string, tb1 *nuc
 		H: 22,
 	})
 	_ = widgets.DrawAndValidateHexInput(w, tb2)
-	if item, found := consts.ItemsByID[string(tb2.Buffer)]; found {
+	if item, found := snes.ItemsByID[string(tb2.Buffer)]; found {
 		w.LayoutSpacePush(rect.Rect{
 			X: 90,
 			Y: y + 76,

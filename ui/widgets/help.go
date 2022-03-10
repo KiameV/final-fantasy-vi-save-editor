@@ -1,7 +1,7 @@
 package widgets
 
 import (
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/snes"
 	"github.com/aarzilli/nucular"
 )
 
@@ -16,13 +16,13 @@ var (
 )
 
 func init() {
-	InitReadOnlyText(&MiscItemsHelp, consts.EmptyText+consts.ItemsText)
-	InitReadOnlyText(&WeaponShieldHelp1, consts.EmptyText+consts.WeaponShieldText1)
-	InitReadOnlyText(&WeaponShieldHelp2, consts.EmptyText+consts.WeaponShieldText2)
-	InitReadOnlyText(&HelmetArmorHelp1, consts.EmptyText+consts.HelmetArmorText1)
-	InitReadOnlyText(&HelmetArmorHelp2, consts.EmptyText+consts.HelmetArmorText2)
-	InitReadOnlyText(&RelicHelp1, consts.EmptyText+consts.RelicText1)
-	InitReadOnlyText(&RelicHelp2, consts.RelicText2Header+consts.RelicText2)
+	InitReadOnlyText(&MiscItemsHelp, snes.EmptyText+snes.ItemsText)
+	InitReadOnlyText(&WeaponShieldHelp1, snes.EmptyText+snes.WeaponShieldText1)
+	InitReadOnlyText(&WeaponShieldHelp2, snes.EmptyText+snes.WeaponShieldText2)
+	InitReadOnlyText(&HelmetArmorHelp1, snes.EmptyText+snes.HelmetArmorText1)
+	InitReadOnlyText(&HelmetArmorHelp2, snes.EmptyText+snes.HelmetArmorText2)
+	InitReadOnlyText(&RelicHelp1, snes.EmptyText+snes.RelicText1)
+	InitReadOnlyText(&RelicHelp2, snes.RelicText2Header+snes.RelicText2)
 }
 
 func InitReadOnlyText(tb *nucular.TextEditor, text string) {

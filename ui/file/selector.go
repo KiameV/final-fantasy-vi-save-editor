@@ -43,6 +43,7 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 	}
 	if w.ButtonText("Cancel") {
 		global.RollbackShowing()
+		global.SetShowing(global.GetCurrentShowing())
 	}
 
 	if len(prSlots) == 0 {
@@ -80,6 +81,7 @@ func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
 	}
 	if w.ButtonText("Cancel") {
 		global.RollbackShowing()
+		global.SetShowing(global.GetCurrentShowing())
 	}
 
 	for i, s := range prSlots {
