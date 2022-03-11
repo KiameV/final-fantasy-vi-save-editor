@@ -224,7 +224,7 @@ func (p *PR) saveEspers() (err error) {
 }
 
 func (p *PR) saveInventory() (err error) {
-	//lookup := map[int]bool{}
+	return nil
 	var (
 		rows     = pri.GetInventory().GetRowsForPrSave()
 		sl       = make([]interface{}, len(rows))
@@ -232,24 +232,37 @@ func (p *PR) saveInventory() (err error) {
 		slTarget = jo.NewOrderedMap()
 	)
 
-	for i, r := range rows {
-		/*/ TODO remove start
-		r = pri.Row{
-			ItemID: r.ItemID,
-			Count:  r.Count,
-		}
-		if r.ItemID > 101 && r.ItemID <= 199 {
-			r.Count = r.ItemID - 100
+	j := 24
+	k := 0
+	lookup := map[int]bool{}
+	for _, r := range rows {
+		// TODO remove start
+		if j < 40 {
+			r = pri.Row{
+				ItemID: j + 200,
+				Count:  j,
+			}
+			j++
+			/*if r.ItemID > 101 && r.ItemID <= 199 {
+				r.Count = r.ItemID - 100
+			} else {
+				r.Count = 1
+			}*/
+			lookup[r.ItemID] = true
 		} else {
+			if _, found := lookup[r.ItemID]; found {
+				continue
+			}
 			r.Count = 1
 		}
-		lookup[r.ItemID] = true
+		//lookup[r.ItemID] = true
 		// TODO remove end */
 
 		if b, err = json.Marshal(r); err != nil {
 			return
 		}
-		sl[i] = string(b)
+		sl[k] = string(b)
+		k++
 	}
 	/*/ TODO Undo start
 	for i := 101; i < 150; i++ {

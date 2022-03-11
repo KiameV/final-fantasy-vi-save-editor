@@ -219,6 +219,7 @@ func (p *PR) loadMiscStats() (err error) {
 }
 
 func (p *PR) loadInventory() (err error) {
+	return nil
 	var (
 		sl  interface{}
 		inv = pri.GetInventory()

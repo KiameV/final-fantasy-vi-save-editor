@@ -159,50 +159,50 @@ Claw
 183 - Tigerfangs`
 
 	WeaponShieldText2 = `Shield
- - Buckler
- - Heavy Shield
- - Mithril Shield
- - Gold Shield
- - Aegis Shield
- - Diamond Shield
- - Flame Shield
- - Ice Shield
- - Thunder Shield
- - Crystal Shield
- - Genji Shield
- - Tortoise Shield
- - Cursed Shield
- - Paladin Shield
- - Force Shield`
+201 - Buckler
+202 - Heavy Shield
+203 - Mythril Shield
+204 - Gold Shield
+205 - Aegis Shield
+206 - Diamond Shield
+207 - Flame Shield
+208 - Ice Shield
+209 - Thunder Shield
+210 - Crystal Shield
+211 - Genji Shield
+212 - Tortoise Shield
+213 - Cursed Shield
+214 - Paladin Shield
+215 - Force Shield`
 
 	HelmetArmorText1 = `Helmet
- - Leather Hat
- - Hair Band
- - Plumed Hat
- - Beret
- - Magus Hat
- - Bandana
- - Iron Helmet
- - Coronet
- - Bard's Hat
- - Green Beret
- - Head Band
- - Mithril Helm
- - Tiara
- - Gold Helmet
- - Tiger Mask
- - Red Hat
- - Mystery Veil
- - Circlet
- - Regal Crown
- - Diamond Helm
- - Dark Hood
- - Crystal Helm
- - Oath Veil
- - Cat Hood
- - Genji Helmet
- - Thornlet
- - Titanium`
+217 - Leather Hat
+218 - Hairband
+219 - Plumed Hat
+220 - Beret
+221 - Magus Hat
+222 - Bandana
+223 - Iron Helmet
+224 - Priest's Miter
+225 - Bard's Hat
+226 - Green Beret
+227 - Head Band
+228 - Mythril Helm
+229 - Tiara
+230 - Gold Helmet
+231 - Tiger Mask
+232 - Red Hat
+233 - Mystery Veil
+234 - Circlet
+235 - Royal Crown
+236 - Diamond Helm
+237 - Black Hood
+237 - Crystal Helm
+238 - Oath Veil
+239 - Cat-Ear Hood
+23 - Genji Helmet
+23 - Thornlet
+23 - Titanium`
 
 	HelmetArmorText2 = `Armor
  - Leather Armor

@@ -65,6 +65,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 			u.equipment.Draw(w)
 		} else {
 			w.Row(30).Dynamic(1)
+			w.Label("Coming soon for Pixel Remastered", "LC")
 		}
 		w.TreePop()
 	}
