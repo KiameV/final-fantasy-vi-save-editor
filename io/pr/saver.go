@@ -186,7 +186,7 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		// TODO Equipment
+		/*/ TODO Equipment
 		eq := jo.NewOrderedMap()
 		if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
 			return
@@ -204,7 +204,7 @@ func (p *PR) saveCharacters() (err error) {
 
 		if err = p.marshalTo(d, EquipmentList, eq); err != nil {
 			return
-		}
+		}*/
 
 		if err = p.marshalTo(d, Parameter, params); err != nil {
 			return

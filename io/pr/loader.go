@@ -2,6 +2,7 @@ package pr
 
 import (
 	"encoding/json"
+	"errors"
 	"ffvi_editor/models"
 	pri "ffvi_editor/models/pr"
 	"fmt"
@@ -17,22 +18,15 @@ func (p *PR) Load(fileName string) (err error) {
 	var (
 		out []byte
 		i   interface{}
+		s   string
 	)
-	if out, err = p.execPythonLoad(fileName, true); err != nil {
-		if out, err = p.execPythonLoad(fileName, false); err != nil {
-			return
-		}
+	if out, err = p.readFile(fileName); err != nil {
+		return
 	}
 
-	var end int
-	end = len(out)
-	for end = len(out) - 1; end > 0 && out[end-1] != '}'; end-- {
+	if s, err = p.getSaveData(string(out)); err != nil {
+		return
 	}
-	data := make([]byte, len(out))
-	for a := 2; a < end; a++ {
-		data[a] = out[a]
-	}
-	s := string(out[2:end])
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = p.fixEscapeCharsForLoad(s)
 	//s = p.fixFile(s)
@@ -55,6 +49,10 @@ func (p *PR) Load(fileName string) (err error) {
 	if err = p.loadBase(s); err != nil {
 		return
 	}
+
+	//if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
+	//	return
+	//}
 
 	if err = p.unmarshalFrom(p.Base, UserDatas, p.UserData); err != nil {
 		return
@@ -403,31 +401,67 @@ func (p *PR) execPythonLoad(fileName string, omitFirstBytes bool) ([]byte, error
 	return cmd.Output()
 }
 
+func (p *PR) initialSetupCmd() error {
+	cmd := exec.Command("python", "-m", "pip", "install", "--upgrade", "pip")
+	if _, err := cmd.Output(); err != nil {
+		return err
+	}
+
+	cmd = exec.Command("pip", "install", "py3rijndael")
+	if _, err := cmd.Output(); err != nil {
+		return err
+	}
+
+	cmd = exec.Command("pip", "install", "pycryptodome")
+	if _, err := cmd.Output(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func handleCmdError(err error) error {
+	if e, ok := err.(*exec.ExitError); ok {
+		return fmt.Errorf("Python failed to load file: " + string(e.Stderr))
+	}
+	return fmt.Errorf("Python failed to load file: " + err.Error())
+}
+
 func (p *PR) loadBase(s string) (err error) {
 	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
-		var fixed bool
-		if fixed, s = p.fixFile(s); fixed {
-			err = p.Base.UnmarshalJSON([]byte(s))
-		}
-		/*i := strings.Index(s, "clearFlag")
-		if i != -1 {
-			c := s[i+9]
-			if c != ':' {
-				cc := s[i+10]
-				if cc >= 48 && c <= 57 {
-					cc -= 48
-				} else {
-					cc = 0
-				}
-				s = s[:i+9] + fmt.Sprintf(`":%d}`, cc)
-				return p.Base.UnmarshalJSON([]byte(s))
-			}
-		}*/
+		s, err = p.getSaveData(s)
 	}
 	return
 }
 
-func (p *PR) fixFile(s string) (bool, string) {
+func (p *PR) getSaveData(s string) (string, error) {
+	end := strings.Index(s, `,"playTime`)
+	if end == -1 {
+		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+	}
+	return s[2:end] + `,"playTime":0.0,"clearFlag":0}`, nil
+}
+
+func (p *PR) readFile(fileName string) (out []byte, err error) {
+	if out, err = p.execPythonLoad(fileName, true); err == nil {
+		return
+	}
+	if out, err = p.execPythonLoad(fileName, false); err == nil {
+		return
+	}
+	if err = p.initialSetupCmd(); err != nil {
+		return
+	}
+	if out, err = p.execPythonLoad(fileName, true); err != nil {
+		e1 := handleCmdError(err)
+		if out, err = p.execPythonLoad(fileName, false); err != nil {
+			err = e1
+			return
+		}
+	}
+	return
+}
+
+/*func (p *PR) fixFile(s string) (bool, string) {
 	if i := strings.Index(s, "clearFlag"); i != -1 {
 		c := s[i+9]
 		if c != ':' {
@@ -440,9 +474,9 @@ func (p *PR) fixFile(s string) (bool, string) {
 			s = s[:i+9] + fmt.Sprintf(`":%d}`, cc)
 		}
 		return true, s
-	} else if i = strings.Index(s, `"cle`); i != -1 && s[i+4] >= 48 && s[i+4] <= 57 {
-		s = s[0:i] + `"clearFlag":0}`
+	} else if i = strings.Index(s, `"playTime`); i != -1 && s[i+4] >= 48 && s[i+4] <= 57 {
+		s = s[0:i] + `"playTime":0.0,"clearFlag":0}`
 		return true, s
 	}
 	return false, s
-}
+}*/

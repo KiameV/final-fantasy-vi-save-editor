@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-const version = "1.0.3"
+const version = "1.0.7"
 
 var (
 	mainMenu     ui.UI
@@ -216,7 +216,7 @@ func updateWindow(w *nucular.Window) {
 }
 
 func popupErr(w *nucular.Window, err error) {
-	w.Master().PopupOpen("Error", nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic, rect.Rect{X: 20, Y: 100, W: 600, H: 400}, true,
+	w.Master().PopupOpen("Error", nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic, rect.Rect{X: 20, Y: 100, W: 600, H: 600}, true,
 		func(w *nucular.Window) {
 			w.Row(100).Dynamic(1)
 			w.LabelWrap(err.Error())

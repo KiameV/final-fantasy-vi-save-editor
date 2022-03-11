@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	minValue   = [2]int{0, 1}
+	minValue   = [2]int{1, 0}
 	vigorLabel = [2]string{"Vigor", "Strength"}
 	speedLabel = [2]string{"Speed", "Agility"}
 )

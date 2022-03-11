@@ -125,11 +125,11 @@ type prSlot struct {
 
 var (
 	prSlots = []*prSlot{
-		{
+		/*{
 			UUID: "7nCxyzTwG31W3Zlg70mo751W8ETH1n+Km0dWOzRU84Y=",
 			Name: "quick save",
 			File: nil,
-		},
+		},*/
 		{
 			UUID: "ookrbATYovG3tEOXIH4HqWnsv8TrUlRWzM8AlCmW2mk=",
 			Name: "slot 1",
