@@ -162,7 +162,6 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		// TODO
 		var eqIDCounts []idCount
 		if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
 			return
@@ -217,7 +216,6 @@ func (p *PR) loadMiscStats() (err error) {
 }
 
 func (p *PR) loadInventory() (err error) {
-	return nil
 	var (
 		sl  interface{}
 		inv = pri.GetInventory()

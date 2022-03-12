@@ -69,5 +69,5 @@ func (u *inventoryUI) Name() string {
 }
 
 func (u *inventoryUI) IsPRSupported() bool {
-	return false
+	return true
 }

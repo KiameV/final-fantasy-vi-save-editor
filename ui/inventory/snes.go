@@ -72,13 +72,14 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 	u.yLast = y
 
 	// Helpers
+	helper := widgets.GetSnesHelpers()
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
 		Y: 0,
 		W: 170,
 		H: 190,
 	})
-	widgets.MiscItemsHelp.Edit(w)
+	helper.MiscItemsHelp.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
@@ -86,7 +87,7 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.WeaponShieldHelp1.Edit(w)
+	helper.WeaponShieldHelp1.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
@@ -94,7 +95,7 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.WeaponShieldHelp2.Edit(w)
+	helper.WeaponShieldHelp2.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
@@ -102,7 +103,7 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.HelmetArmorHelp1.Edit(w)
+	helper.HelmetArmorHelp1.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
@@ -110,7 +111,7 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.HelmetArmorHelp2.Edit(w)
+	helper.HelmetArmorHelp2.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
@@ -118,7 +119,7 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.RelicHelp1.Edit(w)
+	helper.RelicHelp1.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
@@ -126,7 +127,7 @@ func (u *inventoryUI) drawSnes(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.RelicHelp2.Edit(w)
+	helper.RelicHelp2.Edit(w)
 	count += 7
 
 	// Finder

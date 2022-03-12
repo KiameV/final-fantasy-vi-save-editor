@@ -37,42 +37,31 @@ func newEquipmentUI() widget {
 }
 
 func (u *equipmentUI) Draw(w *nucular.Window) {
-	count := 18
-	w.Row(610).SpaceBegin(u.countLast)
-	count += u.drawPair(w, 0, "Weapon ID:", &u.weaponID, "Shield ID:", &u.shieldID, &widgets.WeaponShieldHelp1, &widgets.WeaponShieldHelp2)
-	count += widgets.DrawItemFinder(w, 550, 0)
-	count += u.drawPair(w, 200, "Helmet ID:", &u.helmetID, "Armor ID:", &u.armorID, &widgets.HelmetArmorHelp1, &widgets.HelmetArmorHelp2)
-	count += u.drawPair(w, 400, "Relic 1 ID:", &u.relic1ID, "Relic 2 ID:", &u.relic2ID, &widgets.RelicHelp1, &widgets.RelicHelp2)
-	u.countLast = count
+	if global.IsShowingPR() {
+		u.drawPR(w)
+	} else {
+		var (
+			count   = 18
+			helpers = widgets.GetSnesHelpers()
+		)
+
+		w.Row(610).SpaceBegin(u.countLast)
+		count += u.drawPair(w, 0, "Weapon ID:", &u.weaponID, "Shield ID:", &u.shieldID, &helpers.WeaponShieldHelp1, &helpers.WeaponShieldHelp2)
+		count += widgets.DrawItemFinder(w, 550, 0)
+		count += u.drawPair(w, 200, "Helmet ID:", &u.helmetID, "Armor ID:", &u.armorID, &helpers.HelmetArmorHelp1, &helpers.HelmetArmorHelp2)
+		count += u.drawPair(w, 400, "Relic 1 ID:", &u.relic1ID, "Relic 2 ID:", &u.relic2ID, &helpers.RelicHelp1, &helpers.RelicHelp2)
+		u.countLast = count
+	}
 }
 
 func (u *equipmentUI) Update(character *models.Character) {
-	if global.IsShowingPR() {
-		u.weaponID.Text(toNum(character.Equipment.WeaponID))
-		u.weaponID.Maxlen = 3
-		u.shieldID.Text(toNum(character.Equipment.ShieldID))
-		u.shieldID.Maxlen = 3
-		u.helmetID.Text(toNum(character.Equipment.HelmetID))
-		u.helmetID.Maxlen = 3
-		u.armorID.Text(toNum(character.Equipment.ArmorID))
-		u.armorID.Maxlen = 3
-		u.relic1ID.Text(toNum(character.Equipment.Relic1ID))
-		u.relic1ID.Maxlen = 3
-		u.relic2ID.Text(toNum(character.Equipment.Relic2ID))
-		u.relic2ID.Maxlen = 3
-	} else {
+	if !global.IsShowingPR() {
 		u.weaponID.Text(toHex(character.Equipment.WeaponID))
-		u.weaponID.Maxlen = 2
 		u.shieldID.Text(toHex(character.Equipment.ShieldID))
-		u.shieldID.Maxlen = 2
 		u.helmetID.Text(toHex(character.Equipment.HelmetID))
-		u.helmetID.Maxlen = 2
 		u.armorID.Text(toHex(character.Equipment.ArmorID))
-		u.armorID.Maxlen = 2
 		u.relic1ID.Text(toHex(character.Equipment.Relic1ID))
-		u.relic1ID.Maxlen = 2
 		u.relic2ID.Text(toHex(character.Equipment.Relic2ID))
-		u.relic2ID.Maxlen = 2
 	}
 }
 
@@ -101,6 +90,7 @@ func (u *equipmentUI) drawPair(w *nucular.Window, y int, label1 string, tb1 *nuc
 		H: 22,
 	})
 	_ = widgets.DrawAndValidateHexInput(w, tb1)
+
 	if item, found := snes.ItemsByID[string(tb1.Buffer)]; found {
 		w.LayoutSpacePush(rect.Rect{
 			X: 90,

@@ -1,7 +1,23 @@
-package snes
+package pr
 
+import (
+	"bufio"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+// 243 will fail
 const (
-	EmptyText = `FF - Empty
+	EmptyText = `0 - Empty
+`
+	EmptyWeaponShield = `93 - Empty
+`
+	EmptyHelmet = `198 - Empty
+`
+	EmptyArmor = `199 - Empty
+`
+	EmptyRelic = `200 - Empty
 `
 	ItemsText = `Miscellaneous
 2 - Potion
@@ -176,135 +192,163 @@ Claw
 215 - Force Shield`
 
 	HelmetArmorText1 = `Helmet
-217 - Leather Hat
-218 - Hairband
-219 - Plumed Hat
-220 - Beret
-221 - Magus Hat
-222 - Bandana
-223 - Iron Helmet
-224 - Priest's Miter
-225 - Bard's Hat
-226 - Green Beret
-227 - Head Band
-228 - Mythril Helm
-229 - Tiara
-230 - Gold Helmet
-231 - Tiger Mask
-232 - Red Hat
-233 - Mystery Veil
-234 - Circlet
-235 - Royal Crown
-236 - Diamond Helm
-237 - Black Hood
+216 - Leather Hat
+217 - Hairband
+218 - Plumed Hat
+219 - Beret
+220 - Magus Hat
+221 - Bandana
+222 - Iron Helmet
+223 - Priest's Miter
+224 - Bard's Hat
+225 - Green Beret
+226 - Head Band
+227 - Mythril Helm
+228 - Tiara
+229 - Gold Helmet
+230 - Tiger Mask
+231 - Red Hat
+232 - Mystery Veil
+233 - Circlet
+234 - Royal Crown
+235 - Diamond Helm
+236 - Black Hood
 237 - Crystal Helm
 238 - Oath Veil
 239 - Cat-Ear Hood
-23 - Genji Helmet
-23 - Thornlet
-23 - Titanium`
+240 - Genji Helmet
+241 - Thornlet
+242 - Saucer`
 
 	HelmetArmorText2 = `Armor
- - Leather Armor
- - Cotton Robe
- - Kung Fu Suit
- - Iron Armor
- - Silk Robe
- - Mithril Vest
- - Ninja Gear
- - White Dress
- - Mithril Mail
- - Gaia Gear
- - Mirage Dress
- - Gold Armor
- - Power Sash
- - Light Robe
- - Diamond Vest
- - Red Jacket
- - Force Armor
- - Diamond Armor
- - Dark Gear
- - Tao Robe
- - Crystal Mail
- - Czarina Gown
- - Genji Armor
- - Imp's Armor
- - Minerva
- - Tabby Suit
- - Chocobo Suit
- - Moogle Suit
- - Nutkin Suit
- - Behemeth Suit
- - Snow Muffler`
+244 - Leather Armor
+245 - Cotton Robe
+246 - Kenpo Gi
+247 - Iron Armor
+248 - Silk Robe
+249 - Mythril Vest
+250 - Ninja Gear
+251 - White Dress
+252 - Mythril Mail
+253 - Gaia Gear
+254 - Mirage Dress
+255 - Golden Armor
+256 - Power Sash
+257 - Luminous Robe
+258 - Diamond Vest
+259 - Red Jacket
+260 - Force Armor
+261 - Diamond Armor
+262 - Black Garb
+263 - Magus Rove
+264 - Crystal Mail
+265 - Regal Gown
+266 - Genji Armor
+267 - Reed Cloak
+268 - Minerva Bustier
+269 - Tabby Suit
+270 - Chocobo Suit
+271 - Moogle Suit
+272 - Nutkin Suit
+273 - Behemeth Suit
+274 - Snow Scarf`
 
 	RelicText1 = `Relic
- - Goggles
- - Star Pendant
- - Peace Ring
- - Amulet
- - White Cape
- - Jewel Ring
- - Fair Ring
- - Barrier Ring
- - Mithril Glove
- - Guard Ring
- - Running Shoes
- - Wall Ring
- - Cherub Down
- - Cure Ring
- - True Knight
- - DragoonBoots
- - Zephyr Cape
- - Czarina Ring
- - Cursed Cing
- - Earrings
- - Atlas Armlet
- - Blizzard Ring
- - Rage Ring
- - Sneak Ring
+275 - Silver Spectacles
+276 - Star Pendant
+277 - Peace Ring
+278 - Amulet
+279 - White Cape
+280 - Jewel Ring
+281 - Fairy Ring
+282 - Barrier Ring
+283 - Mythril Glove
+284 - Protect Ring
+285 - Hermes Sandals
+286 - Reflect Ring
+287 - Angel Wings
+288 - Angel Ring
+289 - Knight's Code
+290 - Dragoon Boots
+291 - Zephyr Cloak
+292 - Princess Ring
+293 - Cursed Ring
+294 - Earring
+295 - Gigas Glove
+296 - Blizzard Orb
+297 - Berserker Ring
+298 - Thief's Bracer
+299 - Guard Bracelet
 `
 	RelicText2Header = `Relic (continued)
 `
-	RelicText2 = `C8 - Pod Bracelet
- - Hero Ring
- - Ribbon
- - Muscle Belt
- - Crystal Orb
- - Gold Hairpin
- - Economizer
- - Thief Glove
- - Gauntlet
- - Genji Glove
- - Hyper Wrist
- - Offering
- - Beads
- - Black Belt
- - Coin Toss
- - Fake Mustache
- - Gem Box
- - Dragon Horn
- - Merit Award
- - Momento Ring
- - Safety Bit
- - Relic Ring
- - Moogle Charm
- - Charm Bangle
- - Marvel Shoes
- - Back Gaurd
- - Gale Hairpin
- - Sniper Sight
- - Exp.Egg
- - Tintinabar
- - Sprint Shoes`
+	RelicText2 = `300 - Hero Ring
+301 - Ribbon
+302 - Muscle Belt
+303 - Crystal Orb
+304 - Gold Hairpin
+305 - Celestriad
+306 - Brigand's Glove
+307 - Gauntlet
+308 - Genji Glove
+309 - Hyper Wrist
+310 - Master's Scroll
+311 - Prayer Beads
+312 - Black Belt
+313 - Heiki's Jitte
+314 - Fake Mustache
+315 - Soul of Thamasa
+316 - Dragon Horn
+317 - Merit Award
+318 - Momento Ring
+319 - Safety Bit
+320 - Lich Ring
+321 - Molulu's Charm
+322 - Ward Bangle
+323 - Miracle Shoes
+324 - Alarm Gaurd
+325 - Gale Hairpin
+326 - Sniper Eye
+327 - Growth Egg
+328 - Tintinnabulum
+329 - Sprint Shoes`
 )
 
 var (
-	ItemsByName = make(map[string]string)
-	ItemsByID   = map[string]string{}
+	ItemsByName = make(map[string]int)
+	ItemsByID   = map[int]string{}
 )
 
 func init() {
-	for k, v := range ItemsByID {
-		ItemsByName[v] = k
+	loadItems(EmptyText)
+	loadItems(ItemsText)
+	loadItems(WeaponShieldText1)
+	loadItems(WeaponShieldText2)
+	loadItems(HelmetArmorText1)
+	loadItems(HelmetArmorText2)
+	loadItems(RelicText1)
+	loadItems(RelicText2)
+}
+
+func loadItems(s string) {
+	var in []int
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		sl := strings.Split(scanner.Text(), " - ")
+		if len(sl) == 2 {
+			if i, err := strconv.ParseInt(sl[0], 10, 32); err != nil {
+				panic(sl[1])
+			} else {
+				ItemsByName[sl[1]] = int(i)
+				ItemsByID[int(i)] = sl[1]
+				in = append(in, int(i))
+			}
+		}
 	}
+	ItemsByID[93] = "Empty"
+	ItemsByID[198] = "Empty"
+	ItemsByID[199] = "Empty"
+	ItemsByID[200] = "Empty"
+	sort.Ints(in)
+	return
 }

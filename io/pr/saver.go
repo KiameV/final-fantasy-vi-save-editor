@@ -19,19 +19,34 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		toFile   = filepath.Join(global.Dir, fileName)
 		temp     = filepath.Join(global.PWD, "temp")
 		cmd      = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
+		needed   = make(map[int]int)
 		slTarget = jo.NewOrderedMap()
 	)
 
+	/*/ TODO Test bulk item override
+	j := 0
+	for i := 30; i <= 42; i++ {
+		pri.GetInventory().Set(j, pri.Row{
+			ItemID: 200 + i,
+			Count:  i,
+		})
+		j++
+	}
+	//*/
+
+	p.populateNeeded(&needed)
+	pri.GetInventory().AddNeeded(needed)
+
 	if err = p.saveCharacters(); err != nil {
+		return
+	}
+	if err = p.saveInventory(); err != nil {
 		return
 	}
 	if err = p.saveSkills(); err != nil {
 		return
 	}
 	if err = p.saveEspers(); err != nil {
-		return
-	}
-	if err = p.saveInventory(); err != nil {
 		return
 	}
 	if err = p.saveMiscStats(); err != nil {
@@ -71,8 +86,6 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		return
 	}
 
-	//p.data = p.unfixFile(p.data)
-
 	if _, err = os.Stat(temp); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create(temp); err != nil {
 			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
@@ -95,7 +108,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	if err != nil {
 		err = ioutil.WriteFile("saved.json", prettyJSON.Bytes(), 0644)
 	}
-	TODO END /*/
+	// TODO END /*/
 
 	if err = ioutil.WriteFile(temp, data, 0644); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
@@ -146,7 +159,7 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		// TODO
+		// TODO - readd
 		//if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
 		//	return
 		//}
@@ -154,7 +167,7 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		// TODO
+		// TODO - readd
 		//if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
 		//	return
 		//}
@@ -186,31 +199,43 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		/*/ TODO Equipment
 		eq := jo.NewOrderedMap()
 		if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
 			return
 		}
 		invCounts := pri.GetInventory().GetItemLookup()
-		eqIDCounts := []string{
-			p.getInvCount(invCounts, c.Equipment.WeaponID),
-			p.getInvCount(invCounts, c.Equipment.ShieldID),
-			p.getInvCount(invCounts, c.Equipment.HelmetID),
-			p.getInvCount(invCounts, c.Equipment.ArmorID),
-			p.getInvCount(invCounts, c.Equipment.Relic1ID),
-			p.getInvCount(invCounts, c.Equipment.Relic2ID),
-		}
+		var eqIDCounts []string
+		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.WeaponID)
+		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ShieldID)
+		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.HelmetID)
+		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ArmorID)
+		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic1ID)
+		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic2ID)
 		eq.Set("values", eqIDCounts)
 
 		if err = p.marshalTo(d, EquipmentList, eq); err != nil {
 			return
-		}*/
+		}
 
 		if err = p.marshalTo(d, Parameter, params); err != nil {
 			return
 		}
 	}
 	return
+}
+
+func (p *PR) populateNeeded(needed *map[int]int) {
+	for _, c := range models.Characters {
+		p.addToNeeded(needed, c.Equipment.WeaponID)
+	}
+}
+
+func (p *PR) addToNeeded(needed *map[int]int, id int) {
+	if count, found := (*needed)[id]; !found {
+		(*needed)[id] = 1
+	} else {
+		(*needed)[id] = count + 1
+	}
 }
 
 func (p *PR) saveSkills() (err error) {
@@ -224,74 +249,48 @@ func (p *PR) saveEspers() (err error) {
 }
 
 func (p *PR) saveInventory() (err error) {
-	return nil
 	var (
-		rows     = pri.GetInventory().GetRowsForPrSave()
-		sl       = make([]interface{}, len(rows))
-		b        []byte
-		slTarget = jo.NewOrderedMap()
+		rows             = pri.GetInventory().GetRowsForPrSave()
+		sl               = make([]interface{}, 0, len(rows))
+		b                []byte
+		slTarget         = jo.NewOrderedMap()
+		found            = make(map[int]bool)
+		removeDuplicates = pri.GetInventory().RemoveDuplicates
 	)
 
-	j := 24
-	k := 0
-	lookup := map[int]bool{}
 	for _, r := range rows {
-		// TODO remove start
-		if j < 40 {
-			r = pri.Row{
-				ItemID: j + 200,
-				Count:  j,
-			}
-			j++
-			/*if r.ItemID > 101 && r.ItemID <= 199 {
-				r.Count = r.ItemID - 100
-			} else {
-				r.Count = 1
-			}*/
-			lookup[r.ItemID] = true
-		} else {
-			if _, found := lookup[r.ItemID]; found {
+		if removeDuplicates {
+			if _, f := found[r.ItemID]; f {
 				continue
 			}
-			r.Count = 1
+			found[r.ItemID] = true
 		}
-		//lookup[r.ItemID] = true
-		// TODO remove end */
-
+		// Skip known crashing items
+		if r.ItemID == 184 || r.ItemID == 243 {
+			continue
+		}
+		// Skip Empty rows
+		if r.ItemID == 0 || r.Count == 0 {
+			continue
+		}
 		if b, err = json.Marshal(r); err != nil {
 			return
 		}
-		sl[k] = string(b)
-		k++
+		sl = append(sl, string(b))
 	}
-	/*/ TODO Undo start
-	for i := 101; i < 150; i++ {
-		if _, ok := lookup[i]; !ok {
-			r := pri.Row{
-				ItemID: i,
-				Count:  i - 100,
-			}
-			if b, err = json.Marshal(r); err != nil {
-				return
-			}
-			sl[i] = string(b)
-		}
-	}
-	// TODO Remove end */
 
 	slTarget.Set(targetKey, sl)
 	if err = p.marshalTo(p.UserData, NormalOwnedItemList, slTarget); err != nil {
 		return
 	}
 
-	// TODO Readd
-	//if pri.GetInventory().ResetSortOrder {
-	slTarget = jo.NewOrderedMap()
-	slTarget.Set(targetKey, make([]interface{}, 0))
-	if err = p.marshalTo(p.UserData, NormalOwnedItemSortIdList, slTarget); err != nil {
-		return
+	if pri.GetInventory().ResetSortOrder {
+		slTarget = jo.NewOrderedMap()
+		slTarget.Set(targetKey, make([]interface{}, 0))
+		if err = p.marshalTo(p.UserData, NormalOwnedItemSortIdList, slTarget); err != nil {
+			return
+		}
 	}
-	//}
 	return
 }
 
@@ -327,8 +326,11 @@ func floor0(i int) int {
 	return i
 }
 
-func (p *PR) getInvCount(counts map[int]int, id int) string {
+func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int) {
 	var i idCount
+	if id == 0 {
+		return
+	}
 	if count, ok := counts[id]; ok {
 		i.ContentID = id
 		i.Count = count
@@ -337,16 +339,5 @@ func (p *PR) getInvCount(counts map[int]int, id int) string {
 		i.Count = counts[200]
 	}
 	b, _ := json.Marshal(&i)
-	return string(b)
-}
-
-func (p *PR) unfixFile(data []byte) []byte {
-	//if p.fileEnd == "" {
-	return data
-	//}
-
-	//s := string(data)
-	//i := strings.Index(s, "clearFlag")
-	//s = s[:i+9] + p.fileEnd
-	//return []byte(s)
+	*eq = append(*eq, string(b))
 }

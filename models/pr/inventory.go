@@ -1,8 +1,9 @@
-package snes
+package pr
 
 type Inventory struct {
-	Rows           []*Row
-	ResetSortOrder bool
+	Rows             []*Row
+	ResetSortOrder   bool
+	RemoveDuplicates bool
 }
 
 type Row struct {
@@ -51,7 +52,7 @@ func (i *Inventory) Set(index int, row Row) {
 func (i *Inventory) GetRowsForPrSave() []Row {
 	rows := make([]Row, 0, len(i.Rows))
 	for _, r := range i.Rows {
-		if r.ItemID > 0 && r.ItemID <= 999 && r.Count > 0 {
+		if r.ItemID > 0 && r.ItemID <= 999 && r.Count > 0 && r.Count <= 99 {
 			rows = append(rows, *r)
 		}
 	}
@@ -64,4 +65,33 @@ func (i *Inventory) GetItemLookup() map[int]int {
 		m[r.ItemID] = r.Count
 	}
 	return m
+}
+
+func (i *Inventory) AddNeeded(needed map[int]int) {
+	for _, r := range i.Rows {
+		if /*count*/ _, found := needed[r.ItemID]; found /*&& r.Count < count*/ {
+			//r.Count = count
+			delete(needed, r.ItemID)
+		}
+	}
+
+	if len(needed) > 0 {
+		var j int
+		for j = len(i.Rows) - 1; j >= 0; j-- {
+			if i.Rows[j] != nil && i.Rows[j].ItemID != 0 {
+				j += 1
+				break
+			}
+		}
+		for id, count := range needed {
+			if j >= len(i.Rows) {
+				// TODO add error?
+				return
+			}
+			i.Rows[j] = &Row{
+				ItemID: id,
+				Count:  count,
+			}
+		}
+	}
 }

@@ -1,7 +1,7 @@
 package inventory
 
 import (
-	"ffvi_editor/models/consts/snes"
+	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
@@ -11,7 +11,7 @@ import (
 func (u *inventoryUI) drawPR(w *nucular.Window) {
 	var (
 		y     int
-		count = 3
+		count = 4
 	)
 
 	w.Row(u.yLast).SpaceBegin(u.countLast)
@@ -22,6 +22,14 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		H: 22,
 	})
 	w.CheckboxText("Reset Sort Order", &pri.GetInventory().ResetSortOrder)
+	y += 24
+	w.LayoutSpacePush(rect.Rect{
+		X: 0,
+		Y: y,
+		W: 150,
+		H: 22,
+	})
+	w.CheckboxText("Remove Duplicates", &pri.GetInventory().RemoveDuplicates)
 	y += 24
 
 	w.LayoutSpacePush(rect.Rect{
@@ -41,7 +49,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 	w.Label("Count", "LC")
 	y += 24
 
-	for i, r := range pri.GetInventoryRows() {
+	for _, r := range pri.GetInventoryRows() {
 		w.LayoutSpacePush(rect.Rect{
 			X: 0,
 			Y: y,
@@ -59,7 +67,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		w.PropertyInt("", 0, &r.Count, 999, 1, 0)
 		y += 24
 		count += 2
-		if item, found := snes.ItemsByID[string(u.ids[i].Buffer)]; found && item != "Empty" {
+		if item, found := pr.ItemsByID[r.ItemID]; found && item != "Empty" {
 			w.LayoutSpacePush(rect.Rect{
 				X: 0,
 				Y: y,
@@ -74,13 +82,14 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 	u.yLast = y
 
 	// Helpers
+	helper := widgets.GetPrInvHelpers()
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
 		Y: 0,
 		W: 170,
 		H: 190,
 	})
-	widgets.MiscItemsHelp.Edit(w)
+	helper.MiscItemsHelp.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
@@ -88,7 +97,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.WeaponShieldHelp1.Edit(w)
+	helper.WeaponShieldHelp1.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
@@ -96,7 +105,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.WeaponShieldHelp2.Edit(w)
+	helper.WeaponShieldHelp2.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
@@ -104,7 +113,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.HelmetArmorHelp1.Edit(w)
+	helper.HelmetArmorHelp1.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
@@ -112,7 +121,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.HelmetArmorHelp2.Edit(w)
+	helper.HelmetArmorHelp2.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
@@ -120,7 +129,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.RelicHelp1.Edit(w)
+	helper.RelicHelp1.Edit(w)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
@@ -128,7 +137,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		W: 170,
 		H: 190,
 	})
-	widgets.RelicHelp2.Edit(w)
+	helper.RelicHelp2.Edit(w)
 	count += 7
 
 	// Finder

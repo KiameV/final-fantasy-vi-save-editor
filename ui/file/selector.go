@@ -50,7 +50,11 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 		w.Row(30).Static(300)
 		w.Label("No saves found in this directory.", "LC")
 	} else {
-		for _, s := range prSlots {
+		for i, s := range prSlots {
+			if i == 0 {
+				// Don't save over QS
+				continue
+			}
 			if s.File != nil {
 				w.Row(30).Static(300)
 				if w.ButtonText("Load " + s.Name) {
@@ -125,11 +129,11 @@ type prSlot struct {
 
 var (
 	prSlots = []*prSlot{
-		/*{
+		{
 			UUID: "7nCxyzTwG31W3Zlg70mo751W8ETH1n+Km0dWOzRU84Y=",
 			Name: "quick save",
 			File: nil,
-		},*/
+		},
 		{
 			UUID: "ookrbATYovG3tEOXIH4HqWnsv8TrUlRWzM8AlCmW2mk=",
 			Name: "slot 1",
