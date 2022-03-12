@@ -40,7 +40,7 @@ func main() {
 		global.DirFiles, _ = ioutil.ReadDir(global.Dir)
 	}
 	mainMenu = mm.NewUI()
-	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor", image.Point{X: 725, Y: 500}, updateWindow)
+	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor - "+version, image.Point{X: 725, Y: 500}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
 	wnd.Main()
 }
