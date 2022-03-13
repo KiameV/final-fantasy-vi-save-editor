@@ -27,14 +27,6 @@ var (
 	statusTimer  *time.Timer
 )
 
-type FileType byte
-
-const (
-	Unknown FileType = iota
-	SNES
-	PixelRemastered
-)
-
 func main() {
 	if global.Dir != "" {
 		global.DirFiles, _ = ioutil.ReadDir(global.Dir)
