@@ -1,7 +1,9 @@
-package consts
+package snes
+
+import "ffvi_editor/models/consts"
 
 var (
-	Espers = NewNameSlotMask8s(
+	Espers = consts.NewNameSlotMask8s(
 		"Ramuh",
 		"Ifrit",
 		"Shiva",
@@ -30,9 +32,9 @@ var (
 		"Startlet",
 		"Phoenix",
 	)
-	SortedEspers []*NameSlotMask8
+	SortedEspers []*consts.NameSlotMask8
 )
 
 func init() {
-	SortedEspers = sortByName(Espers)
+	SortedEspers = consts.SortByName(Espers)
 }

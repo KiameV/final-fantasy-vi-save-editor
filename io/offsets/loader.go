@@ -3,6 +3,7 @@ package offsets
 import (
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
+	snes2 "ffvi_editor/models/consts/snes"
 	"ffvi_editor/models/snes"
 	"os"
 	"strconv"
@@ -131,13 +132,13 @@ func (o *Offsets) loadSkills() {
 	for _, r := range consts.Dances {
 		r.SetChecked(GetAt(o.DanceOffset + r.Slot))
 	}
-	for _, r := range consts.Rages {
+	for _, r := range snes2.Rages {
 		r.SetChecked(GetAt(o.RageOffset + r.Slot))
 	}
 }
 
 func (o *Offsets) loadEspers() {
-	for _, r := range consts.Espers {
+	for _, r := range snes2.Espers {
 		r.SetChecked(GetAt(o.EsperOffset + r.Slot))
 	}
 }

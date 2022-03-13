@@ -1,7 +1,9 @@
-package consts
+package snes
+
+import "ffvi_editor/models/consts"
 
 var (
-	Rages = NewNameSlotMask8s(
+	Rages = consts.NewNameSlotMask8s(
 		"Guard",
 		"Soldier",
 		"Templar",
@@ -289,9 +291,9 @@ var (
 		"IronHitman",
 		"Io",
 	)
-	SortedRages []*NameSlotMask8
+	SortedRages []*consts.NameSlotMask8
 )
 
 func init() {
-	SortedRages = sortByName(Rages)
+	SortedRages = consts.SortByName(Rages)
 }

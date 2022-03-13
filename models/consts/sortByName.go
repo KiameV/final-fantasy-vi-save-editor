@@ -2,7 +2,7 @@ package consts
 
 import "sort"
 
-func sortByName(nsms []*NameSlotMask8) []*NameSlotMask8 {
+func SortByName(nsms []*NameSlotMask8) []*NameSlotMask8 {
 	var (
 		lookup      = make(map[string]*NameSlotMask8)
 		sortedNames = make([]string, len(nsms))

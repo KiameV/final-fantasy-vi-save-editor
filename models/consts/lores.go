@@ -62,5 +62,5 @@ var (
 )
 
 func init() {
-	SortedLores = sortByName(Lores)
+	SortedLores = SortByName(Lores)
 }

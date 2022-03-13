@@ -1,6 +1,8 @@
 package consts
 
-import "sort"
+import (
+	"sort"
+)
 
 type Command struct {
 	NameValue
@@ -8,7 +10,7 @@ type Command struct {
 }
 
 var (
-	Commands = []Command{
+	Commands = []*Command{
 		{NameValue: NewNameValue("Fight", 0x0)},
 		{NameValue: NewNameValue("Item", 0x1)},
 		{NameValue: NewNameValue("Magic", 0x2)},
@@ -56,8 +58,8 @@ func init() {
 
 	for i, c := range Commands {
 		p := c
-		CommandLookupByValue[c.Value] = &p
-		CommandLookupByName[c.Name] = &p
+		CommandLookupByValue[c.Value] = p
+		CommandLookupByName[c.Name] = p
 		CommandsSorted[i] = c.Name
 	}
 	sort.Strings(CommandsSorted)

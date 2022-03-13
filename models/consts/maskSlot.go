@@ -5,8 +5,17 @@ type NameValue struct {
 	Value int
 }
 
+type NameValueChecked struct {
+	NameValue
+	Checked bool
+}
+
 func NewNameValue(name string, value int) NameValue {
 	return NameValue{Name: name, Value: value}
+}
+
+func NewNameValueChecked(name string, value int) *NameValueChecked {
+	return &NameValueChecked{NameValue: NameValue{Name: name, Value: value}}
 }
 
 func NewNameValues(names ...string) []NameValue {

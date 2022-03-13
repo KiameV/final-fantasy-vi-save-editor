@@ -37,7 +37,9 @@ func GetCurrentShowing() CurrentScreen {
 }
 
 func SetShowing(s CurrentScreen) {
-	prevShow = showing
+	if showing != prevShow {
+		prevShow = showing
+	}
 	showing = s
 }
 

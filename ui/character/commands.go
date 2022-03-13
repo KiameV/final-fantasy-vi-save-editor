@@ -17,7 +17,6 @@ func newCommandUI() widget {
 
 func (u *commandUI) Draw(w *nucular.Window) {
 	var i int
-
 	w.Row(18).Static(100)
 	if i = w.ComboSimple(consts.CommandsSorted, character.Command1.SortedIndex, 12); i != character.Command1.SortedIndex {
 		character.Command1 = consts.CommandsLookupBySortedIndex[i]

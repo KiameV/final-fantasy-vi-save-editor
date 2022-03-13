@@ -5,6 +5,7 @@ import (
 	"errors"
 	"ffvi_editor/global"
 	"ffvi_editor/models"
+	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
@@ -181,8 +182,6 @@ func (p *PR) saveCharacters() (err error) {
 
 		// TODO Status
 
-		// TODO Commands
-
 		if err = p.setValue(params, AdditionalPower, c.Vigor); err != nil {
 			return
 		}
@@ -244,8 +243,13 @@ func (p *PR) saveSkills() (err error) {
 }
 
 func (p *PR) saveEspers() (err error) {
-	// TODO
-	return
+	var sl []int
+	for _, e := range pr.Espers {
+		if e.Checked {
+			sl = append(sl, e.Value)
+		}
+	}
+	return p.setTarget(p.UserData, OwnedMagicStoneList, sl)
 }
 
 func (p *PR) saveInventory() (err error) {
@@ -340,4 +344,14 @@ func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int) {
 	}
 	b, _ := json.Marshal(&i)
 	*eq = append(*eq, string(b))
+}
+
+func (p *PR) setTarget(d *jo.OrderedMap, key string, value interface{}) (err error) {
+	var (
+		t = jo.NewOrderedMap()
+		b []byte
+	)
+	t.Set(targetKey, value)
+	b, err = t.MarshalJSON()
+	return p.setValue(d, key, string(b))
 }

@@ -2,6 +2,7 @@ package skills
 
 import (
 	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/snes"
 	"ffvi_editor/ui"
 	"github.com/aarzilli/nucular"
 )
@@ -73,12 +74,12 @@ func (u *skillsUI) Draw(w *nucular.Window) {
 	w.Row(18).Static(100)
 	w.Label("Rage", "LC")
 
-	fourth := len(consts.SortedRages) / 4
+	fourth := len(snes.SortedRages) / 4
 	w.Row(1240).Static(150, 10, 150, 10, 150, 10, 150)
 	if sw := w.GroupBegin("", nucular.WindowBorder|nucular.WindowNoScrollbar); sw != nil {
 		sw.Row(18).Static(100)
 		for i = 0; i <= fourth; i++ {
-			se = consts.SortedRages[i]
+			se = snes.SortedRages[i]
 			sw.CheckboxText(se.Name, &se.Checked)
 		}
 		sw.GroupEnd()
@@ -87,7 +88,7 @@ func (u *skillsUI) Draw(w *nucular.Window) {
 	if sw := w.GroupBegin("", nucular.WindowBorder|nucular.WindowNoScrollbar); sw != nil {
 		sw.Row(18).Static(100)
 		for ; i <= fourth*2+1; i++ {
-			se = consts.SortedRages[i]
+			se = snes.SortedRages[i]
 			sw.CheckboxText(se.Name, &se.Checked)
 		}
 		sw.GroupEnd()
@@ -96,7 +97,7 @@ func (u *skillsUI) Draw(w *nucular.Window) {
 	if sw := w.GroupBegin("", nucular.WindowBorder|nucular.WindowNoScrollbar); sw != nil {
 		sw.Row(18).Static(100)
 		for ; i <= fourth*3+2; i++ {
-			se = consts.SortedRages[i]
+			se = snes.SortedRages[i]
 			sw.CheckboxText(se.Name, &se.Checked)
 		}
 		sw.GroupEnd()
@@ -104,8 +105,8 @@ func (u *skillsUI) Draw(w *nucular.Window) {
 	w.Spacing(1)
 	if sw := w.GroupBegin("", nucular.WindowBorder|nucular.WindowNoScrollbar); sw != nil {
 		sw.Row(18).Static(100)
-		for ; i < len(consts.SortedRages); i++ {
-			se = consts.SortedRages[i]
+		for ; i < len(snes.SortedRages); i++ {
+			se = snes.SortedRages[i]
 			sw.CheckboxText(se.Name, &se.Checked)
 		}
 		sw.GroupEnd()

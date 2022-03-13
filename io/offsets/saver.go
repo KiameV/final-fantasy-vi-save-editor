@@ -3,6 +3,7 @@ package offsets
 import (
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
+	snes2 "ffvi_editor/models/consts/snes"
 	"ffvi_editor/models/snes"
 	"strconv"
 	"unsafe"
@@ -106,7 +107,7 @@ func (o *Offsets) saveSkills() {
 }
 
 func (o *Offsets) saveEspers() {
-	o.setFromNameSlotMasks(o.EsperOffset, consts.Espers)
+	o.setFromNameSlotMasks(o.EsperOffset, snes2.Espers)
 }
 
 func (o *Offsets) saveMiscStats() {

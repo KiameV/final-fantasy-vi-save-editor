@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
+	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
@@ -144,7 +145,7 @@ func (p *PR) loadCharacters() (err error) {
 
 		// TODO Status
 
-		// TODO Commands
+		// Command changing does not work in PR
 
 		if c.Vigor, err = p.getInt(params, AdditionalPower); err != nil {
 			return
@@ -205,6 +206,22 @@ func (p *PR) loadSkills() (err error) {
 }
 
 func (p *PR) loadEspers() (err error) {
+	var espers interface{}
+	if espers, err = p.getFromTarget(p.UserData, OwnedMagicStoneList); err != nil {
+		return
+	}
+	var id int64
+	for _, e := range pr.Espers {
+		e.Checked = false
+	}
+	for _, n := range espers.([]interface{}) {
+		if id, err = n.(json.Number).Int64(); err != nil {
+			return
+		}
+		if e, found := pr.EspersByValue[int(id)]; found {
+			e.Checked = true
+		}
+	}
 	return
 }
 
@@ -310,7 +327,7 @@ func (p *PR) getFromTarget(data *jo.OrderedMap, key string) (i interface{}, err 
 		slTarget = jo.NewOrderedMap()
 		ok       bool
 	)
-	if err = p.unmarshalFrom(p.UserData, key, slTarget); err != nil {
+	if err = p.unmarshalFrom(data, key, slTarget); err != nil {
 		return
 	}
 	if i, ok = slTarget.GetValue(targetKey); !ok {
