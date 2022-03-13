@@ -4,7 +4,9 @@ import (
 	"ffvi_editor/global"
 	"ffvi_editor/io/offsets"
 	"github.com/aarzilli/nucular"
+	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func SaveFileSnes(w *nucular.Window) error {
@@ -26,4 +28,15 @@ func SaveFileSnesNoDialog(fileName string) error {
 	}
 	global.FileName = fileName
 	return f.Close()
+}
+
+func SaveInvFile(w *nucular.Window, text []byte) error {
+	fn, err := createDialogInv().Save()
+	if err != nil {
+		return err
+	}
+	if !strings.Contains(fn, ".ff6inv") {
+		fn += ".ff6inv"
+	}
+	return ioutil.WriteFile(fn, text, 0644)
 }

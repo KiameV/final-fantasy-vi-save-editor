@@ -69,6 +69,7 @@ func updateWindow(w *nucular.Window) {
 		}
 	}
 	if global.IsShowing(global.ShowPR) || global.IsShowing(global.ShowSnes) {
+		ui.DrawError = nil
 		if w := w.Menu(label.TA("Save", "CC"), 100, nil); w != nil {
 			w.Close()
 			if global.IsShowing(global.ShowPR) {
@@ -85,6 +86,9 @@ func updateWindow(w *nucular.Window) {
 				}
 				status = "Saved"
 			}
+		}
+		if ui.DrawError != nil {
+			popupErr(w, ui.DrawError)
 		}
 	} else {
 		w.Spacing(1)

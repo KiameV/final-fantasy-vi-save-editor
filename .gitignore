@@ -2,6 +2,7 @@
 */obj
 *.vs
 .idea
+*.ff6inv
 venv
 temp
 save.json

@@ -1,8 +1,11 @@
 package inventory
 
 import (
+	"encoding/json"
+	"ffvi_editor/io"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
+	"ffvi_editor/ui"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
@@ -14,6 +17,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		count = 4
 	)
 
+	// Top
 	w.Row(u.yLast).SpaceBegin(u.countLast)
 	w.LayoutSpacePush(rect.Rect{
 		X: 0,
@@ -22,16 +26,46 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 		H: 22,
 	})
 	w.CheckboxText("Reset Sort Order", &pri.GetInventory().ResetSortOrder)
-	y += 24
+
 	w.LayoutSpacePush(rect.Rect{
-		X: 0,
+		X: 160,
 		Y: y,
 		W: 150,
 		H: 22,
 	})
 	w.CheckboxText("Remove Duplicates", &pri.GetInventory().RemoveDuplicates)
+
+	w.LayoutSpacePush(rect.Rect{
+		X: 320,
+		Y: y,
+		W: 100,
+		H: 22,
+	})
+	if w.ButtonText("Save") {
+		if result, err := json.Marshal(pri.GetInventory().Rows); err != nil {
+			ui.DrawError = err
+		} else if err = io.SaveInvFile(w, result); err != nil {
+			ui.DrawError = err
+		}
+	}
+
+	w.LayoutSpacePush(rect.Rect{
+		X: 430,
+		Y: y,
+		W: 100,
+		H: 22,
+	})
+	if w.ButtonText("Load") {
+		if data, err := io.OpenInvFileDialog(w); err != nil {
+			ui.DrawError = err
+		} else if err = json.Unmarshal(data, &pri.GetInventory().Rows); err != nil {
+			ui.DrawError = err
+		}
+		pri.GetInventory().ResetSortOrder = true
+	}
 	y += 24
 
+	// Items
 	w.LayoutSpacePush(rect.Rect{
 		X: 0,
 		Y: y,
@@ -85,7 +119,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 	helper := widgets.GetPrInvHelpers()
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
-		Y: 0,
+		Y: 24,
 		W: 170,
 		H: 190,
 	})
@@ -93,7 +127,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
-		Y: 200,
+		Y: 224,
 		W: 170,
 		H: 190,
 	})
@@ -101,7 +135,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
-		Y: 200,
+		Y: 224,
 		W: 170,
 		H: 190,
 	})
@@ -109,7 +143,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
-		Y: 400,
+		Y: 424,
 		W: 170,
 		H: 190,
 	})
@@ -117,7 +151,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
-		Y: 400,
+		Y: 424,
 		W: 170,
 		H: 190,
 	})
@@ -125,7 +159,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 170,
-		Y: 600,
+		Y: 624,
 		W: 170,
 		H: 190,
 	})
@@ -133,7 +167,7 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 360,
-		Y: 600,
+		Y: 624,
 		W: 170,
 		H: 190,
 	})
@@ -141,5 +175,5 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 	count += 7
 
 	// Finder
-	u.countLast = count + widgets.DrawItemFinder(w, 540, 0)
+	u.countLast = count + widgets.DrawItemFinder(w, 540, 24)
 }

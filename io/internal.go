@@ -37,3 +37,17 @@ func createDialog(fileType global.SaveFileType) *dialog.FileBuilder {
 	}
 	return d
 }
+
+func createInvDialog() *dialog.FileBuilder {
+	d := dialog.File()
+	d = d.SetStartDir(".")
+	d = d.Title("Select the Inventory Save File").Filter("FF6INV File", "ff6inv")
+	return d
+}
+
+func createDialogInv() *dialog.FileBuilder {
+	d := dialog.File()
+	d = d.SetStartDir(".")
+	d = d.Title("Select the Inventory Save File").Filter("FF6INV File", "ff6inv")
+	return d
+}

@@ -35,6 +35,14 @@ func OpenFileDialog(w *nucular.Window, fileType global.SaveFileType) (fileName s
 	return
 }
 
+func OpenInvFileDialog(w *nucular.Window) (data []byte, err error) {
+	var fn string
+	if fn, err = createInvDialog().Load(); err != nil {
+		return
+	}
+	return ioutil.ReadFile(fn)
+}
+
 func OpenFileNoDialog(file string, fileType global.SaveFileType) (err error) {
 	if err = CreateSnes(fileType).Load(file); err == nil {
 		updateConfig(filepath.Dir(file))
