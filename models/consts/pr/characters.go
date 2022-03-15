@@ -13,7 +13,7 @@ var (
 		"Relm",
 		"Setzer",
 		"Mog",
-		"Gau",
+		"Gau/Ghost",
 		"Gogo",
 		"Umaro",
 		"Wedge",

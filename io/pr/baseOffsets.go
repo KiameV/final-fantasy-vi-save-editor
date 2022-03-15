@@ -90,7 +90,7 @@ var (
 		},
 		{
 			ID:   24,
-			Name: "Gau",
+			Name: "Gau/Ghost",
 			//Character: Gau,
 			HPBase: 45,
 			MPBase: 8,

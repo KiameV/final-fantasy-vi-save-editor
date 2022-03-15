@@ -159,19 +159,17 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		// TODO - readd
-		//if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
-		//	return
-		//}
-		if err = p.setValue(params, AdditionalMaxHp, floor0(c.HP.Max-o.HPBase)); err != nil {
+		if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
+			return
+		}
+		if err = p.setValue(params, AdditionalMaxHp, floor0(c.HP.Max /*-o.HPBase*/)); err != nil {
 			return
 		}
 
-		// TODO - readd
-		//if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
-		//	return
-		//}
-		if err = p.setValue(params, AdditionalMaxMp, floor0(c.MP.Max-o.MPBase)); err != nil {
+		if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
+			return
+		}
+		if err = p.setValue(params, AdditionalMaxMp, floor0(c.MP.Max /*-o.MPBase*/)); err != nil {
 			return
 		}
 
