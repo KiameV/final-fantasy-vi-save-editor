@@ -3,7 +3,7 @@ package pr
 // base keys
 const (
 	PictureData                    = "pictureData"
-	UserDatas                      = "userData"
+	UserData                       = "userData"
 	DataStorage                    = "dataStorage"
 	CompanionEntity                = "companionEntity"
 	MoveCount                      = "moveCount"
@@ -79,27 +79,6 @@ const (
 	OwnedMonsterId               = "ownedMonsterId"
 	MagicStoneId                 = "magicStoneId"
 	MagicLearningValue           = "magicLearningValue"
-)
-
-type CharacterKey byte
-
-const (
-	Terra  CharacterKey = 0
-	Wedge  CharacterKey = 1
-	Biggs  CharacterKey = 2
-	Locke  CharacterKey = 4
-	Mog    CharacterKey = 15
-	Edgar  CharacterKey = 16
-	Sabin  CharacterKey = 17
-	Shadow CharacterKey = 18
-	Celes  CharacterKey = 21
-	Cyan   CharacterKey = 22
-	Gau    CharacterKey = 24
-	Setzer CharacterKey = 25
-	Strago CharacterKey = 27
-	Relm   CharacterKey = 28
-	Umaro  CharacterKey = 31
-	Gogo   CharacterKey = 32
 )
 
 const targetKey = "target"

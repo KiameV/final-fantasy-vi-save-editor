@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/global"
-	"ffvi_editor/models"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"fmt"
@@ -74,7 +73,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		return
 	}
 
-	if err = p.marshalTo(p.Base, UserDatas, p.UserData); err != nil {
+	if err = p.marshalTo(p.Base, UserData, p.UserData); err != nil {
 		return
 	}
 
@@ -140,12 +139,12 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		o, found := CharBaseByCharacterID[id-1]
+		o, found := CharacterByID[id]
 		if !found {
 			continue
 		}
 
-		c := models.GetCharacter(o.Name)
+		c := pri.GetCharacter(o.Name)
 
 		if err = p.setValue(d, Name, c.Name); err != nil {
 			return
@@ -224,7 +223,7 @@ func (p *PR) saveCharacters() (err error) {
 }
 
 func (p *PR) populateNeeded(needed *map[int]int) {
-	for _, c := range models.Characters {
+	for _, c := range pri.Characters {
 		p.addToNeeded(needed, c.Equipment.WeaponID)
 	}
 }

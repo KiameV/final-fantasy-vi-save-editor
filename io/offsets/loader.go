@@ -22,7 +22,7 @@ func (o *Offsets) Load(fileName string) (err error) {
 }
 
 func (o *Offsets) loadCharacters() {
-	for ci, c := range models.Characters {
+	for ci, c := range snes.Characters {
 		var (
 			i = ci*nextCharacterOffset + o.CharacterOffset + 2
 			//data = save.GetChunk(i, (ci+1)*nextCharacterOffset)

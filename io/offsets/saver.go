@@ -19,7 +19,7 @@ func (o *Offsets) Save() error {
 }
 
 func (o *Offsets) saveCharacters() {
-	for ci, c := range models.Characters {
+	for ci, c := range snes.Characters {
 		var (
 			i    = ci*nextCharacterOffset + o.CharacterOffset + 2
 			name = []rune(c.Name)

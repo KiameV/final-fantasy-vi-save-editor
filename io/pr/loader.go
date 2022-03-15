@@ -1,6 +1,7 @@
 package pr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -8,6 +9,8 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -21,18 +24,33 @@ func (p *PR) Load(fileName string) (err error) {
 		i   interface{}
 		s   string
 	)
+	//p.names = make([][]rune, 0, 40)
 	if out, err = p.readFile(fileName); err != nil {
 		return
 	}
-
+	/*for i := 0; i < len(out); i++ {
+		if out[i] == '\\' && out[i+1] == 'x' {
+			j := string(out[i-20 : i+40])
+			print(j)
+			i += 50
+		}
+	}*/
 	if s, err = p.getSaveData(string(out)); err != nil {
 		return
 	}
+	/*if strings.Contains(s, "\\x") {
+		// For foreign langauge, need to double-escape the x
+		p.getUnicodeNames(s)
+		//for i, n := range p.names {
+		//	s = strings.Replace(s, n, fmt.Sprintf(";;;%d;;;", i), 1)
+		//}
+		s = strings.ReplaceAll(s, "\\x", "x")
+	}*/
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = p.fixEscapeCharsForLoad(s)
 	//s = p.fixFile(s)
 
-	/*/ TODO Debug
+	// TODO Debug
 	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create("loaded.json"); err != nil {
 		}
@@ -55,7 +73,7 @@ func (p *PR) Load(fileName string) (err error) {
 	//	return
 	//}
 
-	if err = p.unmarshalFrom(p.Base, UserDatas, p.UserData); err != nil {
+	if err = p.unmarshalFrom(p.Base, UserData, p.UserData); err != nil {
 		return
 	}
 
@@ -103,12 +121,12 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		o, found := CharBaseByCharacterID[id-1]
+		o, found := CharacterByID[id]
 		if !found {
 			continue
 		}
 
-		c := models.GetCharacter(o.Name)
+		c := pri.GetCharacter(o.Name)
 
 		if c.Name, err = p.getString(d, Name); err != nil {
 			return
@@ -442,18 +460,28 @@ func handleCmdError(err error) error {
 }
 
 func (p *PR) loadBase(s string) (err error) {
-	if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
-		s, err = p.getSaveData(s)
-	}
-	return
+	return p.Base.UnmarshalJSON([]byte(s))
 }
 
 func (p *PR) getSaveData(s string) (string, error) {
-	end := strings.Index(s, `,"playTime`)
+	var (
+		start int
+		end   = strings.Index(s, `,"clearFlag`)
+	)
 	if end == -1 {
 		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
 	}
-	return s[2:end] + `,"playTime":0.0,"clearFlag":0}`, nil
+	for start < len(s) && s[start] != '{' {
+		start++
+	}
+	end = len(s) - 1
+	for end >= 0 && s[end] != '}' {
+		end--
+	}
+	if end+1 >= len(s) {
+		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+	}
+	return s[start : end+1], nil // + `,"playTime":0.0,"clearFlag":0}`, nil
 }
 
 func (p *PR) readFile(fileName string) (out []byte, err error) {
@@ -476,6 +504,38 @@ func (p *PR) readFile(fileName string) (out []byte, err error) {
 	return
 }
 
+/*
+func (p *PR) getUnicodeNames(s string) {
+	for i := 0; i < len(s)-10; i++ {
+		if s[i] == '"' && s[i+1] == 'n' && s[i+2] == 'a' && s[i+3] == 'm' && s[i+4] == 'e' && s[i+5] == '\\' {
+			i += 5
+			for i < len(s)-1 && (s[i] == '\\' || s[i] == ':' || s[i] == ' ' || s[i] == '"') {
+				i++
+			}
+			if s[i] == 'x' {
+				i--
+			} else {
+				continue
+			}
+			var b []byte
+			var runes []rune
+			for i < len(s) && s[i] != '"' && !(s[i] == '\\' && s[i+1] == '\\') {
+				b = append(b, s[i])
+				i++
+			}
+			for j := 0; j < len(b)-9; j += 9 {
+				r, _ := utf8.DecodeRune([]byte{b[j], b[j+1], b[j+2], b[j+3], b[j+4], b[j+5], b[j+6], b[j+7], b[j+8]})
+				runes = append(runes, r)
+			}
+			ss := string(runes)
+			ss = ""
+			print(ss)
+			p.names = append(p.names, runes)
+		}
+	}
+	return
+}
+*/
 /*func (p *PR) fixFile(s string) (bool, string) {
 	if i := strings.Index(s, "clearFlag"); i != -1 {
 		c := s[i+9]

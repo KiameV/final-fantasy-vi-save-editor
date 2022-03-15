@@ -3,7 +3,7 @@ package character
 import (
 	"ffvi_editor/global"
 	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/snes"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
@@ -27,7 +27,7 @@ func newStatsUI() widget {
 	u.name.Flags = nucular.EditField
 	u.name.Maxlen = 8
 	u.name.SingleLine = true
-	u.name.Text([]rune(consts.Characters[0]))
+	u.name.Text([]rune(snes.Characters[0]))
 
 	widgets.InitReadOnlyText(&u.levelExpTB, levelText)
 	return u

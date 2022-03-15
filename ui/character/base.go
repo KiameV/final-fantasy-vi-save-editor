@@ -3,7 +3,10 @@ package character
 import (
 	"ffvi_editor/global"
 	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/pr"
+	"ffvi_editor/models/consts/snes"
+	pm "ffvi_editor/models/pr"
+	sm "ffvi_editor/models/snes"
 	"ffvi_editor/ui"
 	"github.com/aarzilli/nucular"
 )
@@ -26,8 +29,7 @@ type characterUI struct {
 }
 
 func NewUI() ui.UI {
-	character = models.GetCharacter(consts.Characters[0])
-	return &characterUI{
+	u := &characterUI{
 		characterIndex: 0,
 		expandAll:      false,
 		stats:          newStatsUI(),
@@ -36,13 +38,22 @@ func NewUI() ui.UI {
 		commands:       newCommandUI(),
 		statusEffects:  newStatusEffectsUI(),
 	}
+	u.Refresh()
+	return u
 }
 
 func (u *characterUI) Draw(w *nucular.Window) {
 	w.Row(18).Static(100, 10, 100)
-	if i := w.ComboSimple(consts.Characters, u.characterIndex, 12); i != u.characterIndex {
-		u.characterIndex = i
-		u.refreshWithCharacter(models.GetCharacter(consts.Characters[u.characterIndex]))
+	if global.IsShowingPR() {
+		if i := w.ComboSimple(pr.Characters, u.characterIndex, 12); i != u.characterIndex {
+			u.characterIndex = i
+			u.refreshWithCharacter(pm.GetCharacter(pr.Characters[u.characterIndex]))
+		}
+	} else {
+		if i := w.ComboSimple(snes.Characters, u.characterIndex, 12); i != u.characterIndex {
+			u.characterIndex = i
+			u.refreshWithCharacter(sm.GetCharacter(snes.Characters[u.characterIndex]))
+		}
 	}
 	w.Spacing(1)
 	w.CheckboxText("Auto-Expand All", &u.expandAll)
@@ -82,7 +93,13 @@ func (u *characterUI) Draw(w *nucular.Window) {
 }
 
 func (u *characterUI) Refresh() {
-	u.refreshWithCharacter(models.GetCharacter(consts.Characters[0]))
+	u.characterIndex = 0
+	if global.IsShowingPR() {
+		character = pm.GetCharacter(pr.Characters[0])
+	} else {
+		character = sm.GetCharacter(snes.Characters[0])
+	}
+	u.refreshWithCharacter(character)
 }
 
 func (u *characterUI) refreshWithCharacter(c *models.Character) {
