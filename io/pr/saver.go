@@ -139,7 +139,12 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
-		o, found := CharacterByID[id]
+		var jobID int
+		if jobID, err = p.getInt(d, JobID); err != nil {
+			return
+		}
+
+		o, found := GetCharacter(id, jobID)
 		if !found {
 			continue
 		}
@@ -215,6 +220,28 @@ func (p *PR) saveCharacters() (err error) {
 
 		if err = p.marshalTo(d, Parameter, params); err != nil {
 			return
+		}
+
+		// Gau
+		if id == 25 {
+			var i interface{}
+			if i, err = p.getFromTarget(d, AbilityList); err != nil {
+				return
+			}
+			for j := 0; j < len(i.([]interface{})); j++ {
+				m := jo.NewOrderedMap()
+				if v, ok := m.GetValue("abilityId"); ok {
+					if iv, _ := v.(json.Number).Int64(); iv >= 800 && iv <= 1054 {
+						m.UnmarshalJSON([]byte(i.([]interface{})[j].(string)))
+						m.Set("skillLevel", 100)
+						b, _ := m.MarshalJSON()
+						i.([]interface{})[j] = string(b)
+					}
+				}
+			}
+			if err = p.setTarget(d, AbilityList, i); err != nil {
+				return
+			}
 		}
 	}
 	return

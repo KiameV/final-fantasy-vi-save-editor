@@ -118,7 +118,12 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		o, found := CharacterByID[id]
+		var jobID int
+		if jobID, err = p.getInt(d, JobID); err != nil {
+			return
+		}
+
+		o, found := GetCharacter(id, jobID)
 		if !found {
 			continue
 		}

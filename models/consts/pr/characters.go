@@ -13,11 +13,12 @@ var (
 		"Relm",
 		"Setzer",
 		"Mog",
-		"Gau/Ghost",
+		"Gau",
 		"Gogo",
 		"Umaro",
 		"Wedge",
 		"Biggs",
+		"Ghost",
 		"Leo",
 		"Banon",
 	}
