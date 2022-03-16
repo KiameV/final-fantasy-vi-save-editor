@@ -89,12 +89,7 @@ func (p *PR) Load(fileName string) (err error) {
 		}
 	}
 
-	p.uncheckAll(pr.Rages)
-
 	if err = p.loadCharacters(); err != nil {
-		return
-	}
-	if err = p.loadSkills(); err != nil {
 		return
 	}
 	if err = p.loadEspers(); err != nil {
@@ -221,37 +216,75 @@ func (p *PR) loadCharacters() (err error) {
 			c.Equipment.Relic2ID = 0
 		}
 
-		// Gau
-		if jobID == 12 {
-			var i interface{}
-			var nvc *consts.NameValueChecked
-			if i, err = p.getFromTarget(d, AbilityList); err != nil {
+		// Cyan
+		if jobID == 3 {
+			p.uncheckAll(pr.Bushidos)
+			if err = p.loadSkills(d, pr.BushidoFrom, pr.BushidoTo, pr.BushidoLookupByID); err != nil {
 				return
 			}
-			for j := 0; j < len(i.([]interface{})); j++ {
-				m := jo.NewOrderedMap()
-				if err = m.UnmarshalJSON([]byte(i.([]interface{})[j].(string))); err != nil {
-					return
-				}
-				if v, ok := m.GetValue("abilityId"); ok {
-					if iv, _ := v.(json.Number).Int64(); iv >= 800 && iv <= 1055 {
-						m.UnmarshalJSON([]byte(i.([]interface{})[j].(string)))
-						k := m.Get("skillLevel")
-						l, _ := k.(json.Number).Int64()
-						if l == 100 {
-							if nvc, found = pr.RageLookupByID[int(iv)]; found {
-								nvc.Checked = true
-							}
-						}
-					}
-				}
+		}
+		// Sabin
+		if jobID == 6 {
+			p.uncheckAll(pr.Blitzes)
+			if err = p.loadSkills(d, pr.BlitzFrom, pr.BlitzTo, pr.BlitzLookupByID); err != nil {
+				return
+			}
+		}
+		// Mog
+		if id == 16 {
+			p.uncheckAll(pr.Dances)
+			if err = p.loadSkills(d, pr.DanceFrom, pr.DanceTo, pr.DanceLookupByID); err != nil {
+				return
+			}
+		}
+		// Strago
+		if jobID == 8 {
+			p.uncheckAll(pr.Lores)
+			if err = p.loadSkills(d, pr.LoreFrom, pr.LoreTo, pr.LoreLookupByID); err != nil {
+				return
+			}
+		}
+		// Gau
+		if jobID == 12 {
+			p.uncheckAll(pr.Rages)
+			if err = p.loadSkills(d, pr.RageFrom, pr.RageTo, pr.RageLookupByID); err != nil {
+				return
 			}
 		}
 	}
 	return
 }
 
-func (p *PR) loadSkills() (err error) {
+func (p *PR) loadSkills(d *jo.OrderedMap, from int64, to int64, nvcLookup map[int]*consts.NameValueChecked) (err error) {
+	var (
+		i     interface{}
+		nvc   *consts.NameValueChecked
+		found bool
+	)
+	if i, err = p.getFromTarget(d, AbilityList); err != nil {
+		return
+	}
+	sli := i.([]interface{})
+	for j := 0; j < len(sli); j++ {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(sli[j].(string))); err != nil {
+			return
+		}
+		if v, ok := m.GetValue("abilityId"); ok {
+			if iv, _ := v.(json.Number).Int64(); iv >= from && iv <= to {
+				if err = m.UnmarshalJSON([]byte(sli[j].(string))); err != nil {
+					return
+				}
+				k := m.Get("skillLevel")
+				l, _ := k.(json.Number).Int64()
+				if l == 100 {
+					if nvc, found = nvcLookup[int(iv)]; found {
+						nvc.Checked = true
+					}
+				}
+			}
+		}
+	}
 	return
 }
 

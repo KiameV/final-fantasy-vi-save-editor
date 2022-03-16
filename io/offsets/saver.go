@@ -100,10 +100,10 @@ func (o *Offsets) saveCharacters() {
 }
 
 func (o *Offsets) saveSkills() {
-	o.setFromNameSlotMasks(o.SwdTechOffset, consts.SwordTech)
-	o.setFromNameSlotMasks(o.LoreOffset, consts.Lores)
-	o.setFromNameSlotMasks(o.BlitzOffset, consts.Blitzes)
-	o.setFromNameSlotMasks(o.DanceOffset, consts.Dances)
+	o.setFromNameSlotMasks(o.SwdTechOffset, snes2.SwordTech)
+	o.setFromNameSlotMasks(o.LoreOffset, snes2.Lores)
+	o.setFromNameSlotMasks(o.BlitzOffset, snes2.Blitzes)
+	o.setFromNameSlotMasks(o.DanceOffset, snes2.Dances)
 }
 
 func (o *Offsets) saveEspers() {

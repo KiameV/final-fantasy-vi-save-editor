@@ -1,6 +1,8 @@
-package consts
+package snes
 
-var Blitzes = NewNameSlotMask8s(
+import "ffvi_editor/models/consts"
+
+var Blitzes = consts.NewNameSlotMask8s(
 	"Pummel",
 	"Surplex",
 	"Aura Bolt",

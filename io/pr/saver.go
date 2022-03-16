@@ -220,9 +220,33 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
+		// Cyan
+		if jobID == 3 {
+			if err = p.saveSkills(d, pr.BushidoFrom, pr.BushidoTo, pr.BushidoLookupByID); err != nil {
+				return
+			}
+		}
+		// Sabin
+		if jobID == 6 {
+			if err = p.saveSkills(d, pr.BlitzFrom, pr.BlitzTo, pr.BlitzLookupByID); err != nil {
+				return
+			}
+		}
+		// Mog
+		if id == 16 {
+			if err = p.saveSkills(d, pr.DanceFrom, pr.DanceTo, pr.DanceLookupByID); err != nil {
+				return
+			}
+		}
+		// Strago
+		if jobID == 8 {
+			if err = p.saveSkills(d, pr.LoreFrom, pr.LoreTo, pr.LoreLookupByID); err != nil {
+				return
+			}
+		}
 		// Gau
 		if jobID == 12 {
-			if err = p.saveRages(d); err != nil {
+			if err = p.saveSkills(d, pr.RageFrom, pr.RageTo, pr.RageLookupByID); err != nil {
 				return
 			}
 		}
@@ -244,7 +268,7 @@ func (p *PR) addToNeeded(needed *map[int]int, id int) {
 	}
 }
 
-func (p *PR) saveRages(d *jo.OrderedMap) (err error) {
+func (p *PR) saveSkills(d *jo.OrderedMap, from int64, to int64, nvcLookup map[int]*consts.NameValueChecked) (err error) {
 	var (
 		b      []byte
 		i      interface{}
@@ -262,8 +286,8 @@ func (p *PR) saveRages(d *jo.OrderedMap) (err error) {
 			return
 		}
 		if v, ok := m.GetValue("abilityId"); ok {
-			if iv, _ := v.(json.Number).Int64(); iv >= 800 && iv <= 1055 {
-				if nvc, found = pr.RageLookupByID[int(iv)]; found {
+			if iv, _ := v.(json.Number).Int64(); iv >= from && iv <= to {
+				if nvc, found = nvcLookup[int(iv)]; found {
 					if nvc.Checked {
 						m.Set("skillLevel", 100)
 					} else {
@@ -280,7 +304,7 @@ func (p *PR) saveRages(d *jo.OrderedMap) (err error) {
 	}
 	for _, r := range pr.Rages {
 		if r.Checked {
-			if _, found := lookup[r.Value]; !found {
+			if _, found = lookup[r.Value]; !found {
 				m := jo.NewOrderedMap()
 				m.Set("abilityId", r.Value)
 				m.Set("contentId", r.Value+168)

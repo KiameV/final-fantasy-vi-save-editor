@@ -120,16 +120,16 @@ func (o *Offsets) loadCharacters() {
 }
 
 func (o *Offsets) loadSkills() {
-	for _, r := range consts.SwordTech {
+	for _, r := range snes2.SwordTech {
 		r.SetChecked(GetAt(o.SwdTechOffset + r.Slot))
 	}
-	for _, r := range consts.Lores {
+	for _, r := range snes2.Lores {
 		r.SetChecked(GetAt(o.LoreOffset + r.Slot))
 	}
-	for _, r := range consts.Blitzes {
+	for _, r := range snes2.Blitzes {
 		r.SetChecked(GetAt(o.BlitzOffset + r.Slot))
 	}
-	for _, r := range consts.Dances {
+	for _, r := range snes2.Dances {
 		r.SetChecked(GetAt(o.DanceOffset + r.Slot))
 	}
 	for _, r := range snes2.Rages {

@@ -4,6 +4,11 @@ import (
 	"ffvi_editor/models/consts"
 )
 
+const (
+	RageFrom int64 = 800
+	RageTo   int64 = 1055
+)
+
 var (
 	Rages = []*consts.NameValueChecked{
 		consts.NewValueNameChecked(800, "Guard"),

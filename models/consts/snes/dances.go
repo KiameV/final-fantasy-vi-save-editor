@@ -1,6 +1,8 @@
-package consts
+package snes
 
-var Dances = NewNameSlotMask8s(
+import "ffvi_editor/models/consts"
+
+var Dances = consts.NewNameSlotMask8s(
 	"Wind Song",
 	"Forest Suite",
 	"Desert Aria",

@@ -1,4 +1,6 @@
-package consts
+package snes
+
+import "ffvi_editor/models/consts"
 
 /*type Lore uint32
 
@@ -32,7 +34,7 @@ const (
 )*/
 
 var (
-	Lores = NewNameSlotMask8s(
+	Lores = consts.NewNameSlotMask8s(
 		"Condemned",
 		"Roulette",
 		"CleanSweep",
@@ -58,9 +60,9 @@ var (
 		"GrandTrain",
 		"Exploder",
 	)
-	SortedLores []*NameSlotMask8
+	SortedLores []*consts.NameSlotMask8
 )
 
 func init() {
-	SortedLores = SortByName(Lores)
+	SortedLores = consts.SortByName(Lores)
 }
