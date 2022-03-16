@@ -102,13 +102,6 @@ var (
 			MPBase: 5,
 		},
 		{
-			ID:     24,
-			Name:   "Ghost",
-			JobID:  17,
-			HPBase: 45,
-			MPBase: 8,
-		},
-		{
 			ID:    25,
 			Name:  "Gau",
 			JobID: 12,

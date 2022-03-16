@@ -18,7 +18,6 @@ var (
 		"Umaro",
 		"Wedge",
 		"Biggs",
-		"Ghost",
 		"Leo",
 		"Banon",
 	}
