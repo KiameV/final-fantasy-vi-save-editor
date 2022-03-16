@@ -37,8 +37,8 @@ var (
 )
 
 func init() {
+	SortedEspers = consts.SortByNameChecked(Espers)
 	for _, i := range Espers {
-		SortedEspers = append(SortedEspers, i)
 		EspersByValue[i.Value] = i
 	}
 }

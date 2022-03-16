@@ -19,3 +19,23 @@ func SortByName(nsms []*NameSlotMask8) []*NameSlotMask8 {
 	}
 	return sorted
 }
+
+func SortByNameChecked(nsms []*NameValueChecked) []*NameValueChecked {
+	var (
+		lookup      = make(map[string]*NameValueChecked)
+		sortedNames = make([]string, len(nsms))
+		sorted      = make([]*NameValueChecked, len(nsms))
+	)
+	for i, s := range nsms {
+		lookup[s.Name] = s
+		sortedNames[i] = s.Name
+	}
+	sort.Strings(sortedNames)
+
+	for i, s := range sortedNames {
+		sorted[i] = lookup[s]
+	}
+	lookup = nil
+	sortedNames = nil
+	return sorted
+}

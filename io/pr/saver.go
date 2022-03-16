@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/global"
+	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"fmt"
@@ -41,9 +42,6 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		return
 	}
 	if err = p.saveInventory(); err != nil {
-		return
-	}
-	if err = p.saveSkills(); err != nil {
 		return
 	}
 	if err = p.saveEspers(); err != nil {
@@ -223,23 +221,8 @@ func (p *PR) saveCharacters() (err error) {
 		}
 
 		// Gau
-		if id == 25 {
-			var i interface{}
-			if i, err = p.getFromTarget(d, AbilityList); err != nil {
-				return
-			}
-			for j := 0; j < len(i.([]interface{})); j++ {
-				m := jo.NewOrderedMap()
-				if v, ok := m.GetValue("abilityId"); ok {
-					if iv, _ := v.(json.Number).Int64(); iv >= 800 && iv <= 1054 {
-						m.UnmarshalJSON([]byte(i.([]interface{})[j].(string)))
-						m.Set("skillLevel", 100)
-						b, _ := m.MarshalJSON()
-						i.([]interface{})[j] = string(b)
-					}
-				}
-			}
-			if err = p.setTarget(d, AbilityList, i); err != nil {
+		if jobID == 12 {
+			if err = p.saveRages(d); err != nil {
 				return
 			}
 		}
@@ -261,8 +244,57 @@ func (p *PR) addToNeeded(needed *map[int]int, id int) {
 	}
 }
 
-func (p *PR) saveSkills() (err error) {
-	// TODO
+func (p *PR) saveRages(d *jo.OrderedMap) (err error) {
+	var (
+		b      []byte
+		i      interface{}
+		found  bool
+		nvc    *consts.NameValueChecked
+		lookup = make(map[int]bool)
+	)
+	if i, err = p.getFromTarget(d, AbilityList); err != nil {
+		return
+	}
+	isl := i.([]interface{})
+	for j := 0; j < len(isl); j++ {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(isl[j].(string))); err != nil {
+			return
+		}
+		if v, ok := m.GetValue("abilityId"); ok {
+			if iv, _ := v.(json.Number).Int64(); iv >= 800 && iv <= 1055 {
+				if nvc, found = pr.RageLookupByID[int(iv)]; found {
+					if nvc.Checked {
+						m.Set("skillLevel", 100)
+					} else {
+						m.Set("skillLevel", 0)
+					}
+				}
+				lookup[int(iv)] = true
+				if b, err = m.MarshalJSON(); err != nil {
+					return
+				}
+				isl[j] = string(b)
+			}
+		}
+	}
+	for _, r := range pr.Rages {
+		if r.Checked {
+			if _, found := lookup[r.Value]; !found {
+				m := jo.NewOrderedMap()
+				m.Set("abilityId", r.Value)
+				m.Set("contentId", r.Value+168)
+				m.Set("skillLevel", 100)
+				if b, err = m.MarshalJSON(); err != nil {
+					return
+				}
+				isl = append(isl, string(b))
+			}
+		}
+	}
+	if err = p.setTarget(d, AbilityList, isl); err != nil {
+		return
+	}
 	return
 }
 

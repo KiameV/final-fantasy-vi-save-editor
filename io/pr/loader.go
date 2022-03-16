@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
+	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"fmt"
@@ -87,6 +88,8 @@ func (p *PR) Load(fileName string) (err error) {
 			return
 		}
 	}
+
+	p.uncheckAll(pr.Rages)
 
 	if err = p.loadCharacters(); err != nil {
 		return
@@ -216,6 +219,33 @@ func (p *PR) loadCharacters() (err error) {
 			c.Equipment.Relic2ID = eqIDCounts[5].ContentID
 		} else {
 			c.Equipment.Relic2ID = 0
+		}
+
+		// Gau
+		if jobID == 12 {
+			var i interface{}
+			var nvc *consts.NameValueChecked
+			if i, err = p.getFromTarget(d, AbilityList); err != nil {
+				return
+			}
+			for j := 0; j < len(i.([]interface{})); j++ {
+				m := jo.NewOrderedMap()
+				if err = m.UnmarshalJSON([]byte(i.([]interface{})[j].(string))); err != nil {
+					return
+				}
+				if v, ok := m.GetValue("abilityId"); ok {
+					if iv, _ := v.(json.Number).Int64(); iv >= 800 && iv <= 1055 {
+						m.UnmarshalJSON([]byte(i.([]interface{})[j].(string)))
+						k := m.Get("skillLevel")
+						l, _ := k.(json.Number).Int64()
+						if l == 100 {
+							if nvc, found = pr.RageLookupByID[int(iv)]; found {
+								nvc.Checked = true
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 	return
@@ -504,6 +534,12 @@ func (p *PR) readFile(fileName string) (out []byte, err error) {
 		}
 	}
 	return
+}
+
+func (p *PR) uncheckAll(rages []*consts.NameValueChecked) {
+	for _, r := range rages {
+		r.Checked = false
+	}
 }
 
 /*
