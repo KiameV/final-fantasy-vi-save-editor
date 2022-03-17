@@ -12,7 +12,7 @@ import (
 
 type FileSelector struct{}
 
-var prIO *pr.PR
+var PrIO *pr.PR
 
 func NewFileSelector() *FileSelector {
 	// Clear slots
@@ -60,7 +60,7 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 				if w.ButtonText("Load " + s.Name) {
 					p := pr.NewPR()
 					if err = p.Load(path.Join(global.Dir, s.File.Name())); err == nil {
-						prIO = p
+						PrIO = p
 						global.FileName = s.File.Name()
 						loaded = true
 					}
@@ -100,7 +100,7 @@ func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
 		}
 		if w.ButtonText(label) {
 			slot := i
-			if err = prIO.Save(slot, s.UUID); err == nil {
+			if err = PrIO.Save(slot, s.UUID); err == nil {
 				saved = true
 				fs.updateSlots()
 			}

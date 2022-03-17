@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func (p *PR) Save(slot int, fileName string) (err error) {
@@ -108,6 +109,10 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	}
 	// TODO END /*/
 
+	if len(p.names) > 0 {
+		data = p.revertUnicodeNames(data)
+	}
+
 	if err = ioutil.WriteFile(temp, data, 0644); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
 	}
@@ -120,8 +125,12 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 
 	var out []byte
 	out, err = cmd.Output()
-	if err != nil && len(out) > 0 {
-		err = fmt.Errorf("%s: %v", string(out), err)
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			err = errors.New(string(ee.Stderr))
+		} else {
+			err = fmt.Errorf("%s: %v", string(out), err)
+		}
 	}
 	return
 }
@@ -434,4 +443,37 @@ func (p *PR) setTarget(d *jo.OrderedMap, key string, value interface{}) (err err
 	t.Set(targetKey, value)
 	b, err = t.MarshalJSON()
 	return p.setValue(d, key, string(b))
+}
+
+func (p *PR) revertUnicodeNames(b []byte) []byte {
+	s := string(b)
+	for _, r := range p.names {
+		s = strings.Replace(s, r.Replaced, r.Original, 1)
+	}
+	return []byte(s)
+	//strconv.Unquote(strings.Replace(strconv.Quote(string(original)), `\\x`, `\x`, -1));
+	/*i := 0
+	for j := 0; j < len(p.names); j++ {
+		original := p.names[j].Original
+		replaced := p.names[j].Replaced
+		for ; i < len(b)-10; i++ {
+			if b[i] == replaced[0] {
+				matched := true
+				for k := 1; k < len(replaced); k++ {
+					if b[i+k] != replaced[k] {
+						matched = false
+						break
+					}
+				}
+				if matched {
+					for k := 0; k < len(replaced); k++ {
+						b[i+k] = original[k]
+					}
+					i += len(replaced)
+					break
+				}
+			}
+		}
+	}
+	return b*/
 }

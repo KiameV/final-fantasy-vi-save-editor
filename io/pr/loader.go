@@ -18,9 +18,10 @@ import (
 
 func (p *PR) Load(fileName string) (err error) {
 	var (
-		out []byte
-		i   interface{}
-		s   string
+		out   []byte
+		i     interface{}
+		s     string
+		names []unicodeNameReplace
 	)
 	//p.names = make([][]rune, 0, 40)
 	if out, err = p.readFile(fileName); err != nil {
@@ -36,6 +37,9 @@ func (p *PR) Load(fileName string) (err error) {
 	if s, err = p.getSaveData(string(out)); err != nil {
 		return
 	}
+	//if err == nil {
+	//err = ioutil.WriteFile("loaded_pre.json", out, 0644)
+	//}
 	/*if strings.Contains(s, "\\x") {
 		// For foreign langauge, need to double-escape the x
 		p.getUnicodeNames(s)
@@ -46,6 +50,13 @@ func (p *PR) Load(fileName string) (err error) {
 	}*/
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = p.fixEscapeCharsForLoad(s)
+	if strings.Contains(s, "\\x") {
+		b := []byte(s)
+		if b, err = p.replaceUnicodeNames(b, &names); err != nil {
+			return
+		}
+		s = string(b)
+	}
 	//s = p.fixFile(s)
 
 	/*/ TODO Debug
@@ -102,6 +113,9 @@ func (p *PR) Load(fileName string) (err error) {
 		return
 	}
 
+	if len(names) > 0 {
+		p.names = names
+	}
 	return
 }
 
@@ -575,39 +589,54 @@ func (p *PR) uncheckAll(rages []*consts.NameValueChecked) {
 	}
 }
 
-/*
-func (p *PR) getUnicodeNames(s string) {
-	for i := 0; i < len(s)-10; i++ {
-		if s[i] == '"' && s[i+1] == 'n' && s[i+2] == 'a' && s[i+3] == 'm' && s[i+4] == 'e' && s[i+5] == '\\' {
+func (p *PR) replaceUnicodeNames(b []byte, names *[]unicodeNameReplace) ([]byte, error) {
+	for i := 0; i < len(b)-10; i++ {
+		if b[i] == '"' && b[i+1] == 'n' && b[i+2] == 'a' && b[i+3] == 'm' && b[i+4] == 'e' && b[i+5] == '\\' {
 			i += 5
-			for i < len(s)-1 && (s[i] == '\\' || s[i] == ':' || s[i] == ' ' || s[i] == '"') {
+			for i < len(b)-1 && (b[i] == '\\' || b[i] == ':' || b[i] == ' ' || b[i] == '"') {
 				i++
 			}
-			if s[i] == 'x' {
+			if b[i] == 'x' {
 				i--
 			} else {
 				continue
 			}
-			var b []byte
-			var runes []rune
-			for i < len(s) && s[i] != '"' && !(s[i] == '\\' && s[i+1] == '\\') {
-				b = append(b, s[i])
+
+			var original, replaced []byte
+			for i < len(b) && b[i] != '"' && !(b[i] == '\\' && b[i+1] == '\\') {
+				original = append(original, b[i])
+				replaced = append(replaced, '~')
+				b[i] = '~'
 				i++
 			}
-			for j := 0; j < len(b)-9; j += 9 {
-				r, _ := utf8.DecodeRune([]byte{b[j], b[j+1], b[j+2], b[j+3], b[j+4], b[j+5], b[j+6], b[j+7], b[j+8]})
-				runes = append(runes, r)
+			r := unicodeNameReplace{
+				Replaced: string(replaced),
 			}
-			ss := string(runes)
-			ss = ""
-			print(ss)
-			p.names = append(p.names, runes)
+			var err error
+			if r.Original, err = strconv.Unquote(strings.Replace(strconv.Quote(string(original)), `\\x`, `\x`, -1)); err != nil {
+				return nil, err
+			}
+			*names = append(*names, r)
 		}
 	}
-	return
+	return b, nil
 }
-*/
-/*func (p *PR) fixFile(s string) (bool, string) {
+
+type unicodeNameReplace struct {
+	Original string
+	Replaced string
+}
+
+/*
+d := []byte(s)
+		for i, c := range d {
+			if c == 'x' && d[i-1] == '\\' {
+				d[i] = '^'
+				d[i-1] = '^'
+			}
+		}
+
+func (p *PR) fixFile(s string) (bool, string) {
 	if i := strings.Index(s, "clearFlag"); i != -1 {
 		c := s[i+9]
 		if c != ':' {

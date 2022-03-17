@@ -4,6 +4,7 @@ import (
 	"ffvi_editor/global"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts/snes"
+	"ffvi_editor/ui/file"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
@@ -42,19 +43,21 @@ func (u *statsUI) Draw(w *nucular.Window) {
 		W: 50,
 		H: 22,
 	})
-	w.Label("Name:", "LC")
-	w.LayoutSpacePush(rect.Rect{
-		X: 60,
-		Y: 0,
-		W: 100,
-		H: 22,
-	})
-	u.name.Edit(w)
-	t := string(u.name.Buffer)
-	if t != character.Name {
-		character.Name = t
+	if !global.IsShowingPR() || (file.PrIO != nil && !file.PrIO.HasUnicodeNames()) {
+		w.Label("Name:", "LC")
+		w.LayoutSpacePush(rect.Rect{
+			X: 60,
+			Y: 0,
+			W: 100,
+			H: 22,
+		})
+		u.name.Edit(w)
+		t := string(u.name.Buffer)
+		if t != character.Name {
+			character.Name = t
+		}
+		y += 24
 	}
-	y += 24
 
 	addPropertyInt(w, 0, y, "Level", &character.Level, 1, 99, 1)
 	addPropertyInt(w, 180, y, "Exp", &character.Exp, 1, 2637112, 1000)

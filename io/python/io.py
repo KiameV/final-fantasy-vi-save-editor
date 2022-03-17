@@ -3,9 +3,6 @@ from Crypto.Protocol import KDF
 import zlib
 import base64
 import sys
-import os
-from hashlib import sha256
-import struct
 
 def getCipher():
     password = b"TKX73OHHK1qMonoICbpVT0hIDGe7SkW0"
@@ -33,18 +30,18 @@ def deobfuscateFile(file_name, omit_first_bytes):
     while(len(enc_bytes) % 32) != 0:
         enc_bytes.append(0)
     enc_bytes = getCipher().decrypt(bytes(enc_bytes))
-    print(inflate(enc_bytes))
+    data = inflate(enc_bytes)
+    print(data)
 
 def deflate(data):
     compress = zlib.compressobj(-1, zlib.DEFLATED, -15)
-    deflated = compress.compress(bytes(data, "utf-8"))
+    deflated = compress.compress(data)
     deflated += compress.flush()
     return deflated
 
 def obfuscateFile(out_file, data_file):
-    df = open(data_file, 'r')
+    df = open(data_file, 'rb')
     data = df.read()
-    print(data)
     deflated = deflate(data)
     enc_bytes = getCipher().encrypt(deflated)
     encoded = base64.b64encode(enc_bytes)

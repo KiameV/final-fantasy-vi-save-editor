@@ -8,6 +8,8 @@ import (
 	pm "ffvi_editor/models/pr"
 	sm "ffvi_editor/models/snes"
 	"ffvi_editor/ui"
+	"ffvi_editor/ui/file"
+	"fmt"
 	"github.com/aarzilli/nucular"
 )
 
@@ -58,11 +60,11 @@ func (u *characterUI) Draw(w *nucular.Window) {
 	w.Spacing(1)
 	w.CheckboxText("Auto-Expand All", &u.expandAll)
 
-	if w.TreePush(nucular.TreeTab, "Stats - "+character.Name, true) {
+	if w.TreePush(nucular.TreeTab, u.makeLabel("Stats"), true) {
 		u.stats.Draw(w)
 		w.TreePop()
 	}
-	if w.TreePush(nucular.TreeTab, "Magic - "+character.Name, u.expandAll) {
+	if w.TreePush(nucular.TreeTab, u.makeLabel("Magic"), u.expandAll) {
 		if !global.IsShowingPR() {
 			u.magic.Draw(w)
 		} else {
@@ -71,17 +73,17 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		}
 		w.TreePop()
 	}
-	if w.TreePush(nucular.TreeTab, "Equipment - "+character.Name, u.expandAll) {
+	if w.TreePush(nucular.TreeTab, u.makeLabel("Equipment"), u.expandAll) {
 		u.equipment.Draw(w)
 		w.TreePop()
 	}
 	if !global.IsShowingPR() {
-		if w.TreePush(nucular.TreeTab, "Commands - "+character.Name, u.expandAll) {
+		if w.TreePush(nucular.TreeTab, u.makeLabel("Commands"), u.expandAll) {
 			u.commands.Draw(w)
 			w.TreePop()
 		}
 	}
-	if w.TreePush(nucular.TreeTab, "Status Effects - "+character.Name, u.expandAll) {
+	if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
 		if !global.IsShowingPR() {
 			u.statusEffects.Draw(w)
 		} else {
@@ -118,4 +120,12 @@ func (u *characterUI) Name() string {
 
 func (u *characterUI) IsPRSupported() bool {
 	return true
+}
+
+func (u *characterUI) makeLabel(label string) string {
+	name := character.Name
+	if global.IsShowingPR() && file.PrIO != nil && file.PrIO.HasUnicodeNames() {
+		name = pr.Characters[u.characterIndex]
+	}
+	return fmt.Sprintf("%s - %s", label, name)
 }

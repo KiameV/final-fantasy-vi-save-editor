@@ -9,6 +9,7 @@ type PR struct {
 	Base       *j.OrderedMap
 	UserData   *j.OrderedMap
 	Characters []*j.OrderedMap
+	names      []unicodeNameReplace
 	//fileEnd    string
 }
 
@@ -18,4 +19,8 @@ func NewPR() *PR {
 		UserData:   j.NewOrderedMap(),
 		Characters: make([]*j.OrderedMap, 40),
 	}
+}
+
+func (p *PR) HasUnicodeNames() bool {
+	return len(p.names) > 0
 }
