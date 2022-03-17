@@ -65,12 +65,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, u.makeLabel("Magic"), u.expandAll) {
-		if !global.IsShowingPR() {
-			u.magic.Draw(w)
-		} else {
-			w.Row(30).Dynamic(1)
-			w.Label("Coming soon for Pixel Remastered", "LC")
-		}
+		u.magic.Draw(w)
 		w.TreePop()
 	}
 	if w.TreePush(nucular.TreeTab, u.makeLabel("Equipment"), u.expandAll) {

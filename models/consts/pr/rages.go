@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	RageFrom int64 = 800
-	RageTo   int64 = 1055
+	RageFrom   int64 = 800
+	RageTo     int64 = 1055
+	RageOffset       = 168
 )
 
 var (

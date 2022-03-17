@@ -3,8 +3,9 @@ package pr
 import "ffvi_editor/models/consts"
 
 const (
-	BushidoFrom int64 = 124
-	BushidoTo   int64 = 131
+	BushidoFrom   int64 = 124
+	BushidoTo     int64 = 131
+	BushidoOffset       = 330
 )
 
 var (

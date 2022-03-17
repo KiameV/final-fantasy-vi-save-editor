@@ -14,8 +14,8 @@ func NewNameValue(name string, value int) NameValue {
 	return NameValue{Name: name, Value: value}
 }
 
-func NewValueName(value int, name string) NameValue {
-	return NameValue{Name: name, Value: value}
+func NewValueName(value int, name string) *NameValue {
+	return &NameValue{Name: name, Value: value}
 }
 
 func NewNameValueChecked(name string, value int) *NameValueChecked {

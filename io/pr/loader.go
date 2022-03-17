@@ -230,6 +230,10 @@ func (p *PR) loadCharacters() (err error) {
 			c.Equipment.Relic2ID = 0
 		}
 
+		if err = p.loadSpells(d, c); err != nil {
+			return
+		}
+
 		// Cyan
 		if jobID == 3 {
 			p.uncheckAll(pr.Bushidos)
@@ -263,6 +267,34 @@ func (p *PR) loadCharacters() (err error) {
 			p.uncheckAll(pr.Rages)
 			if err = p.loadSkills(d, pr.RageFrom, pr.RageTo, pr.RageLookupByID); err != nil {
 				return
+			}
+		}
+	}
+	return
+}
+
+func (p *PR) loadSpells(d *jo.OrderedMap, c *models.Character) (err error) {
+	var i interface{}
+	if i, err = p.getFromTarget(d, AbilityList); err != nil {
+		return
+	}
+	sli := i.([]interface{})
+	for j := 0; j < len(sli); j++ {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(sli[j].(string))); err != nil {
+			return
+		}
+		if v, ok := m.GetValue("abilityId"); ok {
+			if iv, _ := v.(json.Number).Int64(); iv >= pr.SpellFrom && iv <= pr.SpellTo {
+				if err = m.UnmarshalJSON([]byte(sli[j].(string))); err != nil {
+					return
+				}
+				var spell *models.Spell
+				if spell, ok = c.SpellsByID[int(iv)]; ok {
+					k := m.Get("skillLevel")
+					iv, _ = k.(json.Number).Int64()
+					spell.Value = int(iv)
+				}
 			}
 		}
 	}

@@ -1,8 +1,10 @@
 package character
 
 import (
+	"ffvi_editor/global"
 	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/pr"
+	"ffvi_editor/models/consts/snes"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
@@ -28,12 +30,86 @@ func newMagicUI() widget {
 }
 
 func (u *magicUI) Draw(w *nucular.Window) {
+	if global.IsShowingPR() {
+		u.drawPR(w)
+	} else {
+		u.drawSnes(w)
+	}
+}
+
+func (u *magicUI) drawPR(w *nucular.Window) {
+	var (
+		x = 0
+		y = 0
+	)
+	u.lastCount = 5
+	w.Row(u.yLast).SpaceBegin(len(pr.Spells) + 3)
+
+	w.LayoutSpacePush(rect.Rect{
+		X: 0,
+		Y: 0,
+		W: 50,
+		H: 22,
+	})
+	w.Label("Search:", "LC")
+	w.LayoutSpacePush(rect.Rect{
+		X: 60,
+		Y: 0,
+		W: 100,
+		H: 22,
+	})
+	u.searchTB.Edit(w)
+
+	w.LayoutSpacePush(rect.Rect{
+		X: 180,
+		Y: 0,
+		W: 100,
+		H: 22,
+	})
+	if w.ButtonText("Learn All") {
+		for _, s := range character.SpellsSorted {
+			s.Value = 100
+		}
+	}
+	w.LayoutSpacePush(rect.Rect{
+		X: 290,
+		Y: 0,
+		W: 100,
+		H: 22,
+	})
+	if w.ButtonText("Unlearn All") {
+		for _, s := range character.SpellsSorted {
+			s.Value = 0
+		}
+	}
+	y += 26
+
+	search := strings.ToLower(strings.TrimSpace(string(u.searchTB.Buffer)))
+	for _, s := range character.SpellsSorted {
+		if search == "" || strings.Contains(strings.ToLower(s.Name), search) {
+			u.addPrMagicPropertyInt(w, x*180, y, s.Name, &s.Value)
+			x++
+			u.lastCount++
+			if x == 2 {
+				x = 0
+				y += 26
+			}
+		}
+	}
+	if search != "" {
+		y += 26
+	}
+
+	u.yLast = y
+}
+
+func (u *magicUI) drawSnes(w *nucular.Window) {
 	var (
 		x = 0
 		y = 0
 	)
 	u.lastCount = 3
-	w.Row(u.yLast).SpaceBegin(len(consts.Spells) + 3)
+	w.Row(u.yLast).SpaceBegin(len(snes.Spells) + 3)
 
 	w.LayoutSpacePush(rect.Rect{
 		X: 0,
@@ -54,7 +130,7 @@ func (u *magicUI) Draw(w *nucular.Window) {
 	search := strings.ToLower(strings.TrimSpace(string(u.searchTB.Buffer)))
 	for _, s := range character.SpellsSorted {
 		if search == "" || strings.Contains(strings.ToLower(s.Name), search) {
-			u.addMagicPropertyInt(w, x*180, y, s.Name, &s.Value)
+			u.addSnesMagicPropertyInt(w, x*180, y, s.Name, &s.Value)
 			x++
 			u.lastCount++
 			if x == 2 {
@@ -82,7 +158,17 @@ func (u *magicUI) Update(character *models.Character) {
 	u.searchTB.Text([]rune(""))
 }
 
-func (u *magicUI) addMagicPropertyInt(w *nucular.Window, x int, y int, name string, value *int) {
+func (u *magicUI) addPrMagicPropertyInt(w *nucular.Window, x int, y int, name string, value *int) {
+	w.LayoutSpacePush(rect.Rect{
+		X: x,
+		Y: y,
+		W: 160,
+		H: 24,
+	})
+	w.PropertyInt(name, 0, value, 100, 1, 0)
+}
+
+func (u *magicUI) addSnesMagicPropertyInt(w *nucular.Window, x int, y int, name string, value *int) {
 	w.LayoutSpacePush(rect.Rect{
 		X: x,
 		Y: y,

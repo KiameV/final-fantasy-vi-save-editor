@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/global"
+	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
@@ -229,33 +230,37 @@ func (p *PR) saveCharacters() (err error) {
 			return
 		}
 
+		if err = p.saveSpells(d, c); err != nil {
+			return
+		}
+
 		// Cyan
 		if jobID == 3 {
-			if err = p.saveSkills(d, pr.BushidoFrom, pr.BushidoTo, pr.BushidoLookupByID); err != nil {
+			if err = p.saveSkills(d, pr.BushidoFrom, pr.BushidoTo, pr.BushidoOffset, pr.BushidoLookupByID); err != nil {
 				return
 			}
 		}
 		// Sabin
 		if jobID == 6 {
-			if err = p.saveSkills(d, pr.BlitzFrom, pr.BlitzTo, pr.BlitzLookupByID); err != nil {
+			if err = p.saveSkills(d, pr.BlitzFrom, pr.BlitzTo, pr.BlitzOffset, pr.BlitzLookupByID); err != nil {
 				return
 			}
 		}
 		// Mog
 		if id == 16 {
-			if err = p.saveSkills(d, pr.DanceFrom, pr.DanceTo, pr.DanceLookupByID); err != nil {
+			if err = p.saveSkills(d, pr.DanceFrom, pr.DanceTo, pr.DanceOffset, pr.DanceLookupByID); err != nil {
 				return
 			}
 		}
 		// Strago
 		if jobID == 8 {
-			if err = p.saveSkills(d, pr.LoreFrom, pr.LoreTo, pr.LoreLookupByID); err != nil {
+			if err = p.saveSkills(d, pr.LoreFrom, pr.LoreTo, pr.LoreOffset, pr.LoreLookupByID); err != nil {
 				return
 			}
 		}
 		// Gau
 		if jobID == 12 {
-			if err = p.saveSkills(d, pr.RageFrom, pr.RageTo, pr.RageLookupByID); err != nil {
+			if err = p.saveSkills(d, pr.RageFrom, pr.RageTo, pr.RageOffset, pr.RageLookupByID); err != nil {
 				return
 			}
 		}
@@ -277,7 +282,57 @@ func (p *PR) addToNeeded(needed *map[int]int, id int) {
 	}
 }
 
-func (p *PR) saveSkills(d *jo.OrderedMap, from int64, to int64, nvcLookup map[int]*consts.NameValueChecked) (err error) {
+func (p *PR) saveSpells(d *jo.OrderedMap, c *models.Character) (err error) {
+	var (
+		b      []byte
+		i      interface{}
+		found  bool
+		spell  *models.Spell
+		lookup = make(map[int]bool)
+	)
+	if i, err = p.getFromTarget(d, AbilityList); err != nil {
+		return
+	}
+	isl := i.([]interface{})
+	for j := 0; j < len(isl); j++ {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(isl[j].(string))); err != nil {
+			return
+		}
+		if v, ok := m.GetValue("abilityId"); ok {
+			if iv, _ := v.(json.Number).Int64(); iv >= pr.SpellFrom && iv <= pr.SpellTo {
+				if spell, found = c.SpellsByID[int(iv)]; found {
+					m.Set("skillLevel", spell.Value)
+					if b, err = m.MarshalJSON(); err != nil {
+						return
+					}
+					isl[j] = string(b)
+				}
+				lookup[int(iv)] = true
+			}
+		}
+	}
+	for _, s := range c.SpellsByID {
+		if s.Value > 0 {
+			if _, found = lookup[s.Index]; !found {
+				m := jo.NewOrderedMap()
+				m.Set("abilityId", s.Value)
+				m.Set("contentId", s.Value+pr.SpellOffset)
+				m.Set("skillLevel", s.Value)
+				if b, err = m.MarshalJSON(); err != nil {
+					return
+				}
+				isl = append(isl, string(b))
+			}
+		}
+	}
+	if err = p.setTarget(d, AbilityList, isl); err != nil {
+		return
+	}
+	return
+}
+
+func (p *PR) saveSkills(d *jo.OrderedMap, from int64, to int64, offset int, nvcLookup map[int]*consts.NameValueChecked) (err error) {
 	var (
 		b      []byte
 		i      interface{}
@@ -302,21 +357,21 @@ func (p *PR) saveSkills(d *jo.OrderedMap, from int64, to int64, nvcLookup map[in
 					} else {
 						m.Set("skillLevel", 0)
 					}
+					if b, err = m.MarshalJSON(); err != nil {
+						return
+					}
+					isl[j] = string(b)
 				}
 				lookup[int(iv)] = true
-				if b, err = m.MarshalJSON(); err != nil {
-					return
-				}
-				isl[j] = string(b)
 			}
 		}
 	}
-	for _, r := range pr.Rages {
-		if r.Checked {
-			if _, found = lookup[r.Value]; !found {
+	for _, v := range nvcLookup {
+		if v.Checked {
+			if _, found = lookup[v.Value]; !found {
 				m := jo.NewOrderedMap()
-				m.Set("abilityId", r.Value)
-				m.Set("contentId", r.Value+168)
+				m.Set("abilityId", v.Value)
+				m.Set("contentId", v.Value+offset)
 				m.Set("skillLevel", 100)
 				if b, err = m.MarshalJSON(); err != nil {
 					return

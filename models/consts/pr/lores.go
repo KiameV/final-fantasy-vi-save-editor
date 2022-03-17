@@ -3,8 +3,9 @@ package pr
 import "ffvi_editor/models/consts"
 
 const (
-	LoreFrom int64 = 140
-	LoreTo   int64 = 163
+	LoreFrom   int64 = 140
+	LoreTo     int64 = 163
+	LoreOffset       = 330
 )
 
 var (

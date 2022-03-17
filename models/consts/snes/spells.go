@@ -1,4 +1,4 @@
-package consts
+package snes
 
 import "sort"
 

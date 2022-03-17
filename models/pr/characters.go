@@ -21,7 +21,7 @@ func init() {
 			//Command3:      defaultCommand,
 			//Command4:      defaultCommand,
 		}
-		c.SpellsByIndex, c.SpellsSorted, c.SpellsLookup = models.NewSpells()
+		c.SpellsByIndex, c.SpellsSorted, c.SpellsByID = NewSpells()
 		Characters[i] = c
 	}
 }

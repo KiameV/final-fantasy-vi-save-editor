@@ -3,8 +3,9 @@ package pr
 import "ffvi_editor/models/consts"
 
 const (
-	DanceFrom int64 = 164
-	DanceTo   int64 = 171
+	DanceFrom   int64 = 164
+	DanceTo     int64 = 171
+	DanceOffset       = 330
 )
 
 var (

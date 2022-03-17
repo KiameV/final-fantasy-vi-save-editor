@@ -3,8 +3,9 @@ package pr
 import "ffvi_editor/models/consts"
 
 const (
-	BlitzFrom int64 = 132
-	BlitzTo   int64 = 139
+	BlitzFrom   int64 = 132
+	BlitzTo     int64 = 139
+	BlitzOffset       = 330
 )
 
 var (
