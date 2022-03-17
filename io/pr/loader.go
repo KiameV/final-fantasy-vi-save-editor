@@ -628,14 +628,24 @@ func (p *PR) replaceUnicodeNames(b []byte, names *[]unicodeNameReplace) ([]byte,
 			for i < len(b)-1 && (b[i] == '\\' || b[i] == ':' || b[i] == ' ' || b[i] == '"') {
 				i++
 			}
-			if b[i] == 'x' {
+			if b[i-1] != '"' {
 				i--
-			} else {
+			}
+
+			// Start of name is i
+
+			isUnicode := false
+			for j := i; j < len(b)-50 && b[j] != '"' && !(b[j] == '\\' && b[j+1] == '\\'); j++ {
+				if b[j] == '\\' && b[j+1] == 'x' {
+					isUnicode = true
+				}
+			}
+			if !isUnicode {
 				continue
 			}
 
 			var original, replaced []byte
-			for i < len(b) && b[i] != '"' && !(b[i] == '\\' && b[i+1] == '\\') {
+			for i < len(b)-1 && b[i] != '"' && !(b[i] == '\\' && b[i+1] == '\\') {
 				original = append(original, b[i])
 				replaced = append(replaced, '~')
 				b[i] = '~'
@@ -645,9 +655,28 @@ func (p *PR) replaceUnicodeNames(b []byte, names *[]unicodeNameReplace) ([]byte,
 				Replaced: string(replaced),
 			}
 			var err error
-			if r.Original, err = strconv.Unquote(strings.Replace(strconv.Quote(string(original)), `\\x`, `\x`, -1)); err != nil {
-				return nil, err
+			sb := strings.Builder{}
+			for j := 0; j < len(original)-1; j++ {
+				var char []byte
+				if original[j] == '\\' && original[j+1] == 'x' {
+					char = append(char, original[j])
+					for j++; j < len(original); j++ {
+						if original[j] == '\\' {
+							break
+						}
+						char = append(char, original[j])
+					}
+					j--
+					var s string
+					if s, err = strconv.Unquote(strings.Replace(strconv.Quote(string(char)), `\\x`, `\x`, -1)); err != nil {
+						return nil, err
+					}
+					sb.WriteString(s)
+				} else {
+					sb.WriteString(string(original[j]))
+				}
 			}
+			r.Original = sb.String()
 			*names = append(*names, r)
 		}
 	}
