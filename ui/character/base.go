@@ -78,14 +78,11 @@ func (u *characterUI) Draw(w *nucular.Window) {
 			w.TreePop()
 		}
 	}
-	if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
-		if !global.IsShowingPR() {
+	if !global.IsShowingPR() {
+		if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
 			u.statusEffects.Draw(w)
-		} else {
-			w.Row(30).Dynamic(1)
-			w.Label("Coming soon for Pixel Remastered", "LC")
+			w.TreePop()
 		}
-		w.TreePop()
 	}
 }
 
