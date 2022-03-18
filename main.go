@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-const version = "1.5.0"
+const version = "1.5.1"
 
 var (
 	mainMenu     ui.UI

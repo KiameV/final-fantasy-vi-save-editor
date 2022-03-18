@@ -171,7 +171,7 @@ func init() {
 func GetCharacter(id, jobID int) (c *CharacterBase, ok bool) {
 	if id <= 16 {
 		c, ok = CharacterByID[id]
-	} else {
+	} else if id != 21 {
 		c, ok = CharacterByJobID[jobID]
 	}
 	return

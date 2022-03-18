@@ -1,6 +1,7 @@
 package pr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -9,6 +10,8 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -59,7 +62,7 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//s = p.fixFile(s)
 
-	/*/ TODO Debug
+	// TODO Debug
 	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create("loaded.json"); err != nil {
 		}
@@ -163,13 +166,13 @@ func (p *PR) loadCharacters() (err error) {
 		}
 		//c.HP.Max += o.HPBase
 
-		if c.MP.Current, err = p.getInt(params, CurrentHP); err != nil {
+		if c.MP.Current, err = p.getInt(params, CurrentMP); err != nil {
 			return
 		}
 		if c.MP.Max, err = p.getInt(params, AdditionalMaxMp); err != nil {
 			return
 		}
-		c.MP.Max += o.MPBase
+		//c.MP.Max += o.MPBase
 
 		if c.Exp, err = p.getInt(d, CurrentExp); err != nil {
 			return
