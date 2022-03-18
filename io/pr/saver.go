@@ -443,7 +443,55 @@ func (p *PR) saveInventory() (err error) {
 }
 
 func (p *PR) saveMiscStats() (err error) {
-	// TODO
+	if err = p.setValue(p.UserData, OwnedGil, models.GetMisc().GP); err != nil {
+		return
+	}
+	if err = p.setValue(p.UserData, Steps, models.GetMisc().Steps); err != nil {
+		return
+	}
+	if err = p.setValue(p.UserData, EscapeCount, models.GetMisc().EscapeCount); err != nil {
+		return
+	}
+	if err = p.setValue(p.UserData, BattleCount, models.GetMisc().BattleCount); err != nil {
+		return
+	}
+	if err = p.setValue(p.UserData, SaveCompleteCount, models.GetMisc().NumberOfSaves); err != nil {
+		return
+	}
+
+	if ds, ok := p.Base.GetValue(DataStorage); ok {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(ds.(string))); err != nil {
+			return
+		}
+		if err = p.SetIntInSlice(m, "global", models.GetMisc().CursedShieldFightCount); err != nil {
+			return
+		}
+		var b []byte
+		if b, err = m.MarshalJSON(); err != nil {
+			return
+		}
+		p.Base.Set(DataStorage, string(b))
+	}
+	return
+}
+
+func (p *PR) SetIntInSlice(to *jo.OrderedMap, key string, value int) (err error) {
+	var (
+		i, ok = to.GetValue(key)
+		sl    []interface{}
+	)
+	if !ok {
+		err = fmt.Errorf("unable to find %s", key)
+		return
+	}
+
+	if sl, ok = i.([]interface{}); !ok || len(sl) < 9 {
+		err = fmt.Errorf("unable to load cursed shield battle count")
+		return
+	}
+	sl[9] = value
+	to.Set("global", sl)
 	return
 }
 

@@ -11,6 +11,8 @@ type Misc struct {
 	AirshipYAxis           int
 	IsAirshipVisible       bool
 	CursedShieldFightCount int
+	EscapeCount            int
+	BattleCount            int
 }
 
 var misc *Misc

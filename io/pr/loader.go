@@ -1,6 +1,7 @@
 package pr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -9,6 +10,8 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -59,7 +62,7 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//s = p.fixFile(s)
 
-	/*/ TODO Debug
+	// TODO Debug
 	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create("loaded.json"); err != nil {
 		}
@@ -358,6 +361,28 @@ func (p *PR) loadMiscStats() (err error) {
 	if models.GetMisc().GP, err = p.getInt(p.UserData, OwnedGil); err != nil {
 		return
 	}
+	if models.GetMisc().Steps, err = p.getInt(p.UserData, Steps); err != nil {
+		return
+	}
+	if models.GetMisc().EscapeCount, err = p.getInt(p.UserData, EscapeCount); err != nil {
+		return
+	}
+	if models.GetMisc().BattleCount, err = p.getInt(p.UserData, BattleCount); err != nil {
+		return
+	}
+	if models.GetMisc().NumberOfSaves, err = p.getInt(p.UserData, SaveCompleteCount); err != nil {
+		return
+	}
+
+	if ds, ok := p.Base.GetValue(DataStorage); ok {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(ds.(string))); err != nil {
+			return
+		}
+		if models.GetMisc().CursedShieldFightCount, err = p.getIntFromSlice(m, "global"); err != nil {
+			return
+		}
+	}
 	return
 }
 
@@ -414,6 +439,29 @@ func (p *PR) getInt(c *jo.OrderedMap, key string) (i int, err error) {
 	default:
 		err = fmt.Errorf("unable to parse field %s value %v ", key, j)
 	}
+	return
+}
+
+func (p *PR) getIntFromSlice(from *jo.OrderedMap, key string) (v int, err error) {
+	var (
+		i, ok = from.GetValue(key)
+		sl    []interface{}
+		i64   int64
+	)
+	if !ok {
+		err = fmt.Errorf("unable to find %s", key)
+		return
+	}
+
+	if sl, ok = i.([]interface{}); !ok || len(sl) < 9 {
+		err = fmt.Errorf("unable to load cursed shield battle count")
+		return
+	}
+
+	if i64, err = sl[9].(json.Number).Int64(); err != nil {
+		return
+	}
+	v = int(i64)
 	return
 }
 
