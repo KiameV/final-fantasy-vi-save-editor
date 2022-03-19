@@ -1,7 +1,6 @@
 package pr
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -10,8 +9,6 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
-	"io/ioutil"
-	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -62,7 +59,7 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//s = p.fixFile(s)
 
-	// TODO Debug
+	/*/ TODO Debug
 	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create("loaded.json"); err != nil {
 		}
@@ -164,7 +161,7 @@ func (p *PR) loadCharacters() (err error) {
 		if c.HP.Max, err = p.getInt(params, AdditionalMaxHp); err != nil {
 			return
 		}
-		//c.HP.Max += o.HPBase
+		c.HP.Max += o.HPBase
 
 		if c.MP.Current, err = p.getInt(params, CurrentMP); err != nil {
 			return
@@ -172,7 +169,7 @@ func (p *PR) loadCharacters() (err error) {
 		if c.MP.Max, err = p.getInt(params, AdditionalMaxMp); err != nil {
 			return
 		}
-		//c.MP.Max += o.MPBase
+		c.MP.Max += o.MPBase
 
 		if c.Exp, err = p.getInt(d, CurrentExp); err != nil {
 			return
@@ -346,12 +343,14 @@ func (p *PR) loadEspers() (err error) {
 	for _, e := range pr.Espers {
 		e.Checked = false
 	}
-	for _, n := range espers.([]interface{}) {
-		if id, err = n.(json.Number).Int64(); err != nil {
-			return
-		}
-		if e, found := pr.EspersByValue[int(id)]; found {
-			e.Checked = true
+	if espers != nil {
+		for _, n := range espers.([]interface{}) {
+			if id, err = n.(json.Number).Int64(); err != nil {
+				return
+			}
+			if e, found := pr.EspersByValue[int(id)]; found {
+				e.Checked = true
+			}
 		}
 	}
 	return

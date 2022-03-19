@@ -175,16 +175,35 @@ func (p *PR) saveCharacters() (err error) {
 		if err = p.setValue(params, CurrentHP, c.HP.Current); err != nil {
 			return
 		}
-		if err = p.setValue(params, AdditionalMaxHp, floor0(c.HP.Max /*-o.HPBase*/)); err != nil {
+
+		maxHp := c.HP.Max - o.HPBase
+		if err = p.setValue(params, AdditionalMaxHp, maxHp); err != nil {
 			return
 		}
+		/*var v int
+		if v, err = p.getInt(params, AdditionalMaxHp); err == nil {
+			if v != c.HP.Max {
+				if err = p.setValue(params, AdditionalMaxHp, v+(c.HP.Max-v)); err != nil {
+					return
+				}
+			}
+		}*/
 
 		if err = p.setValue(params, CurrentMP, c.MP.Current); err != nil {
 			return
 		}
-		if err = p.setValue(params, AdditionalMaxMp, floor0(c.MP.Max /*-o.MPBase*/)); err != nil {
+
+		maxMp := c.MP.Max - o.MPBase
+		if err = p.setValue(params, AdditionalMaxMp, maxMp); err != nil {
 			return
 		}
+		/*if v, err = p.getInt(params, AdditionalMaxMp); err == nil {
+			if v != c.MP.Max {
+				if err = p.setValue(params, AdditionalMaxMp, v+(c.MP.Max-v)); err != nil {
+					return
+				}
+			}
+		}*/
 
 		if err = p.setValue(d, CurrentExp, c.Exp); err != nil {
 			return
@@ -284,11 +303,12 @@ func (p *PR) addToNeeded(needed *map[int]int, id int) {
 
 func (p *PR) saveSpells(d *jo.OrderedMap, c *models.Character) (err error) {
 	var (
-		b      []byte
-		i      interface{}
-		found  bool
-		spell  *models.Spell
-		lookup = make(map[int]bool)
+		b           []byte
+		i           interface{}
+		found       bool
+		spell       *models.Spell
+		lookup      = make(map[int]bool)
+		knownSpells = make(map[int]bool)
 	)
 	if i, err = p.getFromTarget(d, AbilityList); err != nil {
 		return
@@ -302,6 +322,9 @@ func (p *PR) saveSpells(d *jo.OrderedMap, c *models.Character) (err error) {
 		if v, ok := m.GetValue("abilityId"); ok {
 			if iv, _ := v.(json.Number).Int64(); iv >= pr.SpellFrom && iv <= pr.SpellTo {
 				if spell, found = c.SpellsByID[int(iv)]; found {
+					if spell.Value == 100 {
+						knownSpells[int(iv)] = true
+					}
 					m.Set("skillLevel", spell.Value)
 					if b, err = m.MarshalJSON(); err != nil {
 						return
@@ -328,6 +351,75 @@ func (p *PR) saveSpells(d *jo.OrderedMap, c *models.Character) (err error) {
 	}
 	if err = p.setTarget(d, AbilityList, isl); err != nil {
 		return
+	}
+
+	return p.unlearnSpellsForCharacter(d, knownSpells)
+}
+
+func (p *PR) unlearnSpellsForCharacter(d *jo.OrderedMap, spells map[int]bool) (err error) {
+	var (
+		kv      = jo.NewOrderedMap()
+		i       interface{}
+		sl      []interface{}
+		b       []byte
+		ok      bool
+		changed bool
+	)
+	if err = p.unmarshalFrom(d, AbilityDictionary, kv); err != nil {
+		return
+	}
+	if i, ok = kv.GetValue("values"); ok {
+		if sl, ok = i.([]interface{}); ok && len(sl) >= 2 {
+			m := jo.NewOrderedMap()
+			if err = m.UnmarshalJSON([]byte(sl[1].(string))); err != nil {
+				return
+			}
+			if changed, err = p.unlearnSpells(m, spells); err != nil {
+				return
+			} else if changed {
+				if b, err = m.MarshalJSON(); err != nil {
+					return
+				}
+				sl[1] = string(b)
+				kv.Set("value", sl)
+			}
+		}
+	}
+	if changed {
+		if err = p.marshalTo(d, AbilityDictionary, kv); err != nil {
+			return
+		}
+	}
+	return
+}
+
+func (p *PR) unlearnSpells(om *jo.OrderedMap, knownSpells map[int]bool) (changed bool, err error) {
+	changed = false
+	if i, ok := om.GetValue("target"); ok {
+		sl := i.([]interface{})
+		var result []interface{}
+		for _, r := range sl {
+			m := jo.NewOrderedMap()
+			if err = m.UnmarshalJSON([]byte(r.(string))); err != nil {
+				return
+			}
+			if v, ok := m.GetValue("abilityId"); ok {
+				if spellID, _ := v.(json.Number).Int64(); spellID >= pr.SpellFrom && spellID <= pr.SpellTo {
+					if !knownSpells[int(spellID)] {
+						changed = true
+						continue
+					}
+				}
+			}
+			result = append(result, r)
+		}
+		if changed {
+			if len(result) == 0 {
+				om.Set("target", make([]interface{}, 0))
+			} else {
+				om.Set("target", result)
+			}
+		}
 	}
 	return
 }
@@ -387,7 +479,7 @@ func (p *PR) saveSkills(d *jo.OrderedMap, from int64, to int64, offset int, nvcL
 }
 
 func (p *PR) saveEspers() (err error) {
-	var sl []int
+	var sl []interface{}
 	for _, e := range pr.Espers {
 		if e.Checked {
 			sl = append(sl, e.Value)
@@ -538,12 +630,16 @@ func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int) {
 	*eq = append(*eq, string(b))
 }
 
-func (p *PR) setTarget(d *jo.OrderedMap, key string, value interface{}) (err error) {
+func (p *PR) setTarget(d *jo.OrderedMap, key string, value []interface{}) (err error) {
 	var (
 		t = jo.NewOrderedMap()
 		b []byte
 	)
-	t.Set(targetKey, value)
+	if value != nil {
+		t.Set(targetKey, value)
+	} else {
+		t.Set(targetKey, make([]interface{}, 0))
+	}
 	b, err = t.MarshalJSON()
 	return p.setValue(d, key, string(b))
 }

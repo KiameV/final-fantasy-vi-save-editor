@@ -63,11 +63,11 @@ func (u *statsUI) Draw(w *nucular.Window) {
 	addPropertyInt(w, 180, y, "Exp", &character.Exp, 1, 2637112, 1000)
 	y += 26
 
-	addPropertyInt(w, 0, y, "Current HP", &character.HP.Current, 0, character.HP.Max, 100)
+	addPropertyInt(w, 0, y, "Current HP", &character.HP.Current, 0, 9999, 100)
 	addPropertyInt(w, 180, y, "Max HP", &character.HP.Max, 1, 9999, 100)
 	y += 26
 
-	addPropertyInt(w, 0, y, "Current MP", &character.MP.Current, 0, character.HP.Max, 10)
+	addPropertyInt(w, 0, y, "Current MP", &character.MP.Current, 0, 999, 10)
 	addPropertyInt(w, 180, y, "Max MP", &character.MP.Max, 1, 999, 10)
 	y += 26
 
