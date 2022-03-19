@@ -9,7 +9,7 @@ import (
 
 // 243 will fail
 const (
-	EmptyText = `0 - Empty
+	EmptyText = `0 - Invalid
 `
 	EmptyWeaponShield = `93 - Empty
 `

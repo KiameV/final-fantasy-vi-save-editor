@@ -84,6 +84,9 @@ func (u *inventoryUI) drawPR(w *nucular.Window) {
 	y += 24
 
 	for _, r := range pri.GetInventoryRows() {
+		if r.ItemID == 93 || r.ItemID == 198 || r.ItemID == 199 || r.ItemID == 200 {
+			continue
+		}
 		w.LayoutSpacePush(rect.Rect{
 			X: 0,
 			Y: y,

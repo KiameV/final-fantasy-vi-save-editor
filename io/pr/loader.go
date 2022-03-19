@@ -194,42 +194,42 @@ func (p *PR) loadCharacters() (err error) {
 		if c.Magic, err = p.getInt(params, AdditionMagic); err != nil {
 			return
 		}
-
-		var eqIDCounts []idCount
-		if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
-			return
-		}
-		if len(eqIDCounts) > 0 {
-			c.Equipment.WeaponID = eqIDCounts[0].ContentID
-		} else {
-			c.Equipment.WeaponID = 0
-		}
-		if len(eqIDCounts) > 1 {
-			c.Equipment.ShieldID = eqIDCounts[1].ContentID
-		} else {
-			c.Equipment.ShieldID = 0
-		}
-		if len(eqIDCounts) > 2 {
-			c.Equipment.HelmetID = eqIDCounts[2].ContentID
-		} else {
-			c.Equipment.HelmetID = 0
-		}
-		if len(eqIDCounts) > 3 {
-			c.Equipment.ArmorID = eqIDCounts[3].ContentID
-		} else {
-			c.Equipment.ArmorID = 0
-		}
-		if len(eqIDCounts) > 4 {
-			c.Equipment.Relic1ID = eqIDCounts[4].ContentID
-		} else {
-			c.Equipment.Relic1ID = 0
-		}
-		if len(eqIDCounts) > 5 {
-			c.Equipment.Relic2ID = eqIDCounts[5].ContentID
-		} else {
-			c.Equipment.Relic2ID = 0
-		}
-
+		/*
+			var eqIDCounts []idCount
+			if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
+				return
+			}
+			if len(eqIDCounts) > 0 {
+				c.Equipment.WeaponID = eqIDCounts[0].ContentID
+			} else {
+				c.Equipment.WeaponID = 0
+			}
+			if len(eqIDCounts) > 1 {
+				c.Equipment.ShieldID = eqIDCounts[1].ContentID
+			} else {
+				c.Equipment.ShieldID = 0
+			}
+			if len(eqIDCounts) > 2 {
+				c.Equipment.ArmorID = eqIDCounts[3].ContentID
+			} else {
+				c.Equipment.ArmorID = 0
+			}
+			if len(eqIDCounts) > 3 {
+				c.Equipment.HelmetID = eqIDCounts[2].ContentID
+			} else {
+				c.Equipment.HelmetID = 0
+			}
+			if len(eqIDCounts) > 4 {
+				c.Equipment.Relic1ID = eqIDCounts[4].ContentID
+			} else {
+				c.Equipment.Relic1ID = 0
+			}
+			if len(eqIDCounts) > 5 {
+				c.Equipment.Relic2ID = eqIDCounts[5].ContentID
+			} else {
+				c.Equipment.Relic2ID = 0
+			}
+		*/
 		if err = p.loadSpells(d, c); err != nil {
 			return
 		}
@@ -488,11 +488,12 @@ func (p *PR) unmarshalEquipment(m *jo.OrderedMap) (idCounts []idCount, err error
 		return
 	}
 
-	i, _ = eq.GetValue("values")
-	idCounts = make([]idCount, len(i.([]interface{})))
-	for j, v := range i.([]interface{}) {
-		if err = json.Unmarshal([]byte(v.(string)), &idCounts[j]); err != nil {
-			return
+	if i, ok = eq.GetValue("values"); ok && i != nil {
+		idCounts = make([]idCount, len(i.([]interface{})))
+		for j, v := range i.([]interface{}) {
+			if err = json.Unmarshal([]byte(v.(string)), &idCounts[j]); err != nil {
+				return
+			}
 		}
 	}
 	return

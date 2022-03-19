@@ -226,25 +226,26 @@ func (p *PR) saveCharacters() (err error) {
 		if err = p.setValue(params, AdditionMagic, c.Magic); err != nil {
 			return
 		}
+		/*
+			eq := jo.NewOrderedMap()
+			if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
+				return
+			}
+			invCounts := pri.GetInventory().GetItemLookup()
+			var eqIDCounts []string
+			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.WeaponID, 93)
+			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ShieldID, 93)
+			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.HelmetID, 198)
+			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ArmorID, 199)
+			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic1ID, 200)
+			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic2ID, 200)
+			eq.Set("keys", []int{1, 2, 3, 4, 5, 6})
+			eq.Set("values", eqIDCounts)
 
-		eq := jo.NewOrderedMap()
-		if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
-			return
-		}
-		invCounts := pri.GetInventory().GetItemLookup()
-		var eqIDCounts []string
-		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.WeaponID)
-		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ShieldID)
-		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.HelmetID)
-		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ArmorID)
-		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic1ID)
-		p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic2ID)
-		eq.Set("values", eqIDCounts)
-
-		if err = p.marshalTo(d, EquipmentList, eq); err != nil {
-			return
-		}
-
+			if err = p.marshalTo(d, EquipmentList, eq); err != nil {
+				return
+			}
+		*/
 		if err = p.marshalTo(d, Parameter, params); err != nil {
 			return
 		}
@@ -614,17 +615,19 @@ func floor0(i int) int {
 	return i
 }
 
-func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int) {
+func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int, emptyID int) {
 	var i idCount
 	if id == 0 {
-		return
+		i.ContentID = emptyID
+		i.Count = counts[emptyID]
 	}
+
 	if count, ok := counts[id]; ok {
 		i.ContentID = id
 		i.Count = count
 	} else {
-		i.ContentID = 200
-		i.Count = counts[200]
+		i.ContentID = emptyID
+		i.Count = counts[emptyID]
 	}
 	b, _ := json.Marshal(&i)
 	*eq = append(*eq, string(b))
