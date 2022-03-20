@@ -37,3 +37,7 @@ func GetCharacterIndex(name string) int {
 		return i
 	}
 }
+
+func IsMainCharacter(n string) bool {
+	return !(n == "Wedge" || n == "Biggs" || n == "Leo" || n == "Banon")
+}

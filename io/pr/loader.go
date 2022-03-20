@@ -1,6 +1,7 @@
 package pr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -9,6 +10,8 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -59,7 +62,7 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//s = p.fixFile(s)
 
-	/*/ TODO Debug
+	// TODO Debug
 	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create("loaded.json"); err != nil {
 		}
@@ -194,42 +197,11 @@ func (p *PR) loadCharacters() (err error) {
 		if c.Magic, err = p.getInt(params, AdditionMagic); err != nil {
 			return
 		}
-		/*
-			var eqIDCounts []idCount
-			if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
-				return
-			}
-			if len(eqIDCounts) > 0 {
-				c.Equipment.WeaponID = eqIDCounts[0].ContentID
-			} else {
-				c.Equipment.WeaponID = 0
-			}
-			if len(eqIDCounts) > 1 {
-				c.Equipment.ShieldID = eqIDCounts[1].ContentID
-			} else {
-				c.Equipment.ShieldID = 0
-			}
-			if len(eqIDCounts) > 2 {
-				c.Equipment.ArmorID = eqIDCounts[3].ContentID
-			} else {
-				c.Equipment.ArmorID = 0
-			}
-			if len(eqIDCounts) > 3 {
-				c.Equipment.HelmetID = eqIDCounts[2].ContentID
-			} else {
-				c.Equipment.HelmetID = 0
-			}
-			if len(eqIDCounts) > 4 {
-				c.Equipment.Relic1ID = eqIDCounts[4].ContentID
-			} else {
-				c.Equipment.Relic1ID = 0
-			}
-			if len(eqIDCounts) > 5 {
-				c.Equipment.Relic2ID = eqIDCounts[5].ContentID
-			} else {
-				c.Equipment.Relic2ID = 0
-			}
-		*/
+
+		if err = p.loadEquipment(d, c); err != nil {
+			return
+		}
+
 		if err = p.loadSpells(d, c); err != nil {
 			return
 		}
@@ -272,6 +244,64 @@ func (p *PR) loadCharacters() (err error) {
 	}
 	return
 }
+
+func (p *PR) loadEquipment(d *jo.OrderedMap, c *models.Character) (err error) {
+	c.Equipment.WeaponID = 93
+	c.Equipment.ShieldID = 93
+	c.Equipment.ArmorID = 199
+	c.Equipment.HelmetID = 198
+	c.Equipment.Relic1ID = 200
+	c.Equipment.Relic2ID = 200
+
+	var eqIDCounts []idCount
+	if eqIDCounts, err = p.unmarshalEquipment(d); err != nil {
+		return
+	}
+
+	if len(eqIDCounts) > 0 {
+		c.Equipment.WeaponID = eqIDCounts[0].ContentID
+	}
+	if len(eqIDCounts) > 1 {
+		c.Equipment.ShieldID = eqIDCounts[1].ContentID
+	}
+	if len(eqIDCounts) > 2 {
+		c.Equipment.ArmorID = eqIDCounts[2].ContentID
+	}
+	if len(eqIDCounts) > 3 {
+		c.Equipment.HelmetID = eqIDCounts[3].ContentID
+	}
+	if len(eqIDCounts) > 4 {
+		c.Equipment.Relic1ID = eqIDCounts[4].ContentID
+	}
+	if len(eqIDCounts) > 5 {
+		c.Equipment.Relic2ID = eqIDCounts[5].ContentID
+	}
+	return
+}
+
+/*func (p *PR) getEquipmentKeys(m *jo.OrderedMap) (keys []int, err error) {
+	i, ok := m.GetValue(EquipmentList)
+	if !ok {
+		return nil, fmt.Errorf("%s not found", EquipmentList)
+	}
+
+	eq := jo.NewOrderedMap()
+	if err = eq.UnmarshalJSON([]byte(i.(string))); err != nil {
+		return
+	}
+
+	if i, ok = eq.GetValue("keys"); ok && i != nil {
+		keys = make([]int, len(i.([]interface{})))
+		for j, v := range i.([]interface{}) {
+			var k int64
+			if k, err = v.(json.Number).Int64(); err != nil {
+				return
+			}
+			keys[j] = int(k)
+		}
+	}
+	return
+}*/
 
 func (p *PR) loadSpells(d *jo.OrderedMap, c *models.Character) (err error) {
 	var i interface{}

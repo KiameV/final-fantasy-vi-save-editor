@@ -14,6 +14,8 @@ type FileSelector struct{}
 
 var PrIO *pr.PR
 
+const quickSave = "Quick Save"
+
 func NewFileSelector() *FileSelector {
 	// Clear slots
 	fs := &FileSelector{}
@@ -50,21 +52,30 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 		w.Row(30).Static(300)
 		w.Label("No saves found in this directory.", "LC")
 	} else {
+		if loaded, err = fs.drawLoadButton(w, prSlots[21]); loaded || err != nil {
+			return
+		}
 		for i, s := range prSlots {
-			if i == 0 {
-				// Don't save over QS
+			if i == 0 || s.Name == quickSave {
 				continue
 			}
-			if s.File != nil {
-				w.Row(30).Static(300)
-				if w.ButtonText("Load " + s.Name) {
-					p := pr.NewPR()
-					if err = p.Load(path.Join(global.Dir, s.File.Name())); err == nil {
-						PrIO = p
-						global.FileName = s.File.Name()
-						loaded = true
-					}
-				}
+			if loaded, err = fs.drawLoadButton(w, s); loaded || err != nil {
+				return
+			}
+		}
+	}
+	return
+}
+
+func (fs *FileSelector) drawLoadButton(w *nucular.Window, s *prSlot) (loaded bool, err error) {
+	if s.File != nil {
+		w.Row(30).Static(300)
+		if w.ButtonText("Load " + s.Name) {
+			p := pr.NewPR()
+			if err = p.Load(path.Join(global.Dir, s.File.Name())); err == nil {
+				PrIO = p
+				global.FileName = s.File.Name()
+				loaded = true
 			}
 		}
 	}
@@ -87,23 +98,29 @@ func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
 		global.RollbackShowing()
 		global.SetShowing(global.GetCurrentShowing())
 	}
-
+	
 	for i, s := range prSlots {
-		if i == 0 {
-			// Don't save over QS
+		if i == 0 || s.Name == quickSave {
 			continue
 		}
-		w.Row(30).Static(300)
-		label := "Save " + s.Name
-		if s.File != nil {
-			label += " (replace)"
+		if saved, err = fs.drawSaveButton(w, i, s); saved || err != nil {
+			return
 		}
-		if w.ButtonText(label) {
-			slot := i
-			if err = PrIO.Save(slot, s.UUID); err == nil {
-				saved = true
-				fs.updateSlots()
-			}
+	}
+	return
+}
+
+func (fs *FileSelector) drawSaveButton(w *nucular.Window, i int, s *prSlot) (saved bool, err error) {
+	w.Row(30).Static(300)
+	label := "Save " + s.Name
+	if s.File != nil {
+		label += " (replace)"
+	}
+	if w.ButtonText(label) {
+		slot := i
+		if err = PrIO.Save(slot, s.UUID); err == nil {
+			saved = true
+			fs.updateSlots()
 		}
 	}
 	return
@@ -130,8 +147,8 @@ type prSlot struct {
 var (
 	prSlots = []*prSlot{
 		{
-			UUID: "7nCxyzTwG31W3Zlg70mo751W8ETH1n+Km0dWOzRU84Y=",
-			Name: "quick save",
+			UUID: "",
+			Name: "",
 			File: nil,
 		},
 		{
@@ -232,6 +249,11 @@ var (
 		{
 			UUID: "mkYfUr4Mtg0zUmF=6lw+bxRLnbnBYp9ayg1KgploDpQ=",
 			Name: "slot 20",
+			File: nil,
+		},
+		{
+			UUID: "7nCxyzTwG31W3Zlg70mo751W8ETH1n+Km0dWOzRU84Y=",
+			Name: quickSave,
 			File: nil,
 		},
 	}

@@ -40,10 +40,11 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	p.populateNeeded(&needed)
 	pri.GetInventory().AddNeeded(needed)
 
-	if err = p.saveCharacters(); err != nil {
+	var addedItems []int
+	if err = p.saveCharacters(&addedItems); err != nil {
 		return
 	}
-	if err = p.saveInventory(); err != nil {
+	if err = p.saveInventory(addedItems); err != nil {
 		return
 	}
 	if err = p.saveEspers(); err != nil {
@@ -136,7 +137,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	return
 }
 
-func (p *PR) saveCharacters() (err error) {
+func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 	for _, d := range p.Characters {
 		if d == nil {
 			continue
@@ -226,26 +227,25 @@ func (p *PR) saveCharacters() (err error) {
 		if err = p.setValue(params, AdditionMagic, c.Magic); err != nil {
 			return
 		}
-		/*
-			eq := jo.NewOrderedMap()
-			if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
-				return
-			}
-			invCounts := pri.GetInventory().GetItemLookup()
-			var eqIDCounts []string
-			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.WeaponID, 93)
-			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ShieldID, 93)
-			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.HelmetID, 198)
-			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.ArmorID, 199)
-			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic1ID, 200)
-			p.tryGetInvCount(&eqIDCounts, invCounts, c.Equipment.Relic2ID, 200)
-			eq.Set("keys", []int{1, 2, 3, 4, 5, 6})
-			eq.Set("values", eqIDCounts)
 
-			if err = p.marshalTo(d, EquipmentList, eq); err != nil {
-				return
-			}
-		*/
+		eq := jo.NewOrderedMap()
+		if err = p.unmarshalFrom(d, EquipmentList, eq); err != nil {
+			return
+		}
+		invCounts := pri.GetInventory().GetItemLookup()
+		var eqIDCounts []string
+		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.WeaponID, 93)
+		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.ShieldID, 93)
+		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.ArmorID, 199)
+		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.HelmetID, 198)
+		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.Relic1ID, 200)
+		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.Relic2ID, 200)
+		eq.Set("values", eqIDCounts)
+
+		if err = p.marshalTo(d, EquipmentList, eq); err != nil {
+			return
+		}
+
 		if err = p.marshalTo(d, Parameter, params); err != nil {
 			return
 		}
@@ -290,7 +290,9 @@ func (p *PR) saveCharacters() (err error) {
 
 func (p *PR) populateNeeded(needed *map[int]int) {
 	for _, c := range pri.Characters {
-		p.addToNeeded(needed, c.Equipment.WeaponID)
+		if pr.IsMainCharacter(c.RootName) {
+			p.addToNeeded(needed, c.Equipment.WeaponID)
+		}
 	}
 }
 
@@ -489,7 +491,7 @@ func (p *PR) saveEspers() (err error) {
 	return p.setTarget(p.UserData, OwnedMagicStoneList, sl)
 }
 
-func (p *PR) saveInventory() (err error) {
+func (p *PR) saveInventory(addedItems []int) (err error) {
 	var (
 		rows             = pri.GetInventory().GetRowsForPrSave()
 		sl               = make([]interface{}, 0, len(rows))
@@ -497,6 +499,7 @@ func (p *PR) saveInventory() (err error) {
 		slTarget         = jo.NewOrderedMap()
 		found            = make(map[int]bool)
 		removeDuplicates = pri.GetInventory().RemoveDuplicates
+		addedCountLookup = make(map[int]int)
 	)
 
 	for _, r := range rows {
@@ -515,6 +518,19 @@ func (p *PR) saveInventory() (err error) {
 			continue
 		}
 		if b, err = json.Marshal(r); err != nil {
+			return
+		}
+		sl = append(sl, string(b))
+	}
+
+	for _, i := range addedItems {
+		addedCountLookup[i]++
+	}
+	for k, v := range addedCountLookup {
+		if b, err = json.Marshal(&pri.Row{
+			ItemID: k,
+			Count:  v,
+		}); err != nil {
 			return
 		}
 		sl = append(sl, string(b))
@@ -615,7 +631,7 @@ func floor0(i int) int {
 	return i
 }
 
-func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int, emptyID int) {
+func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, addedItems *[]int, id int, emptyID int) {
 	var i idCount
 	if id == 0 {
 		i.ContentID = emptyID
@@ -626,8 +642,9 @@ func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, id int, emptyID in
 		i.ContentID = id
 		i.Count = count
 	} else {
-		i.ContentID = emptyID
-		i.Count = counts[emptyID]
+		*addedItems = append(*addedItems, id)
+		i.ContentID = id
+		i.Count = 1
 	}
 	b, _ := json.Marshal(&i)
 	*eq = append(*eq, string(b))
