@@ -82,6 +82,6 @@ func (u *miscUI) Name() string {
 	return "Misc"
 }
 
-func (u *miscUI) IsPRSupported() bool {
-	return true
+func (u *miscUI) Behavior() ui.Behavior {
+	return ui.Show
 }

@@ -77,7 +77,7 @@ func (u *characterUI) Draw(w *nucular.Window) {
 			u.commands.Draw(w)
 			w.TreePop()
 		}
-		
+
 		if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
 			u.statusEffects.Draw(w)
 			w.TreePop()
@@ -109,8 +109,8 @@ func (u *characterUI) Name() string {
 	return "Characters"
 }
 
-func (u *characterUI) IsPRSupported() bool {
-	return true
+func (u *characterUI) Behavior() ui.Behavior {
+	return ui.Show
 }
 
 func (u *characterUI) makeLabel(label string) string {

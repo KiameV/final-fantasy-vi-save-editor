@@ -55,14 +55,12 @@ func (u *equipmentUI) Draw(w *nucular.Window) {
 }
 
 func (u *equipmentUI) Update(character *models.Character) {
-	if !global.IsShowingPR() {
-		u.weaponID.Text(toHex(character.Equipment.WeaponID))
-		u.shieldID.Text(toHex(character.Equipment.ShieldID))
-		u.helmetID.Text(toHex(character.Equipment.HelmetID))
-		u.armorID.Text(toHex(character.Equipment.ArmorID))
-		u.relic1ID.Text(toHex(character.Equipment.Relic1ID))
-		u.relic2ID.Text(toHex(character.Equipment.Relic2ID))
-	}
+	u.weaponID.Text(toHex(character.Equipment.WeaponID))
+	u.shieldID.Text(toHex(character.Equipment.ShieldID))
+	u.helmetID.Text(toHex(character.Equipment.HelmetID))
+	u.armorID.Text(toHex(character.Equipment.ArmorID))
+	u.relic1ID.Text(toHex(character.Equipment.Relic1ID))
+	u.relic2ID.Text(toHex(character.Equipment.Relic2ID))
 }
 
 func toNum(i int) []rune {

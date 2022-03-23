@@ -30,6 +30,7 @@ func (p *PR) Load(fileName string) (err error) {
 	if out, err = p.readFile(fileName); err != nil {
 		return
 	}
+	//ioutil.WriteFile("loaded.json", out, 0644)
 	/*for i := 0; i < len(out); i++ {
 		if out[i] == '\\' && out[i+1] == 'x' {
 			j := string(out[i-20 : i+40])
@@ -103,7 +104,12 @@ func (p *PR) Load(fileName string) (err error) {
 		}
 	}
 
+	pri.GetParty().Clear()
+
 	if err = p.loadCharacters(); err != nil {
+		return
+	}
+	if err = p.loadParty(); err != nil {
 		return
 	}
 	if err = p.loadEspers(); err != nil {
@@ -118,6 +124,42 @@ func (p *PR) Load(fileName string) (err error) {
 
 	if len(names) > 0 {
 		p.names = names
+	}
+	return
+}
+
+func (p *PR) loadParty() (err error) {
+	var (
+		party = pri.GetParty()
+		//id     int
+		//name   string
+		i      interface{}
+		member pri.Member
+	)
+	/*for _, d := range p.Characters {
+		if d == nil {
+			continue
+		}
+		if id, err = p.getInt(d, ID); err != nil {
+			return
+		}
+		if name, err = p.getString(d, Name); err != nil {
+			return
+		}
+		party.AddPossibleMember(&pri.Member{
+			CharacterID: id,
+			Name:        name,
+		})
+	}*/
+
+	if i, err = p.getFromTarget(p.UserData, CorpsList); err != nil {
+		return
+	}
+	for slot, c := range i.([]interface{}) {
+		if err = json.Unmarshal([]byte(c.(string)), &member); err != nil {
+			return
+		}
+		party.SetMemberByID(slot, member.CharacterID)
 	}
 	return
 }
@@ -147,6 +189,13 @@ func (p *PR) loadCharacters() (err error) {
 
 		if c.Name, err = p.getString(d, Name); err != nil {
 			return
+		}
+
+		if pr.IsMainCharacter(c.Name) {
+			pri.GetParty().AddPossibleMember(&pri.Member{
+				CharacterID: id,
+				Name:        c.Name,
+			})
 		}
 
 		params := jo.NewOrderedMap()

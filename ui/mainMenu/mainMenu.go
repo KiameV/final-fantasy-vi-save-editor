@@ -7,22 +7,24 @@ import (
 	"ffvi_editor/ui/espers"
 	"ffvi_editor/ui/inventory"
 	"ffvi_editor/ui/misc"
+	"ffvi_editor/ui/party"
 	"ffvi_editor/ui/skills"
 	"github.com/aarzilli/nucular"
 )
 
 type mainMenu struct {
-	uis [5]ui.UI
+	uis [6]ui.UI
 }
 
 func NewUI() ui.UI {
 	return &mainMenu{
-		uis: [5]ui.UI{
+		uis: [6]ui.UI{
 			character.NewUI(),
 			inventory.NewUI(),
 			skills.NewUI(),
 			espers.NewUI(),
 			misc.NewUI(),
+			party.NewUI(),
 		},
 	}
 }
@@ -31,13 +33,15 @@ func (u *mainMenu) Draw(w *nucular.Window) {
 	w.Row(5).Static(1)
 
 	for i := 0; i < len(u.uis); i++ {
+		b := u.uis[i].Behavior()
+		if b == ui.Hide ||
+			(b == ui.PrShow && !global.IsShowingPR()) ||
+			(b == ui.SnesShow && global.IsShowingPR()) {
+			continue
+		}
+		
 		if w.TreePush(nucular.TreeTab, u.uis[i].Name(), false) {
-			if global.IsShowingPR() && !u.uis[i].IsPRSupported() {
-				w.Row(30).Dynamic(1)
-				w.Label("Coming soon for Pixel Remastered", "LC")
-			} else {
-				u.uis[i].Draw(w)
-			}
+			u.uis[i].Draw(w)
 			w.TreePop()
 		}
 	}
@@ -53,6 +57,6 @@ func (u *mainMenu) Name() string {
 	return "Main Menu"
 }
 
-func (u *mainMenu) IsPRSupported() bool {
-	return true
+func (u *mainMenu) Behavior() ui.Behavior {
+	return ui.Show
 }

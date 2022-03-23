@@ -253,6 +253,6 @@ func (u *skillsUI) Name() string {
 	return "Skills"
 }
 
-func (u *skillsUI) IsPRSupported() bool {
-	return true
+func (u *skillsUI) Behavior() ui.Behavior {
+	return ui.Show
 }

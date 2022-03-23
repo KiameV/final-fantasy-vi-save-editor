@@ -254,6 +254,11 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 			return
 		}
 
+		// TODO - Party Management
+		//if err = p.saveParty(); err != nil {
+		//	return
+		//}
+
 		// Cyan
 		if jobID == 3 {
 			if err = p.saveSkills(d, pr.BushidoFrom, pr.BushidoTo, pr.BushidoOffset, pr.BushidoLookupByID); err != nil {
@@ -302,6 +307,45 @@ func (p *PR) addToNeeded(needed *map[int]int, id int) {
 	} else {
 		(*needed)[id] = count + 1
 	}
+}
+
+type partyMember struct {
+	ID          int `json:"id"`
+	CharacterID int `json:"characterId"`
+}
+
+func (p *PR) saveParty() (err error) {
+	var (
+		party   = pri.GetParty()
+		partyID = p.getPartyID()
+		b       []byte
+		sl      = make([]interface{}, 4)
+	)
+	for i, m := range party.Members {
+		pm := partyMember{
+			ID:          partyID,
+			CharacterID: m.CharacterID,
+		}
+		if b, err = json.Marshal(&pm); err != nil {
+			return
+		}
+		sl[i] = string(b)
+	}
+	return p.setTarget(p.UserData, CorpsList, sl)
+}
+
+func (p *PR) getPartyID() int {
+	i, err := p.getFromTarget(p.UserData, CorpsList)
+	if err != nil {
+		return 1
+	}
+	var m partyMember
+	for _, c := range i.([]interface{}) {
+		if err = json.Unmarshal([]byte(c.(string)), &m); err != nil {
+			return 1
+		}
+	}
+	return m.ID
 }
 
 func (p *PR) saveSpells(d *jo.OrderedMap, c *models.Character) (err error) {

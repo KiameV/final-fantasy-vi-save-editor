@@ -106,6 +106,6 @@ func (u *espersUI) Name() string {
 	return "Espers"
 }
 
-func (u *espersUI) IsPRSupported() bool {
-	return true
+func (u *espersUI) Behavior() ui.Behavior {
+	return ui.Show
 }

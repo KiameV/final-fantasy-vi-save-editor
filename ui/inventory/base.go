@@ -68,6 +68,6 @@ func (u *inventoryUI) Name() string {
 	return "Inventory"
 }
 
-func (u *inventoryUI) IsPRSupported() bool {
-	return true
+func (u *inventoryUI) Behavior() ui.Behavior {
+	return ui.Show
 }
