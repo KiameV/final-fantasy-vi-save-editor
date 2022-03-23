@@ -1,7 +1,6 @@
 package pr
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -10,8 +9,6 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
-	"io/ioutil"
-	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -63,7 +60,7 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//s = p.fixFile(s)
 
-	// TODO Debug
+	/*/ TODO Debug
 	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create("loaded.json"); err != nil {
 		}

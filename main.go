@@ -14,23 +14,26 @@ import (
 	"image"
 	"image/color"
 	"io/ioutil"
+	"strings"
 	"time"
 )
 
-const version = "1.5.5"
+const version = "1.5.6"
 
 var (
-	mainMenu     ui.UI
-	status       string
-	err          error
-	fileSelector *file.FileSelector
-	statusTimer  *time.Timer
+	mainMenu      ui.UI
+	status        string
+	err           error
+	fileSelector  *file.FileSelector
+	statusTimer   *time.Timer
+	errTextEditor nucular.TextEditor
 )
 
 func main() {
 	if global.Dir != "" {
 		global.DirFiles, _ = ioutil.ReadDir(global.Dir)
 	}
+	errTextEditor.Flags = nucular.EditReadOnly | nucular.EditSelectable | nucular.EditSelectable | nucular.EditMultiline
 	mainMenu = mm.NewUI()
 	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor - "+version, image.Point{X: 725, Y: 500}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
@@ -212,10 +215,37 @@ func updateWindow(w *nucular.Window) {
 }
 
 func popupErr(w *nucular.Window, err error) {
-	w.Master().PopupOpen("Error", nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic, rect.Rect{X: 20, Y: 100, W: 600, H: 600}, true,
+	msg := err.Error()
+	sb := strings.Builder{}
+	for i := 0; i < len(msg)-7; i++ {
+		c := msg[i]
+		if c == '\r' {
+			continue
+		}
+		if c == 'U' || c == 'u' {
+			s := msg[i : i+5]
+			if s == "Users" || s == "users" {
+				for ; i < len(msg)-6; i++ {
+					c = msg[i]
+					if c == '\\' || c == '/' {
+						s = msg[i+1 : i+6]
+						if s == "io.py" {
+							i--
+							break
+						}
+					}
+				}
+				sb.WriteString("...")
+				continue
+			}
+		}
+		sb.WriteByte(c)
+	}
+	errTextEditor.Buffer = []rune(sb.String())
+	w.Master().PopupOpen("Error", nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic, rect.Rect{X: 20, Y: 100, W: 700, H: 600}, true,
 		func(w *nucular.Window) {
-			w.Row(100).Dynamic(1)
-			w.LabelWrap(err.Error())
+			w.Row(300).Dynamic(1)
+			errTextEditor.Edit(w)
 			w.Row(25).Dynamic(1)
 			if w.Button(label.T("OK"), false) {
 				w.Close()

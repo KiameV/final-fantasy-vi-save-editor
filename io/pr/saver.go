@@ -234,12 +234,12 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 		}
 		invCounts := pri.GetInventory().GetItemLookup()
 		var eqIDCounts []string
-		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.WeaponID, 93)
-		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.ShieldID, 93)
-		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.ArmorID, 199)
-		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.HelmetID, 198)
-		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.Relic1ID, 200)
-		p.tryGetInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.Relic2ID, 200)
+		p.getInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.WeaponID, 93)
+		p.getInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.ShieldID, 93)
+		p.getInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.ArmorID, 199)
+		p.getInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.HelmetID, 198)
+		p.getInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.Relic1ID, 200)
+		p.getInvCount(&eqIDCounts, invCounts, addedItems, c.Equipment.Relic2ID, 200)
 		eq.Set("values", eqIDCounts)
 
 		if err = p.marshalTo(d, EquipmentList, eq); err != nil {
@@ -675,7 +675,7 @@ func floor0(i int) int {
 	return i
 }
 
-func (p *PR) tryGetInvCount(eq *[]string, counts map[int]int, addedItems *[]int, id int, emptyID int) {
+func (p *PR) getInvCount(eq *[]string, counts map[int]int, addedItems *[]int, id int, emptyID int) {
 	var i idCount
 	if id == 0 {
 		i.ContentID = emptyID
