@@ -8,6 +8,7 @@ type PR struct {
 	//data       []byte
 	Base       *jo.OrderedMap
 	UserData   *jo.OrderedMap
+	MapData    *jo.OrderedMap
 	Characters []*jo.OrderedMap
 	names      []unicodeNameReplace
 	//fileEnd    string
@@ -17,6 +18,7 @@ func NewPR() *PR {
 	return &PR{
 		Base:       jo.NewOrderedMap(),
 		UserData:   jo.NewOrderedMap(),
+		MapData:    jo.NewOrderedMap(),
 		Characters: make([]*jo.OrderedMap, 40),
 	}
 }

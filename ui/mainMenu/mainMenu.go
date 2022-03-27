@@ -4,6 +4,7 @@ import (
 	"ffvi_editor/global"
 	"ffvi_editor/ui"
 	"ffvi_editor/ui/character"
+	"ffvi_editor/ui/cheats"
 	"ffvi_editor/ui/espers"
 	"ffvi_editor/ui/inventory"
 	"ffvi_editor/ui/misc"
@@ -13,18 +14,19 @@ import (
 )
 
 type mainMenu struct {
-	uis [6]ui.UI
+	uis [7]ui.UI
 }
 
 func NewUI() ui.UI {
 	return &mainMenu{
-		uis: [6]ui.UI{
+		uis: [7]ui.UI{
 			character.NewUI(),
 			inventory.NewUI(),
 			skills.NewUI(),
 			espers.NewUI(),
 			misc.NewUI(),
 			party.NewUI(),
+			cheats.NewUI(),
 		},
 	}
 }
@@ -39,7 +41,7 @@ func (u *mainMenu) Draw(w *nucular.Window) {
 			(b == ui.SnesShow && global.IsShowingPR()) {
 			continue
 		}
-		
+
 		if w.TreePush(nucular.TreeTab, u.uis[i].Name(), false) {
 			u.uis[i].Draw(w)
 			w.TreePop()

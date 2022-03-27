@@ -16,11 +16,14 @@ type Party struct {
 	Members       [4]*Member
 	Possible      []*Member
 	PossibleNames []string
+	Enabled       bool
 }
 
 func GetParty() *Party {
 	if party == nil {
-		party = &Party{}
+		party = &Party{
+			Enabled: false,
+		}
 		party.AddPossibleMember(&Member{
 			CharacterID: 0,
 			Name:        "Empty",

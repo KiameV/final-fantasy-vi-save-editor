@@ -1,6 +1,7 @@
 package pr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"ffvi_editor/models"
@@ -9,6 +10,8 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -60,20 +63,20 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//s = p.fixFile(s)
 
-	/*/ TODO Debug
-	if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
-		if _, err = os.Create("loaded.json"); err != nil {
+	if len(os.Args) >= 2 && os.Args[1] == "print" {
+		if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
+			if _, err = os.Create("loaded.json"); err != nil {
+			}
+		}
+		t := strings.ReplaceAll(s, `\`, ``)
+		t = strings.ReplaceAll(t, `"{`, `{`)
+		t = strings.ReplaceAll(t, `}"`, `}`)
+		var prettyJSON bytes.Buffer
+		err = json.Indent(&prettyJSON, []byte(t), "", "\t")
+		if err == nil {
+			err = ioutil.WriteFile("loaded.json", prettyJSON.Bytes(), 0644)
 		}
 	}
-	t := strings.ReplaceAll(s, `\`, ``)
-	t = strings.ReplaceAll(t, `"{`, `{`)
-	t = strings.ReplaceAll(t, `}"`, `}`)
-	var prettyJSON bytes.Buffer
-	err = json.Indent(&prettyJSON, []byte(t), "", "\t")
-	if err == nil {
-		err = ioutil.WriteFile("loaded.json", prettyJSON.Bytes(), 0644)
-	}
-	///TODO END /*/
 
 	if err = p.loadBase(s); err != nil {
 		return
@@ -84,6 +87,10 @@ func (p *PR) Load(fileName string) (err error) {
 	//}
 
 	if err = p.unmarshalFrom(p.Base, UserData, p.UserData); err != nil {
+		return
+	}
+
+	if err = p.unmarshalFrom(p.Base, MapData, p.MapData); err != nil {
 		return
 	}
 
@@ -116,6 +123,9 @@ func (p *PR) Load(fileName string) (err error) {
 		return
 	}
 	if err = p.loadInventory(); err != nil {
+		return
+	}
+	if err = p.loadCheats(); err != nil {
 		return
 	}
 
@@ -188,12 +198,12 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		if pr.IsMainCharacter(c.Name) {
-			pri.GetParty().AddPossibleMember(&pri.Member{
-				CharacterID: id,
-				Name:        c.Name,
-			})
-		}
+		//if pr.IsMainCharacter(c.Name) {
+		pri.GetParty().AddPossibleMember(&pri.Member{
+			CharacterID: id,
+			Name:        c.Name,
+		})
+		//}
 
 		params := jo.NewOrderedMap()
 		if err = p.unmarshalFrom(d, Parameter, params); err != nil {
@@ -480,6 +490,20 @@ func (p *PR) loadInventory() (err error) {
 	return nil
 }
 
+func (p *PR) loadCheats() (err error) {
+	c := pri.GetCheats()
+	if c.OpenedChestCount, err = p.getInt(p.UserData, OpenChestCount); err != nil {
+		return
+	}
+	if c.ClearFlag, err = p.getFlag(p.Base, ClearFlag); err != nil {
+		return
+	}
+	if c.IsCompleteFlag, err = p.getFlag(p.Base, IsCompleteFlag); err != nil {
+		return
+	}
+	return
+}
+
 func (p *PR) getString(c *jo.OrderedMap, key string) (s string, err error) {
 	j, ok := c.GetValue(key)
 	if !ok {
@@ -513,6 +537,31 @@ func (p *PR) getInt(c *jo.OrderedMap, key string) (i int, err error) {
 		}
 	default:
 		err = fmt.Errorf("unable to parse field %s value %v ", key, j)
+	}
+	return
+}
+
+func (p *PR) getJsonInts(data *jo.OrderedMap, key string) (ints []interface{}, err error) {
+	j, ok := data.GetValue(key)
+	if !ok {
+		err = fmt.Errorf("unable to find %s", key)
+	}
+	ints, ok = j.([]interface{})
+	if !ok {
+		err = fmt.Errorf("unable to load %s", key)
+	}
+	return
+}
+
+func (p *PR) getFlag(m *jo.OrderedMap, key string) (b bool, err error) {
+	var i int
+	if i, err = p.getInt(m, key); err != nil {
+		return
+	}
+	if i == 0 {
+		b = false
+	} else {
+		b = true
 	}
 	return
 }

@@ -53,6 +53,16 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	if err = p.saveMiscStats(); err != nil {
 		return
 	}
+	if pri.GetParty().Enabled {
+		if err = p.saveParty(); err != nil {
+			return
+		}
+	}
+	if pri.GetCheats().Enabled {
+		if err = p.saveCheats(); err != nil {
+			return
+		}
+	}
 
 	iSlice := make([]interface{}, 0, len(p.Characters))
 	for _, c := range p.Characters {
@@ -75,6 +85,10 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	}
 
 	if err = p.marshalTo(p.Base, UserData, p.UserData); err != nil {
+		return
+	}
+
+	if err = p.marshalTo(p.Base, MapData, p.MapData); err != nil {
 		return
 	}
 
@@ -253,11 +267,6 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 		if err = p.saveSpells(d, c); err != nil {
 			return
 		}
-
-		// TODO - Party Management
-		//if err = p.saveParty(); err != nil {
-		//	return
-		//}
 
 		// Cyan
 		if jobID == 3 {
@@ -629,6 +638,33 @@ func (p *PR) saveMiscStats() (err error) {
 	return
 }
 
+func (p *PR) saveCheats() (err error) {
+	c := pri.GetCheats()
+	if err = p.setValue(p.UserData, OpenChestCount, c.OpenedChestCount); err != nil {
+		return
+	}
+	if err = p.setFlag(p.Base, ClearFlag, c.ClearFlag); err != nil {
+		return
+	}
+	if err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag); err != nil {
+		return
+	}
+	if c.SetAllEncounters {
+		var sl []interface{}
+		if sl, err = p.getJsonInts(p.MapData, BeastFieldEncountExchangeFlags); err != nil {
+			return
+		}
+		set := make([]int, len(sl))
+		for i, _ := range sl {
+			set[i] = 1
+		}
+		if err = p.setValue(p.MapData, BeastFieldEncountExchangeFlags, set); err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (p *PR) SetIntInSlice(to *jo.OrderedMap, key string, value int) (err error) {
 	var (
 		i, ok = to.GetValue(key)
@@ -654,6 +690,14 @@ func (p *PR) setValue(to *jo.OrderedMap, key string, value interface{}) (err err
 	}
 	to.Set(key, value)
 	return
+}
+
+func (p *PR) setFlag(to *jo.OrderedMap, key string, value bool) error {
+	var i int
+	if value {
+		i = 1
+	}
+	return p.setValue(to, key, i)
 }
 
 func (p *PR) marshalTo(to *jo.OrderedMap, key string, value *jo.OrderedMap) error {

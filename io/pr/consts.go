@@ -20,6 +20,7 @@ const (
 	TimeStamp                      = "timeStamp"
 	ClearFlag                      = "clearFlag"
 	IsCompleteFlag                 = "isCompleteFlag"
+	MapData                        = "mapData"
 	//ConfigData                   = "configData"
 	//PlayTime                     = "playTime"
 )
