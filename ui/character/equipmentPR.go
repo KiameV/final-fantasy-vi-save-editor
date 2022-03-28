@@ -24,8 +24,8 @@ func (u *equipmentUI) drawPR(w *nucular.Window) {
 		"Armor ID:", &character.Equipment.ArmorID, 199, 244, 274,
 		&helpers.HelmetArmorHelp1, &helpers.HelmetArmorHelp2)
 	count += u.drawPrPair(w, 400,
-		"Relic 1 ID:", &character.Equipment.Relic1ID, 200, 275, 299,
-		"Relic 2 ID:", &character.Equipment.Relic2ID, 200, 275, 299,
+		"Relic 1 ID:", &character.Equipment.Relic1ID, 200, 275, 329,
+		"Relic 2 ID:", &character.Equipment.Relic2ID, 200, 275, 329,
 		&helpers.RelicHelp1, &helpers.RelicHelp2)
 	u.countLast = count
 }
