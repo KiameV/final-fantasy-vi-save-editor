@@ -7,7 +7,6 @@ import (
 
 var (
 	PWD      string
-	Dir      = ""
 	DirFiles []fs.FileInfo
 	FileName string
 	FileType SaveFileType

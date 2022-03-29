@@ -6,21 +6,22 @@ import (
 	"github.com/sqweek/dialog"
 	"io/fs"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 )
 
 func OpenDirAndFileDialog(w *nucular.Window) (dir string, files []fs.FileInfo, err error) {
 	d := dialog.Directory()
-	if global.Dir != "" {
-		d = d.SetStartDir(global.Dir)
+
+	if GetConfig().SaveDir != "" {
+		d = d.SetStartDir(GetConfig().SaveDir)
 	} else {
 		d = d.SetStartDir(".")
 	}
 	d = d.Title("Select Save Directory")
 
 	if dir, err = d.Browse(); err == nil {
-		updateConfig(dir)
+		GetConfig().SaveDir = dir
+		SaveConfig()
 		files, err = ioutil.ReadDir(dir)
 	}
 	return
@@ -45,13 +46,8 @@ func OpenInvFileDialog(w *nucular.Window) (data []byte, err error) {
 
 func OpenFileNoDialog(file string, fileType global.SaveFileType) (err error) {
 	if err = CreateSnes(fileType).Load(file); err == nil {
-		updateConfig(filepath.Dir(file))
+		GetConfig().SaveDir = filepath.Dir(file)
+		SaveConfig()
 	}
 	return
-}
-
-func updateConfig(dir string) {
-	if f, e1 := os.Create(filepath.Join(global.PWD, "ff6editor.config")); e1 == nil {
-		_, _ = f.Write([]byte(dir))
-	}
 }

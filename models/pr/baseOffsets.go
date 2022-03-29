@@ -9,17 +9,17 @@ type CharacterBase struct {
 }
 
 var (
-	CharacterByName  = make(map[string]*CharacterBase)
-	CharacterByID    = make(map[int]*CharacterBase)
-	CharacterByJobID = make(map[int]*CharacterBase)
-	CharacterBases   = []*CharacterBase{
+	CharacterOffsetByName  = make(map[string]*CharacterBase)
+	CharacterOffsetByID    = make(map[int]*CharacterBase)
+	CharacterOffsetByJobID = make(map[int]*CharacterBase)
+	CharacterOffsetBases   = []*CharacterBase{
 		{
 			ID:    1,
 			Name:  "Terra",
 			JobID: 1,
 			//Character: Terra,
-			HPBase: 63,
-			MPBase: 138,
+			HPBase: 29,
+			MPBase: 11,
 		},
 		{
 			ID:    2,
@@ -66,7 +66,7 @@ var (
 			Name:  "Sabin",
 			JobID: 6,
 			//Character: Sabin,
-			HPBase: 76,
+			HPBase: 58,
 			MPBase: 3,
 		},
 		{
@@ -107,7 +107,7 @@ var (
 			JobID: 12,
 			//Character: Gau,
 			HPBase: 45,
-			MPBase: 8,
+			MPBase: 10,
 		},
 		{
 			ID:    26,
@@ -161,18 +161,18 @@ var (
 )
 
 func init() {
-	for _, c := range CharacterBases {
-		CharacterByName[c.Name] = c
-		CharacterByID[c.ID] = c
-		CharacterByJobID[c.JobID] = c
+	for _, c := range CharacterOffsetBases {
+		CharacterOffsetByName[c.Name] = c
+		CharacterOffsetByID[c.ID] = c
+		CharacterOffsetByJobID[c.JobID] = c
 	}
 }
 
-func GetCharacter(id, jobID int) (c *CharacterBase, ok bool) {
+func GetCharacterBaseOffset(id, jobID int) (c *CharacterBase, ok bool) {
 	if id <= 16 {
-		c, ok = CharacterByID[id]
+		c, ok = CharacterOffsetByID[id]
 	} else if id != 21 {
-		c, ok = CharacterByJobID[jobID]
+		c, ok = CharacterOffsetByJobID[jobID]
 	}
 	return
 }

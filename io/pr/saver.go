@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/global"
+	"ffvi_editor/io"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
@@ -19,7 +20,7 @@ import (
 
 func (p *PR) Save(slot int, fileName string) (err error) {
 	var (
-		toFile   = filepath.Join(global.Dir, fileName)
+		toFile   = filepath.Join(io.GetConfig().SaveDir, fileName)
 		temp     = filepath.Join(global.PWD, "temp")
 		cmd      = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
 		needed   = make(map[int]int)
@@ -167,7 +168,7 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 			return
 		}
 
-		o, found := GetCharacter(id, jobID)
+		o, found := pri.GetCharacterBaseOffset(id, jobID)
 		if !found {
 			continue
 		}

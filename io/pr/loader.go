@@ -187,7 +187,7 @@ func (p *PR) loadCharacters() (err error) {
 			return
 		}
 
-		o, found := GetCharacter(id, jobID)
+		o, found := pri.GetCharacterBaseOffset(id, jobID)
 		if !found {
 			continue
 		}

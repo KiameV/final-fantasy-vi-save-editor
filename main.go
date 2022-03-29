@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const version = "1.6.1"
+const version = "1.6.2"
 
 var (
 	mainMenu      ui.UI
@@ -30,12 +30,21 @@ var (
 )
 
 func main() {
-	if global.Dir != "" {
-		global.DirFiles, _ = ioutil.ReadDir(global.Dir)
+	dir := io.GetConfig().SaveDir
+	if dir != "" {
+		global.DirFiles, _ = ioutil.ReadDir(dir)
 	}
 	errTextEditor.Flags = nucular.EditReadOnly | nucular.EditSelectable | nucular.EditSelectable | nucular.EditMultiline
 	mainMenu = mm.NewUI()
-	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor - "+version, image.Point{X: 725, Y: 500}, updateWindow)
+	var (
+		x = io.GetConfig().WindowX
+		y = io.GetConfig().WindowY
+	)
+	if x == 0 || y == 0 {
+		x = 725
+		y = 800
+	}
+	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor - "+version, image.Point{X: x, Y: y}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
 	wnd.Main()
 }

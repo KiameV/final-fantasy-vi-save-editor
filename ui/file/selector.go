@@ -24,18 +24,19 @@ func NewFileSelector() *FileSelector {
 }
 
 func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
-	if global.Dir == "" || len(global.DirFiles) == 0 {
-		if global.Dir, global.DirFiles, err = io.OpenDirAndFileDialog(w); err != nil {
+	dir := io.GetConfig().SaveDir
+	if dir == "" || len(global.DirFiles) == 0 {
+		if dir, global.DirFiles, err = io.OpenDirAndFileDialog(w); err != nil {
 			return
 		}
 		fs.updateSlots()
 	}
 
 	w.Row(30).Static(400, 100, 100, 100)
-	w.Label(global.Dir, "LC")
+	w.Label(dir, "LC")
 	if w.ButtonText("Change") {
 		if d, f, e1 := io.OpenDirAndFileDialog(w); e1 == nil {
-			global.Dir = d
+			dir = d
 			global.DirFiles = f
 			fs.updateSlots()
 		}
@@ -72,7 +73,7 @@ func (fs *FileSelector) drawLoadButton(w *nucular.Window, s *prSlot) (loaded boo
 		w.Row(30).Static(300)
 		if w.ButtonText("Load " + s.Name) {
 			p := pr.NewPR()
-			if err = p.Load(path.Join(global.Dir, s.File.Name())); err == nil {
+			if err = p.Load(path.Join(io.GetConfig().SaveDir, s.File.Name())); err == nil {
 				PrIO = p
 				global.FileName = s.File.Name()
 				loaded = true
@@ -83,11 +84,12 @@ func (fs *FileSelector) drawLoadButton(w *nucular.Window, s *prSlot) (loaded boo
 }
 
 func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
+	dir := io.GetConfig().SaveDir
 	w.Row(30).Static(400, 100, 100, 100)
-	w.Label(global.Dir, "LC")
+	w.Label(dir, "LC")
 	if w.ButtonText("Change") {
 		if d, f, e1 := io.OpenDirAndFileDialog(w); e1 == nil {
-			global.Dir = d
+			dir = d
 			global.DirFiles = f
 		}
 	}
@@ -98,7 +100,7 @@ func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {
 		global.RollbackShowing()
 		global.SetShowing(global.GetCurrentShowing())
 	}
-	
+
 	for i, s := range prSlots {
 		if i == 0 || s.Name == quickSave {
 			continue
@@ -130,7 +132,7 @@ func (fs *FileSelector) updateSlots() {
 	for _, s := range prSlots {
 		s.File = nil
 	}
-	global.DirFiles, _ = ioutil.ReadDir(global.Dir)
+	global.DirFiles, _ = ioutil.ReadDir(io.GetConfig().SaveDir)
 	for _, f := range global.DirFiles {
 		if s, ok := slotLookup[f.Name()]; ok {
 			s.File = f

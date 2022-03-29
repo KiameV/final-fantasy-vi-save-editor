@@ -5,6 +5,7 @@ import (
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/snes"
+	"ffvi_editor/models/pr"
 	"ffvi_editor/ui/file"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
@@ -67,12 +68,52 @@ func (u *statsUI) Draw(w *nucular.Window) {
 	w.LayoutSpacePush(rect.Rect{
 		X: 180,
 		Y: 0,
-		W: 160,
+		W: 50,
 		H: 22,
 	})
-	if w.ButtonText("Reset Exp") {
+	w.Label("Reset:", "LC")
+	w.LayoutSpacePush(rect.Rect{
+		X: 235,
+		Y: 0,
+		W: 30,
+		H: 22,
+	})
+	if w.ButtonText("Exp") {
 		character.Exp = int(consts.LevelToExp[character.Level])
 	}
+	w.LayoutSpacePush(rect.Rect{
+		X: 270,
+		Y: 0,
+		W: 30,
+		H: 22,
+	})
+	if w.ButtonText("HP") {
+		if offset, ok := pr.CharacterOffsetByName[character.RootName]; ok {
+			v := int(pr.HpMpCounts[character.Level].HP) + offset.HPBase
+			if v > 9999 {
+				v = 9999
+			}
+			character.HP.Current = v
+			character.HP.Max = v
+		}
+	}
+	w.LayoutSpacePush(rect.Rect{
+		X: 305,
+		Y: 0,
+		W: 30,
+		H: 22,
+	})
+	if w.ButtonText("MP") {
+		if offset, ok := pr.CharacterOffsetByName[character.RootName]; ok {
+			v := int(pr.HpMpCounts[character.Level].MP) + offset.MPBase
+			if v > 999 {
+				v = 999
+			}
+			character.MP.Current = v
+			character.MP.Max = v
+		}
+	}
+
 	y += 24
 
 	addPropertyInt(w, 0, y, "Level", &character.Level, 1, 99, 1)

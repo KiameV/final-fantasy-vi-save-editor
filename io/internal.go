@@ -3,24 +3,15 @@ package io
 import (
 	"ffvi_editor/global"
 	"github.com/sqweek/dialog"
-	"os"
-	"path/filepath"
 )
-
-func init() {
-	if global.Dir == "" {
-		if dir, err := os.ReadFile(filepath.Join(global.PWD, "ff6editor.config")); err == nil {
-			global.Dir = string(dir)
-		}
-	}
-}
 
 func createDialog(fileType global.SaveFileType) *dialog.FileBuilder {
 	d := dialog.File()
-	if global.Dir == "" {
+	dir := GetConfig().SaveDir
+	if dir == "" {
 		d = d.SetStartDir(".")
 	} else {
-		d = d.SetStartDir(global.Dir)
+		d = d.SetStartDir(dir)
 	}
 
 	switch fileType {
