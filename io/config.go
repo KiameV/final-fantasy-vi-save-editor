@@ -34,6 +34,12 @@ func init() {
 
 func SaveConfig() {
 	if f, e1 := os.Create(filepath.Join(global.PWD, "ff6editor.config")); e1 == nil {
+		if config.WindowX == 0 {
+			config.WindowX = global.WindowWidth
+		}
+		if config.WindowY == 0 {
+			config.WindowY = global.WindowHeight
+		}
 		b, err := json.Marshal(&config)
 		if err == nil {
 			os.WriteFile(filepath.Join(global.PWD, file), b, 644)

@@ -5,6 +5,11 @@ import (
 	"os"
 )
 
+const (
+	WindowWidth  = 725
+	WindowHeight = 800
+)
+
 var (
 	PWD      string
 	DirFiles []fs.FileInfo

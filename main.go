@@ -41,8 +41,8 @@ func main() {
 		y = io.GetConfig().WindowY
 	)
 	if x == 0 || y == 0 {
-		x = 725
-		y = 800
+		x = global.WindowWidth
+		y = global.WindowHeight
 	}
 	wnd := nucular.NewMasterWindowSize(0, "Final Fantasy VI Editor - "+version, image.Point{X: x, Y: y}, updateWindow)
 	wnd.SetStyle(style.FromTable(customTheme, 1.2))
