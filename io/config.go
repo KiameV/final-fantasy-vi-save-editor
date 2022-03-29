@@ -12,8 +12,8 @@ const file = "ff6editor.config"
 var config ConfigData
 
 type ConfigData struct {
-	WindowX int    `json:"wx"`
-	WindowY int    `json:"wy"`
+	WindowX int    `json:"width"`
+	WindowY int    `json:"height""`
 	SaveDir string `json:"dir"`
 }
 
