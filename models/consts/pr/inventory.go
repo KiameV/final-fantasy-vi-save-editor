@@ -13,9 +13,9 @@ const (
 `
 	EmptyWeaponShield = `93 - Empty
 `
-	EmptyHelmet = `198 - Empty
+	EmptyHelmet = `199 - Empty
 `
-	EmptyArmor = `199 - Empty
+	EmptyArmor = `198 - Empty
 `
 	EmptyRelic = `200 - Empty
 `

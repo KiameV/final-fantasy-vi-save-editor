@@ -20,8 +20,8 @@ func (u *equipmentUI) drawPR(w *nucular.Window) {
 		&helpers.WeaponShieldHelp1, &helpers.WeaponShieldHelp2)
 	count += widgets.DrawItemFinder(w, 550, 0)
 	count += u.drawPrPair(w, 200,
-		"Helmet ID:", &character.Equipment.HelmetID, 198, 216, 242,
-		"Armor ID:", &character.Equipment.ArmorID, 199, 244, 274,
+		"Helmet ID:", &character.Equipment.HelmetID, 199, 216, 242,
+		"Armor ID:", &character.Equipment.ArmorID, 198, 244, 274,
 		&helpers.HelmetArmorHelp1, &helpers.HelmetArmorHelp2)
 	count += u.drawPrPair(w, 400,
 		"Relic 1 ID:", &character.Equipment.Relic1ID, 200, 275, 329,
