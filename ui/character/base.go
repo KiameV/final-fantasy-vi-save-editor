@@ -60,27 +60,34 @@ func (u *characterUI) Draw(w *nucular.Window) {
 	w.Spacing(1)
 	w.CheckboxText("Auto-Expand All", &u.expandAll)
 
-	if w.TreePush(nucular.TreeTab, u.makeLabel("Stats"), true) {
-		u.stats.Draw(w)
-		w.TreePop()
-	}
-	if w.TreePush(nucular.TreeTab, u.makeLabel("Magic"), u.expandAll) {
-		u.magic.Draw(w)
-		w.TreePop()
-	}
-	if w.TreePush(nucular.TreeTab, u.makeLabel("Equipment"), u.expandAll) {
-		u.equipment.Draw(w)
-		w.TreePop()
-	}
-	if !global.IsShowingPR() {
-		if w.TreePush(nucular.TreeTab, u.makeLabel("Commands"), u.expandAll) {
-			u.commands.Draw(w)
+	w.Row(18).Static(300)
+	if !character.IsEnabled {
+		w.CheckboxText("Disabled (cannot be used in the game)", &character.IsEnabled)
+	} else {
+		w.CheckboxText("Enabled", &character.IsEnabled)
+
+		if w.TreePush(nucular.TreeTab, u.makeLabel("Stats"), true) {
+			u.stats.Draw(w)
 			w.TreePop()
 		}
-
-		if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
-			u.statusEffects.Draw(w)
+		if w.TreePush(nucular.TreeTab, u.makeLabel("Magic"), u.expandAll) {
+			u.magic.Draw(w)
 			w.TreePop()
+		}
+		if w.TreePush(nucular.TreeTab, u.makeLabel("Equipment"), u.expandAll) {
+			u.equipment.Draw(w)
+			w.TreePop()
+		}
+		if !global.IsShowingPR() {
+			if w.TreePush(nucular.TreeTab, u.makeLabel("Commands"), u.expandAll) {
+				u.commands.Draw(w)
+				w.TreePop()
+			}
+
+			if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
+				u.statusEffects.Draw(w)
+				w.TreePop()
+			}
 		}
 	}
 }

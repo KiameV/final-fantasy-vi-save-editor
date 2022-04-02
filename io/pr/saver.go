@@ -179,6 +179,10 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 			return
 		}
 
+		if err = p.setValue(d, IsEnableCorps, c.IsEnabled); err != nil {
+			return
+		}
+
 		params := jo.NewOrderedMap()
 		if err = p.unmarshalFrom(d, Parameter, params); err != nil {
 			return

@@ -29,14 +29,17 @@ func (u *partyUI) Draw(w *nucular.Window) {
 
 func (u *partyUI) drawRow(w *nucular.Window, slot int, p *pr.Party, selected *int) {
 
-	w.Row(24).Static(60, 200, 200)
+	w.Row(24).Static(60, 200, 200, 60)
 	w.Label(fmt.Sprintf("Member: %d", slot+1), "LC")
 	if i := w.ComboSimple(p.PossibleNames, *selected, 12); i != *selected {
 		*selected = i
 		p.Members[slot] = p.Possible[i]
 	}
 	if !pri.IsMainCharacter(p.PossibleNames[*selected]) {
-		w.Label("Will not work in most cases", "LC")
+		c := pr.GetCharacter(p.PossibleNames[*selected])
+		if !c.IsEnabled {
+			w.CheckboxText("Enable?", &c.IsEnabled)
+		}
 	}
 	//if p.Members[slot].CharacterID != 0 {
 	//	w.CheckboxText("Enable Equipment: ", &p.Members[slot].EnableEquipment)

@@ -205,6 +205,10 @@ func (p *PR) loadCharacters() (err error) {
 		})
 		//}
 
+		if c.IsEnabled, err = p.getBool(d, IsEnableCorps); err != nil {
+			return
+		}
+
 		params := jo.NewOrderedMap()
 		if err = p.unmarshalFrom(d, Parameter, params); err != nil {
 			return
@@ -511,6 +515,17 @@ func (p *PR) getString(c *jo.OrderedMap, key string) (s string, err error) {
 	}
 	if s, ok = j.(string); !ok {
 		err = fmt.Errorf("unable to parse field %s value %v ", key, j)
+	}
+	return
+}
+
+func (p *PR) getBool(c *jo.OrderedMap, key string) (b bool, err error) {
+	j, ok := c.GetValue(key)
+	if !ok {
+		err = fmt.Errorf("unable to find %s", key)
+	}
+	if b, ok = j.(bool); !ok {
+		err = fmt.Errorf("unable to parse field %s value %v", key, j)
 	}
 	return
 }

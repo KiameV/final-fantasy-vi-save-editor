@@ -5,16 +5,17 @@ import (
 )
 
 type Character struct {
-	RootName string
-	Name     string
-	Level    int
-	Exp      int
-	HP       CurrentMax
-	MP       CurrentMax
-	Vigor    int
-	Stamina  int
-	Speed    int
-	Magic    int
+	RootName  string
+	Name      string
+	Level     int
+	Exp       int
+	HP        CurrentMax
+	MP        CurrentMax
+	Vigor     int
+	Stamina   int
+	Speed     int
+	Magic     int
+	IsEnabled bool
 	//Esper   *Esper
 
 	SpellsByIndex []*Spell
