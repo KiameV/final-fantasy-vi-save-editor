@@ -2,24 +2,36 @@ package pr
 
 var (
 	Characters = []string{
-		"Terra",
-		"Locke",
-		"Cyan",
-		"Shadow",
-		"Edgar",
-		"Sabin",
 		"Celes",
-		"Strago",
-		"Relm",
-		"Setzer",
-		"Mog",
+		"Cyan",
+		"Edgar",
+		"Locke",
 		"Gau",
 		"Gogo",
+		"Mog",
+		"Relm",
+		"Sabin",
+		"Setzer",
+		"Shadow",
+		"Strago",
+		"Terra",
 		"Umaro",
-		"Wedge",
+		"??????",
+		"Banon",
 		"Biggs",
 		"Leo",
-		"Banon",
+		"Maduin",
+		"Wedge",
+		"Cosmog",
+		"Moggie",
+		"Moghan",
+		"Moglin",
+		"Mogret",
+		"Mogsy",
+		"Moguel",
+		"Mogwin",
+		"Molulu",
+		"Mugmug",
 	}
 	CharacterLookup = make(map[string]int)
 )
@@ -38,6 +50,8 @@ func GetCharacterIndex(name string) int {
 	}
 }
 
+/*
 func IsMainCharacter(n string) bool {
 	return !(n == "Wedge" || n == "Biggs" || n == "Leo" || n == "Banon")
 }
+*/

@@ -24,7 +24,7 @@ func (u *cheatUI) Draw(w *nucular.Window) {
 
 	w.Row(24).Static(250, 400)
 	w.PropertyInt("Chests Opened", 0, &c.OpenedChestCount, 214, 1, 0)
-	w.Label("Does not update steam. Maybe need to open one more chest?", "LC")
+	w.Label("Set to 218 for steam achievement", "LC")
 
 	w.Row(24).Static(300)
 	w.CheckboxText("Clear Flag", &c.ClearFlag)

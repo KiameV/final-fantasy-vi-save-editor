@@ -1,7 +1,6 @@
 package party
 
 import (
-	pri "ffvi_editor/models/consts/pr"
 	"ffvi_editor/models/pr"
 	"ffvi_editor/ui"
 	"fmt"
@@ -22,20 +21,21 @@ func (u *partyUI) Draw(w *nucular.Window) {
 	w.Label("Currently In Testing", "LC")
 	w.Row(24).Static(260)
 	w.CheckboxText("Enable", &p.Enabled)
+	//w.Row(24).Static(260)
+	//w.CheckboxText("Include NPCs", &p.IncludeNPCs)
 	for i := 0; i < 4; i++ {
 		u.drawRow(w, i, p, &u.selected[i])
 	}
 }
 
 func (u *partyUI) drawRow(w *nucular.Window, slot int, p *pr.Party, selected *int) {
-
 	w.Row(24).Static(60, 200, 200, 60)
 	w.Label(fmt.Sprintf("Member: %d", slot+1), "LC")
 	if i := w.ComboSimple(p.PossibleNames, *selected, 12); i != *selected {
 		*selected = i
-		p.Members[slot] = p.Possible[i]
+		p.Members[slot] = p.Possible[p.PossibleNames[i]]
 	}
-	if !pri.IsMainCharacter(p.PossibleNames[*selected]) {
+	if *selected > 0 {
 		c := pr.GetCharacter(p.PossibleNames[*selected])
 		if !c.IsEnabled {
 			w.CheckboxText("Enable?", &c.IsEnabled)

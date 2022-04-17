@@ -309,7 +309,7 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 
 func (p *PR) populateNeeded(needed *map[int]int) {
 	for _, c := range pri.Characters {
-		if pr.IsMainCharacter(c.RootName) {
+		if c.IsEnabled { //pr.IsMainCharacter(c.RootName) {
 			p.addToNeeded(needed, c.Equipment.WeaponID)
 		}
 	}

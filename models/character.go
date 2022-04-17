@@ -5,6 +5,7 @@ import (
 )
 
 type Character struct {
+	ID        int
 	RootName  string
 	Name      string
 	Level     int
@@ -16,6 +17,7 @@ type Character struct {
 	Speed     int
 	Magic     int
 	IsEnabled bool
+	IsNPC     bool
 	//Esper   *Esper
 
 	SpellsByIndex []*Spell

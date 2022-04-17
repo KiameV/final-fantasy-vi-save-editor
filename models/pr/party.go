@@ -2,7 +2,13 @@ package pr
 
 import (
 	"fmt"
+	"sort"
 )
+
+var empty = &Member{
+	CharacterID: 0,
+	Name:        "Empty",
+}
 
 type Member struct {
 	CharacterID int `json:"characterId"`
@@ -14,9 +20,11 @@ var party *Party
 
 type Party struct {
 	Members       [4]*Member
-	Possible      []*Member
+	Possible      map[string]*Member
 	PossibleNames []string
-	Enabled       bool
+	//PossibleNamesWithNPCs []string
+	Enabled bool
+	//IncludeNPCs bool
 }
 
 func GetParty() *Party {
@@ -24,25 +32,30 @@ func GetParty() *Party {
 		party = &Party{
 			Enabled: false,
 		}
-		party.AddPossibleMember(&Member{
-			CharacterID: 0,
-			Name:        "Empty",
-		})
+		party.Clear()
 	}
 	return party
 }
 
 func (p *Party) Clear() {
-	for i := 0; i < len(p.Members); i++ {
-		p.Members[i] = p.Possible[0]
-	}
-	p.Possible = p.Possible[:1]
-	p.PossibleNames = p.PossibleNames[:1]
+	p.Possible = make(map[string]*Member)
+	p.PossibleNames = make([]string, 0, 40)
+	//p.PossibleNamesWithNPCs = make([]string, 0, 40)
+	p.AddPossibleMember(empty)
 }
 
 func (p *Party) AddPossibleMember(m *Member) {
-	p.Possible = append(p.Possible, m)
+	//c := GetCharacterByID(m.CharacterID)
+
+	p.Possible[m.Name] = m
+
+	//if !c.IsNPC {
 	p.PossibleNames = append(p.PossibleNames, m.Name)
+	sort.Strings(p.PossibleNames)
+	//}
+
+	//p.PossibleNamesWithNPCs = append(p.PossibleNamesWithNPCs, m.Name)
+	//sort.Strings(p.PossibleNamesWithNPCs)
 }
 
 func (p *Party) SetMemberByID(slot int, characterID int) error {
@@ -66,8 +79,13 @@ func (p *Party) SetMemberByName(slot int, name string) error {
 }
 
 func (p *Party) GetPossibleIndex(m *Member) int {
-	for i, po := range p.Possible {
-		if m == po {
+	names := p.PossibleNames
+	//if p.IncludeNPCs {
+	//	names = p.PossibleNamesWithNPCs
+	//}
+
+	for i, po := range names {
+		if m.Name == po {
 			return i
 		}
 	}

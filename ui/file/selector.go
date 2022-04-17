@@ -5,8 +5,11 @@ import (
 	"ffvi_editor/io"
 	"ffvi_editor/io/pr"
 	"github.com/aarzilli/nucular"
+	"github.com/aarzilli/nucular/label"
+	"github.com/aarzilli/nucular/rect"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"path"
 )
 
@@ -50,7 +53,7 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 	}
 
 	if len(prSlots) == 0 {
-		w.Row(30).Static(300)
+		w.Row(30).Static(300, 100, 100)
 		w.Label("No saves found in this directory.", "LC")
 	} else {
 		if loaded, err = fs.drawLoadButton(w, prSlots[21]); loaded || err != nil {
@@ -70,7 +73,7 @@ func (fs *FileSelector) DrawLoad(w *nucular.Window) (loaded bool, err error) {
 
 func (fs *FileSelector) drawLoadButton(w *nucular.Window, s *prSlot) (loaded bool, err error) {
 	if s.File != nil {
-		w.Row(30).Static(300)
+		w.Row(30).Static(300, 50, 100)
 		if w.ButtonText("Load " + s.Name) {
 			p := pr.NewPR()
 			if err = p.Load(path.Join(io.GetConfig().SaveDir, s.File.Name())); err == nil {
@@ -79,8 +82,34 @@ func (fs *FileSelector) drawLoadButton(w *nucular.Window, s *prSlot) (loaded boo
 				loaded = true
 			}
 		}
+		w.Spacing(1)
+		if w.ButtonText("Delete") {
+			fs.confirmDialog(w, func() {
+				os.Remove(path.Join(io.GetConfig().SaveDir, s.File.Name()))
+				fs.updateSlots()
+			})
+		}
 	}
 	return
+}
+
+func (fs *FileSelector) confirmDialog(w *nucular.Window, callback func()) {
+	w.Master().PopupOpen(
+		"Confirm",
+		nucular.WindowMovable|nucular.WindowTitle|nucular.WindowDynamic|nucular.WindowNoScrollbar,
+		rect.Rect{X: 20, Y: 100, W: 325, H: 150},
+		true, func(w *nucular.Window) {
+			w.Row(25).Dynamic(1)
+			w.Label("Do you want to delete this save permanently?", "LC")
+			w.Row(25).Dynamic(2)
+			if w.Button(label.T("Yes"), false) {
+				callback()
+				w.Close()
+			}
+			if w.Button(label.T("No"), false) {
+				w.Close()
+			}
+		})
 }
 
 func (fs *FileSelector) DrawSave(w *nucular.Window) (saved bool, err error) {

@@ -6,6 +6,7 @@ type CharacterBase struct {
 	JobID  int
 	HPBase int
 	MPBase int
+	IsNPC  bool
 }
 
 var (
@@ -44,6 +45,86 @@ var (
 			//Character: Locke,
 			HPBase: 48,
 			MPBase: 7,
+		},
+		{
+			ID:     6,
+			Name:   "Moglin",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     7,
+			Name:   "Mogret",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     8,
+			Name:   "Moggie",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     9,
+			Name:   "Molulu",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     10,
+			Name:   "Moghan",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     11,
+			Name:   "Moguel",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     12,
+			Name:   "Mogsy",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     13,
+			Name:   "Mogwin",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     14,
+			Name:   "Mugmug",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
+			ID:     15,
+			Name:   "Cosmog",
+			JobID:  11,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
 		},
 		{
 			ID:    16,
@@ -102,6 +183,14 @@ var (
 			MPBase: 5,
 		},
 		{
+			ID:     24,
+			Name:   "??????",
+			JobID:  17,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
+		},
+		{
 			ID:    25,
 			Name:  "Gau",
 			JobID: 12,
@@ -116,6 +205,14 @@ var (
 			//Character: Setzer,
 			HPBase: 46,
 			MPBase: 9,
+		},
+		{
+			ID:     27,
+			Name:   "Maduin",
+			JobID:  20,
+			HPBase: 20,
+			MPBase: 20,
+			IsNPC:  true,
 		},
 		{
 			ID:    28,
