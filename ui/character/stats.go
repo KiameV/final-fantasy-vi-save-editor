@@ -10,6 +10,7 @@ import (
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
+	"math"
 )
 
 var (
@@ -28,7 +29,6 @@ func newStatsUI() widget {
 	u := &statsUI{}
 
 	u.name.Flags = nucular.EditField
-	u.name.Maxlen = 8
 	u.name.SingleLine = true
 	u.name.Text([]rune(snes.Characters[0]))
 
@@ -159,6 +159,11 @@ func (u *statsUI) Update(character *models.Character) {
 	u.name.SelectAll()
 	u.name.DeleteSelection()
 	u.name.Text([]rune(character.Name))
+	if global.IsShowingPR() {
+		u.name.Maxlen = math.MaxInt
+	} else {
+		u.name.Maxlen = 8
+	}
 }
 
 func addPropertyInt(w *nucular.Window, x int, y int, name string, value *int, min int, max int, step int) {
