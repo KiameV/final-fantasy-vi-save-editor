@@ -2,7 +2,7 @@ package pr
 
 type Cheats struct {
 	Enabled          bool
-	SetAllEncounters bool
+	Encounters       []bool
 	OpenedChestCount int
 	ClearFlag        bool
 	IsCompleteFlag   bool

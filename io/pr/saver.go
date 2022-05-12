@@ -11,7 +11,6 @@ import (
 	pri "ffvi_editor/models/pr"
 	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -20,10 +19,10 @@ import (
 
 func (p *PR) Save(slot int, fileName string) (err error) {
 	var (
-		toFile   = filepath.Join(io.GetConfig().SaveDir, fileName)
-		temp     = filepath.Join(global.PWD, "temp")
-		cmd      = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
-		needed   = make(map[int]int)
+		toFile = filepath.Join(io.GetConfig().SaveDir, fileName)
+		temp   = filepath.Join(global.PWD, "temp")
+		cmd    = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
+		//needed   = make(map[int]int)
 		slTarget = jo.NewOrderedMap()
 	)
 
@@ -38,8 +37,8 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	}
 	//*/
 
-	p.populateNeeded(&needed)
-	pri.GetInventory().AddNeeded(needed)
+	//p.populateNeeded(&needed)
+	//pri.GetInventory().AddNeeded(needed)
 
 	var addedItems []int
 	if err = p.saveCharacters(&addedItems); err != nil {
@@ -130,7 +129,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		data = p.revertUnicodeNames(data)
 	}
 
-	if err = ioutil.WriteFile(temp, data, 0644); err != nil {
+	if err = os.WriteFile(temp, data, 0644); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
 	}
 
@@ -654,18 +653,15 @@ func (p *PR) saveCheats() (err error) {
 	if err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag); err != nil {
 		return
 	}
-	if c.SetAllEncounters {
-		var sl []interface{}
-		if sl, err = p.getJsonInts(p.MapData, BeastFieldEncountExchangeFlags); err != nil {
-			return
-		}
-		set := make([]int, len(sl))
-		for i, _ := range sl {
+
+	set := make([]int, len(c.Encounters))
+	for i, v := range c.Encounters {
+		if v {
 			set[i] = 1
 		}
-		if err = p.setValue(p.MapData, BeastFieldEncountExchangeFlags, set); err != nil {
-			return
-		}
+	}
+	if err = p.setValue(p.MapData, BeastFieldEncountExchangeFlags, set); err != nil {
+		return
 	}
 	return
 }
@@ -735,7 +731,7 @@ func (p *PR) getInvCount(eq *[]string, counts map[int]int, addedItems *[]int, id
 		i.ContentID = id
 		i.Count = count
 	} else {
-		*addedItems = append(*addedItems, id)
+		//*addedItems = append(*addedItems, id)
 		i.ContentID = id
 		i.Count = 1
 	}

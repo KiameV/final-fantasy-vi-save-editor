@@ -505,6 +505,17 @@ func (p *PR) loadCheats() (err error) {
 	if c.IsCompleteFlag, err = p.getFlag(p.Base, IsCompleteFlag); err != nil {
 		return
 	}
+
+	var sl []interface{}
+	if sl, err = p.getJsonInts(p.MapData, BeastFieldEncountExchangeFlags); err != nil {
+		return
+	}
+	c.Encounters = make([]bool, len(sl))
+	for i, v := range sl {
+		if v.(json.Number).String() == "1" {
+			c.Encounters[i] = true
+		}
+	}
 	return
 }
 
