@@ -52,7 +52,7 @@ const (
 	SaveCompleteCount         = "saveCompleteCount"
 	MonstersKilledCount       = "monstersKilledCount"
 	TotalGil                  = "totalGil"
-	//PlayTime                = "playTime"
+	PlayTime                  = "playTime"
 	//ConfigData              = "configData"
 )
 

@@ -5,6 +5,7 @@ type Cheats struct {
 	OpenedChestCount int
 	ClearFlag        bool
 	IsCompleteFlag   bool
+	PlayTime         float64
 }
 
 var cheats *Cheats

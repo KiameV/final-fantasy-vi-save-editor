@@ -667,7 +667,10 @@ func (p *PR) saveCheats() (err error) {
 	if err = p.setFlag(p.Base, ClearFlag, c.ClearFlag); err != nil {
 		return
 	}
-	err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag)
+	if err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag); err != nil {
+		return
+	}
+	err = p.setValue(p.UserData, PlayTime, c.PlayTime)
 	return
 }
 

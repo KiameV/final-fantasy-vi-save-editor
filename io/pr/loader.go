@@ -525,6 +525,9 @@ func (p *PR) loadCheats() (err error) {
 	if c.IsCompleteFlag, err = p.getFlag(p.Base, IsCompleteFlag); err != nil {
 		return
 	}
+	if c.PlayTime, err = p.getFloat(p.UserData, PlayTime); err != nil {
+		return
+	}
 	return
 }
 
@@ -570,6 +573,28 @@ func (p *PR) getInt(c *jo.OrderedMap, key string) (i int, err error) {
 		if err == nil {
 			i = int(l)
 		}
+	default:
+		err = fmt.Errorf("unable to parse field %s value %v ", key, j)
+	}
+	return
+}
+
+func (p *PR) getFloat(c *jo.OrderedMap, key string) (f float64, err error) {
+	j, ok := c.GetValue(key)
+	if !ok {
+		err = fmt.Errorf("unable to find %s", key)
+	}
+
+	k := reflect.ValueOf(j)
+	switch k.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return k.Float(), nil
+	case reflect.Float32, reflect.Float64:
+		return k.Float(), nil
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return k.Float(), nil
+	case reflect.String:
+		f, err = strconv.ParseFloat(k.String(), 64)
 	default:
 		err = fmt.Errorf("unable to parse field %s value %v ", key, j)
 	}

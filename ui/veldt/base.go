@@ -22,12 +22,12 @@ func NewUI() ui.UI {
 func (u *veldtUI) Draw(w *nucular.Window) {
 	c := pr.GetVeldt()
 	w.Row(24).Static(100, 100)
-	if w.ButtonText("All True") {
+	if w.ButtonText("Check All") {
 		for i := 0; i < len(c.Encounters); i++ {
 			c.Encounters[i] = true
 		}
 	}
-	if w.ButtonText("All False") {
+	if w.ButtonText("Uncheck All") {
 		for i := 0; i < len(c.Encounters); i++ {
 			c.Encounters[i] = false
 		}
