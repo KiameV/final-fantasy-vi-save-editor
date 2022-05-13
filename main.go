@@ -1,12 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"ffvi_editor/browser"
 	"ffvi_editor/global"
 	"ffvi_editor/io"
 	"ffvi_editor/ui"
-	"ffvi_editor/ui/cheats"
 	"ffvi_editor/ui/file"
 	mm "ffvi_editor/ui/mainMenu"
 	"github.com/aarzilli/nucular"
@@ -16,13 +14,11 @@ import (
 	"image"
 	"image/color"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 )
 
-const version = "1.7.4"
+const version = "1.8.0"
 
 var (
 	mainMenu      ui.UI
@@ -38,7 +34,6 @@ func main() {
 	if dir != "" {
 		global.DirFiles, _ = ioutil.ReadDir(dir)
 	}
-	loadEncounterNames()
 	errTextEditor.Flags = nucular.EditReadOnly | nucular.EditSelectable | nucular.EditSelectable | nucular.EditMultiline
 	mainMenu = mm.NewUI()
 	var (
@@ -297,19 +292,4 @@ var customTheme = style.ColorTable{
 	ColorScrollbarCursorHover:  color.RGBA{150, 150, 150, 255},
 	ColorScrollbarCursorActive: color.RGBA{160, 160, 160, 255},
 	ColorTabHeader:             color.RGBA{210, 210, 210, 255},
-}
-
-func loadEncounterNames() {
-	var f *os.File
-	f, err = os.Open(filepath.Join(global.PWD, "veldt.txt"))
-	if err != nil {
-		return
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		cheats.EncounterLabels = append(cheats.EncounterLabels, scanner.Text())
-	}
 }

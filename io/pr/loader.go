@@ -125,6 +125,9 @@ func (p *PR) Load(fileName string) (err error) {
 	if err = p.loadInventory(); err != nil {
 		return
 	}
+	if err = p.loadVeldt(); err != nil {
+		return
+	}
 	if err = p.loadCheats(); err != nil {
 		return
 	}
@@ -494,6 +497,23 @@ func (p *PR) loadInventory() (err error) {
 	return nil
 }
 
+func (p *PR) loadVeldt() (err error) {
+	var (
+		veldt = pri.GetVeldt()
+		sl    []interface{}
+	)
+	if sl, err = p.getJsonInts(p.MapData, BeastFieldEncountExchangeFlags); err != nil {
+		return
+	}
+	veldt.Encounters = make([]bool, len(sl))
+	for i, v := range sl {
+		if v.(json.Number).String() == "1" {
+			veldt.Encounters[i] = true
+		}
+	}
+	return
+}
+
 func (p *PR) loadCheats() (err error) {
 	c := pri.GetCheats()
 	if c.OpenedChestCount, err = p.getInt(p.UserData, OpenChestCount); err != nil {
@@ -504,17 +524,6 @@ func (p *PR) loadCheats() (err error) {
 	}
 	if c.IsCompleteFlag, err = p.getFlag(p.Base, IsCompleteFlag); err != nil {
 		return
-	}
-
-	var sl []interface{}
-	if sl, err = p.getJsonInts(p.MapData, BeastFieldEncountExchangeFlags); err != nil {
-		return
-	}
-	c.Encounters = make([]bool, len(sl))
-	for i, v := range sl {
-		if v.(json.Number).String() == "1" {
-			c.Encounters[i] = true
-		}
 	}
 	return
 }

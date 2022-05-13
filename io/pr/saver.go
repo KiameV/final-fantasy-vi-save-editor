@@ -58,6 +58,9 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 			return
 		}
 	}
+	if err = p.saveVeldt(); err != nil {
+		return
+	}
 	if pri.GetCheats().Enabled {
 		if err = p.saveCheats(); err != nil {
 			return
@@ -642,6 +645,20 @@ func (p *PR) saveMiscStats() (err error) {
 	return
 }
 
+func (p *PR) saveVeldt() (err error) {
+	var (
+		veldt = pri.GetVeldt()
+		set   = make([]int, len(veldt.Encounters))
+	)
+	for i, v := range veldt.Encounters {
+		if v {
+			set[i] = 1
+		}
+	}
+	err = p.setValue(p.MapData, BeastFieldEncountExchangeFlags, set)
+	return
+}
+
 func (p *PR) saveCheats() (err error) {
 	c := pri.GetCheats()
 	if err = p.setValue(p.UserData, OpenChestCount, c.OpenedChestCount); err != nil {
@@ -650,19 +667,7 @@ func (p *PR) saveCheats() (err error) {
 	if err = p.setFlag(p.Base, ClearFlag, c.ClearFlag); err != nil {
 		return
 	}
-	if err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag); err != nil {
-		return
-	}
-
-	set := make([]int, len(c.Encounters))
-	for i, v := range c.Encounters {
-		if v {
-			set[i] = 1
-		}
-	}
-	if err = p.setValue(p.MapData, BeastFieldEncountExchangeFlags, set); err != nil {
-		return
-	}
+	err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag)
 	return
 }
 

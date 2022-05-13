@@ -10,22 +10,24 @@ import (
 	"ffvi_editor/ui/misc"
 	"ffvi_editor/ui/party"
 	"ffvi_editor/ui/skills"
+	"ffvi_editor/ui/veldt"
 	"github.com/aarzilli/nucular"
 )
 
 type mainMenu struct {
-	uis [7]ui.UI
+	uis [8]ui.UI
 }
 
 func NewUI() ui.UI {
 	return &mainMenu{
-		uis: [7]ui.UI{
+		uis: [8]ui.UI{
 			character.NewUI(),
 			inventory.NewUI(),
 			skills.NewUI(),
 			espers.NewUI(),
 			misc.NewUI(),
 			party.NewUI(),
+			veldt.NewUI(),
 			cheats.NewUI(),
 		},
 	}
