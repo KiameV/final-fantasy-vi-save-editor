@@ -43,6 +43,9 @@ func (u *veldtUI) Draw(w *nucular.Window) {
 
 	s := strings.ToLower(string(u.search.Buffer))
 	for i := 0; i < len(c.Encounters) && i < len(labels); i++ {
+		if labels[i] == "" {
+			continue
+		}
 		if s != "" && !strings.Contains(strings.ToLower(labels[i]), s) {
 			continue
 		}
@@ -180,6 +183,7 @@ var labels = []string{
 	"Onion Knight, Onion Knight, General",
 	"Chaser",
 	"Onion Knight, Chaser, Onion Knight, Onion Knight",
+	"",
 	"Lenergia",
 	"Desert Hare, Desert Hare, Desert Hare",
 	"Bomb",
@@ -207,6 +211,7 @@ var labels = []string{
 	"Provoker, Provoker",
 	"Lich, Lich, Lich",
 	"Antares, Provoker, Lich",
+	"",
 	"Outcast, Outcast, Outcast",
 	"Adamankary, Adamankary",
 	"Bonnacon, Bonnacon, Adamankary",
@@ -222,7 +227,7 @@ var labels = []string{
 	"Land Grillon, Mandrake, Land Grillon",
 	"Apocrypha",
 	"Apocrypha, Apocrypha, Apocrypha",
-	"Misfit, Apocrypha, Misfit",
+	//"Misfit, Apocrypha, Misfit",
 	"Brainpan, Brainpan, Misfit, Apocrypha",
 	"Sky Armor, Spitfire",
 	"Ninja, Ninja",
