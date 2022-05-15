@@ -17,12 +17,9 @@ func NewUI() ui.UI {
 
 func (u *partyUI) Draw(w *nucular.Window) {
 	p := pr.GetParty()
-	w.Row(24).Static(300)
-	w.Label("Currently In Testing", "LC")
 	w.Row(24).Static(260)
 	w.CheckboxText("Enable", &p.Enabled)
-	//w.Row(24).Static(260)
-	//w.CheckboxText("Include NPCs", &p.IncludeNPCs)
+	w.Row(10).Static()
 	for i := 0; i < 4; i++ {
 		u.drawRow(w, i, p, &u.selected[i])
 	}
@@ -36,14 +33,14 @@ func (u *partyUI) drawRow(w *nucular.Window, slot int, p *pr.Party, selected *in
 		p.Members[slot] = p.Possible[p.PossibleNames[i]]
 	}
 	if *selected > 0 {
-		c := pr.GetCharacter(p.PossibleNames[*selected])
-		if !c.IsEnabled {
-			w.CheckboxText("Enable?", &c.IsEnabled)
+		pn := p.PossibleNames[*selected]
+		if pn != pr.EmptyPartyMember.Name {
+			c := pr.GetCharacter(pn)
+			if !c.IsEnabled {
+				w.CheckboxText("Enable?", &c.IsEnabled)
+			}
 		}
 	}
-	//if p.Members[slot].CharacterID != 0 {
-	//	w.CheckboxText("Enable Equipment: ", &p.Members[slot].EnableEquipment)
-	//}
 }
 
 func (u *partyUI) Refresh() {

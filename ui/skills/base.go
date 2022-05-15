@@ -57,6 +57,8 @@ func (u *skillsUI) drawPR(w *nucular.Window) {
 		sw.GroupEnd()
 	}
 
+	w.Row(10).Static()
+
 	w.Row(18).Static(50, 100, 10, 100)
 	w.Label("Lore", "LC")
 	if w.ButtonText("Select All") {
@@ -91,6 +93,8 @@ func (u *skillsUI) drawPR(w *nucular.Window) {
 		}
 		sw.GroupEnd()
 	}
+	
+	w.Row(10).Static()
 
 	w.Row(18).Static(50, 100, 10, 100)
 	w.Label("Rage", "LC")

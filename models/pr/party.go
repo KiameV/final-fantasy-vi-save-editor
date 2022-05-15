@@ -5,9 +5,9 @@ import (
 	"sort"
 )
 
-var empty = &Member{
+var EmptyPartyMember = &Member{
 	CharacterID: 0,
-	Name:        "Empty",
+	Name:        "[Empty]",
 }
 
 type Member struct {
@@ -41,7 +41,7 @@ func (p *Party) Clear() {
 	p.Possible = make(map[string]*Member)
 	p.PossibleNames = make([]string, 0, 40)
 	//p.PossibleNamesWithNPCs = make([]string, 0, 40)
-	p.AddPossibleMember(empty)
+	p.AddPossibleMember(EmptyPartyMember)
 }
 
 func (p *Party) AddPossibleMember(m *Member) {

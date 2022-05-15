@@ -27,6 +27,18 @@ func (u *espersUI) Draw(w *nucular.Window) {
 }
 
 func (u *espersUI) drawPR(w *nucular.Window) {
+	w.Row(18).Static(100, 10, 100)
+	if w.ButtonText("Select All") {
+		for _, e := range pr.Espers {
+			e.Checked = true
+		}
+	}
+	w.Spacing(1)
+	if w.ButtonText("Deselect All") {
+		for _, e := range pr.Espers {
+			e.Checked = false
+		}
+	}
 	w.Row(u.yLast).SpaceBegin(len(snes.Espers))
 	var (
 		y    = 0

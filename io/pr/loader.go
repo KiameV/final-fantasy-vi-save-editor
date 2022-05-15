@@ -519,9 +519,6 @@ func (p *PR) loadCheats() (err error) {
 	if c.OpenedChestCount, err = p.getInt(p.UserData, OpenChestCount); err != nil {
 		return
 	}
-	if c.ClearFlag, err = p.getFlag(p.Base, ClearFlag); err != nil {
-		return
-	}
 	if c.IsCompleteFlag, err = p.getFlag(p.Base, IsCompleteFlag); err != nil {
 		return
 	}

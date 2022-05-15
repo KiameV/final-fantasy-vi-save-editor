@@ -3,9 +3,9 @@ package pr
 type Cheats struct {
 	Enabled          bool
 	OpenedChestCount int
-	ClearFlag        bool
-	IsCompleteFlag   bool
-	PlayTime         float64
+	//ClearFlag        bool
+	IsCompleteFlag bool
+	PlayTime       float64
 }
 
 var cheats *Cheats

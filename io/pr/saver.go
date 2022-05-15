@@ -664,9 +664,6 @@ func (p *PR) saveCheats() (err error) {
 	if err = p.setValue(p.UserData, OpenChestCount, c.OpenedChestCount); err != nil {
 		return
 	}
-	if err = p.setFlag(p.Base, ClearFlag, c.ClearFlag); err != nil {
-		return
-	}
 	if err = p.setFlag(p.Base, IsCompleteFlag, c.IsCompleteFlag); err != nil {
 		return
 	}
