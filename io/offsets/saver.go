@@ -60,13 +60,13 @@ func (o *Offsets) saveCharacters() {
 			SetAt(i-1, 0)
 		}
 
-		SetIntAt(i, c.Command1.Value)
+		SetIntAt(i, c.Commands[0].Value)
 		i++
-		SetIntAt(i, c.Command2.Value)
+		SetIntAt(i, c.Commands[1].Value)
 		i++
-		SetIntAt(i, c.Command3.Value)
+		SetIntAt(i, c.Commands[2].Value)
 		i++
-		SetIntAt(i, c.Command4.Value)
+		SetIntAt(i, c.Commands[3].Value)
 		i++
 
 		SetIntAt(i, c.Vigor)

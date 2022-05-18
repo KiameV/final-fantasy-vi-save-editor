@@ -78,12 +78,11 @@ func (u *characterUI) Draw(w *nucular.Window) {
 			u.equipment.Draw(w)
 			w.TreePop()
 		}
+		if w.TreePush(nucular.TreeTab, u.makeLabel("Commands"), u.expandAll) {
+			u.commands.Draw(w)
+			w.TreePop()
+		}
 		if !global.IsShowingPR() {
-			if w.TreePush(nucular.TreeTab, u.makeLabel("Commands"), u.expandAll) {
-				u.commands.Draw(w)
-				w.TreePop()
-			}
-
 			if w.TreePush(nucular.TreeTab, u.makeLabel("Status Effects"), u.expandAll) {
 				u.statusEffects.Draw(w)
 				w.TreePop()

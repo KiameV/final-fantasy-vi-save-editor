@@ -26,11 +26,9 @@ type Character struct {
 
 	Equipment Equipment
 
-	Command1      *consts.Command
-	Command2      *consts.Command
-	Command3      *consts.Command
-	Command4      *consts.Command
-	StatusEffects []*consts.NameSlotMask8
+	EnableCommandsSave bool
+	Commands           []*Command
+	StatusEffects      []*consts.NameSlotMask8
 }
 
 type Spell struct {

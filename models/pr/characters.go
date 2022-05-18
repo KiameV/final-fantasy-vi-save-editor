@@ -16,16 +16,25 @@ func init() {
 		if !ok {
 			panic("failed to load character " + name)
 		}
+		defaultCommand := pr.CommandLookupByValue[4]
 		c := &models.Character{
-			ID:            o.ID,
-			RootName:      name,
-			Name:          name,
-			StatusEffects: consts.NewStatusEffects(),
-			IsNPC:         o.IsNPC,
-			//Command1:      defaultCommand,
-			//Command2:      defaultCommand,
-			//Command3:      defaultCommand,
-			//Command4:      defaultCommand,
+			ID:                 o.ID,
+			RootName:           name,
+			Name:               name,
+			StatusEffects:      consts.NewStatusEffects(),
+			IsNPC:              o.IsNPC,
+			EnableCommandsSave: false,
+			Commands: []*models.Command{
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+			},
 		}
 		c.SpellsByIndex, c.SpellsSorted, c.SpellsByID = NewSpells()
 		Characters[i] = c

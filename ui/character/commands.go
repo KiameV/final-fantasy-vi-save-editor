@@ -1,8 +1,10 @@
 package character
 
 import (
+	"ffvi_editor/global"
 	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/pr"
+	"ffvi_editor/models/consts/snes"
 	"github.com/aarzilli/nucular"
 )
 
@@ -10,28 +12,38 @@ type commandUI struct {
 }
 
 func newCommandUI() widget {
-	u := &commandUI{}
-
-	return u
+	return &commandUI{}
 }
 
 func (u *commandUI) Draw(w *nucular.Window) {
-	var i int
-	w.Row(18).Static(100)
-	if i = w.ComboSimple(consts.CommandsSorted, character.Command1.SortedIndex, 12); i != character.Command1.SortedIndex {
-		character.Command1 = consts.CommandsLookupBySortedIndex[i]
+	var (
+		commandsSorted              []string
+		commandsLookupBySortedIndex []*models.Command
+	)
+
+	if global.IsShowingPR() {
+		commandsSorted = pr.CommandsSorted
+		commandsLookupBySortedIndex = pr.CommandsLookupBySortedIndex
+	} else {
+		commandsSorted = snes.CommandsSorted
+		commandsLookupBySortedIndex = snes.CommandsLookupBySortedIndex
 	}
-	w.Row(18).Static(100)
-	if i = w.ComboSimple(consts.CommandsSorted, character.Command2.SortedIndex, 12); i != character.Command2.SortedIndex {
-		character.Command2 = consts.CommandsLookupBySortedIndex[i]
+
+	if global.IsShowingPR() {
+		w.Row(24).Static(260)
+		w.CheckboxText("Enable", &character.EnableCommandsSave)
+		w.Row(24).Static(260)
+		w.Label("Can cause soft locks and crashing!", "LC")
+		w.Row(10).Static()
 	}
-	w.Row(18).Static(100)
-	if i = w.ComboSimple(consts.CommandsSorted, character.Command3.SortedIndex, 12); i != character.Command3.SortedIndex {
-		character.Command3 = consts.CommandsLookupBySortedIndex[i]
-	}
-	w.Row(18).Static(100)
-	if i = w.ComboSimple(consts.CommandsSorted, character.Command4.SortedIndex, 12); i != character.Command4.SortedIndex {
-		character.Command4 = consts.CommandsLookupBySortedIndex[i]
+
+	if character.EnableCommandsSave {
+		for i, c := range character.Commands {
+			w.Row(18).Static(100)
+			if j := w.ComboSimple(commandsSorted, c.SortedIndex, 12); j != c.SortedIndex {
+				character.Commands[i] = commandsLookupBySortedIndex[j]
+			}
+		}
 	}
 }
 

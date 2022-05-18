@@ -231,6 +231,16 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 			return
 		}
 
+		if c.EnableCommandsSave {
+			sl := make([]interface{}, len(c.Commands))
+			for i, cmd := range c.Commands {
+				sl[i] = cmd.Value
+			}
+			if err = p.setTarget(d, CommandList, sl); err != nil {
+				return
+			}
+		}
+
 		// TODO Status
 
 		if err = p.setValue(params, AdditionalPower, c.Vigor); err != nil {

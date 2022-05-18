@@ -12,9 +12,10 @@ const file = "ff6editor.config"
 var config ConfigData
 
 type ConfigData struct {
-	WindowX int    `json:"width"`
-	WindowY int    `json:"height""`
-	SaveDir string `json:"dir"`
+	WindowX       int    `json:"width"`
+	WindowY       int    `json:"height""`
+	SaveDir       string `json:"dir"`
+	AutoEnableCmd bool   `json:"autoEnableCmd"`
 }
 
 func GetConfig() *ConfigData {

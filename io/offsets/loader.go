@@ -2,7 +2,6 @@ package offsets
 
 import (
 	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
 	snes2 "ffvi_editor/models/consts/snes"
 	"ffvi_editor/models/snes"
 	"os"
@@ -80,13 +79,13 @@ func (o *Offsets) loadCharacters() {
 		i++
 
 		cmd := GetIntAt(i)
-		c.Command1 = consts.CommandLookupByValue[cmd]
+		c.Commands[0] = snes2.CommandLookupByValue[cmd]
 		i++
-		c.Command2 = consts.CommandLookupByValue[GetIntAt(i)]
+		c.Commands[1] = snes2.CommandLookupByValue[GetIntAt(i)]
 		i++
-		c.Command3 = consts.CommandLookupByValue[GetIntAt(i)]
+		c.Commands[2] = snes2.CommandLookupByValue[GetIntAt(i)]
 		i++
-		c.Command4 = consts.CommandLookupByValue[GetIntAt(i)]
+		c.Commands[3] = snes2.CommandLookupByValue[GetIntAt(i)]
 		i++
 
 		c.Vigor = GetIntAt(i)

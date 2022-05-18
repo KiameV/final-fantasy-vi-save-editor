@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"ffvi_editor/io"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
@@ -196,6 +197,7 @@ func (p *PR) loadCharacters() (err error) {
 		}
 
 		c := pri.GetCharacter(o.Name)
+		c.EnableCommandsSave = io.GetConfig().AutoEnableCmd
 
 		if c.Name, err = p.getString(d, Name); err != nil {
 			return
@@ -243,7 +245,17 @@ func (p *PR) loadCharacters() (err error) {
 
 		// TODO Status
 
-		// Command changing does not work in PR
+		var values interface{}
+		if values, err = p.getFromTarget(d, CommandList); err != nil {
+			return
+		}
+		for i, v := range values.([]interface{}) {
+			var j int64
+			if j, err = v.(json.Number).Int64(); err != nil {
+				return
+			}
+			c.Commands[i] = pr.CommandLookupByValue[int(j)]
+		}
 
 		if c.Vigor, err = p.getInt(params, AdditionalPower); err != nil {
 			return

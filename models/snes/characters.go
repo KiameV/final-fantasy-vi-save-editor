@@ -10,16 +10,19 @@ var Characters []*models.Character
 
 func init() {
 	Characters = make([]*models.Character, len(snes.Characters))
-	defaultCommand := consts.CommandLookupByValue[0xFF]
+	defaultCommand := snes.CommandLookupByValue[0xFF]
 	for i, name := range snes.Characters {
 		c := &models.Character{
-			RootName:      name,
-			Name:          name,
-			StatusEffects: consts.NewStatusEffects(),
-			Command1:      defaultCommand,
-			Command2:      defaultCommand,
-			Command3:      defaultCommand,
-			Command4:      defaultCommand,
+			RootName:           name,
+			Name:               name,
+			StatusEffects:      consts.NewStatusEffects(),
+			EnableCommandsSave: true,
+			Commands: []*models.Command{
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+				defaultCommand,
+			},
 		}
 		c.SpellsByIndex, c.SpellsSorted = NewSpells()
 		Characters[i] = c
