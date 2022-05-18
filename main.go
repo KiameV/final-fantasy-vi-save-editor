@@ -55,12 +55,12 @@ func updateWindow(w *nucular.Window) {
 	var ft global.SaveFileType
 	w.MenubarBegin()
 	w.Row(12).Static(100, 100, 75, 125, 100, 100)
-	if w := w.Menu(label.TA("Load Remaster Save", "CC"), 100, nil); w != nil {
+	if w := w.Menu(label.TA("Load Remaster Save", "LC"), 100, nil); w != nil {
 		global.SetShowing(global.LoadPR)
 		fileSelector = file.NewFileSelector()
 		w.Close()
 	}
-	if w := w.Menu(label.TA("Load SNES", "CC"), 100, nil); w != nil {
+	if w := w.Menu(label.TA("Load SNES", "LC"), 100, nil); w != nil {
 		w.Row(12).Dynamic(1)
 		if w.MenuItem(label.TA("SRM Slot 1", "LC")) {
 			global.SetShowing(global.LoadSnes)
@@ -82,7 +82,7 @@ func updateWindow(w *nucular.Window) {
 	}
 	if global.IsShowing(global.ShowPR) || global.IsShowing(global.ShowSnes) {
 		ui.DrawError = nil
-		if w := w.Menu(label.TA("Save", "CC"), 100, nil); w != nil {
+		if w := w.Menu(label.TA("Save", "LC"), 100, nil); w != nil {
 			w.Close()
 			if global.IsShowing(global.ShowPR) {
 				fileSelector = file.NewFileSelector()
@@ -106,18 +106,28 @@ func updateWindow(w *nucular.Window) {
 		w.Spacing(1)
 	}
 
-	if w := w.Menu(label.TA("Check For Update", "CC"), 100, nil); w != nil {
-		var hasNewer bool
-		var latest string
-		if hasNewer, latest, err = browser.CheckForUpdate(version); err != nil {
-			popupErr(w, err)
+	if w := w.Menu(label.TA("Options", "LC"), 300, nil); w != nil {
+		w.Row(20).Static(290)
+		if w.ButtonText("Check For Update") {
+			var hasNewer bool
+			var latest string
+			if hasNewer, latest, err = browser.CheckForUpdate(version); err != nil {
+				popupErr(w, err)
+			}
+			if hasNewer {
+				browser.Update(latest)
+			} else {
+				status = "version is current"
+			}
+			w.Close()
 		}
-		if hasNewer {
-			browser.Update(latest)
-		} else {
-			status = "version is current"
+		w.Row(4).Static()
+		w.Row(18).Static(290)
+		b := io.GetConfig().AutoEnableCmd
+		if r := w.CheckboxText("Auto-Enable Character Commands", &b); r {
+			io.GetConfig().AutoEnableCmd = !io.GetConfig().AutoEnableCmd
+			io.SaveConfig()
 		}
-		w.Close()
 	}
 
 	if status != "" {
