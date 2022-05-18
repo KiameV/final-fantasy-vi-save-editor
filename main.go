@@ -106,9 +106,9 @@ func updateWindow(w *nucular.Window) {
 		w.Spacing(1)
 	}
 
-	if w := w.Menu(label.TA("Options", "LC"), 300, nil); w != nil {
-		w.Row(20).Static(290)
-		if w.ButtonText("Check For Update") {
+	if w := w.Menu(label.TA("Options", "LC"), 280, nil); w != nil {
+		w.Row(20).Static(200)
+		if w.MenuItem(label.TA("Check For Update", "LC")) {
 			var hasNewer bool
 			var latest string
 			if hasNewer, latest, err = browser.CheckForUpdate(version); err != nil {
@@ -122,7 +122,7 @@ func updateWindow(w *nucular.Window) {
 			w.Close()
 		}
 		w.Row(4).Static()
-		w.Row(18).Static(290)
+		w.Row(18).Static(280)
 		b := io.GetConfig().AutoEnableCmd
 		if r := w.CheckboxText("Auto-Enable Character Commands", &b); r {
 			io.GetConfig().AutoEnableCmd = !io.GetConfig().AutoEnableCmd
