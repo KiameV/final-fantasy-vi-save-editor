@@ -1,6 +1,7 @@
 package pr
 
 type Inventory struct {
+	Size             int
 	Rows             []*Row
 	ResetSortOrder   bool
 	RemoveDuplicates bool
@@ -11,27 +12,39 @@ type Row struct {
 	Count  int `json:"count"`
 }
 
-func newInventory() *Inventory {
-	inv := &Inventory{
-		Rows: make([]*Row, 255),
-	}
-	for i := 0; i < 255; i++ {
-		inv.Rows[i] = &Row{ItemID: 0, Count: 0}
-	}
-	return inv
-}
-
 var inventory *Inventory
+var importantInventory *Inventory
 
 func GetInventory() *Inventory {
 	if inventory == nil {
-		inventory = newInventory()
+		inventory = &Inventory{Size: 255}
+		inventory.Clear()
 	}
 	return inventory
 }
 
-func GetInventoryRows() []*Row {
-	return GetInventory().Rows
+func GetImportantInventory() *Inventory {
+	if importantInventory == nil {
+		importantInventory = &Inventory{Size: 100}
+		importantInventory.Clear()
+	}
+	return importantInventory
+}
+
+func (i *Inventory) Clear() {
+	// Clear existing memory
+	for j := 0; j < len(i.Rows); j++ {
+		i.Rows[j] = nil
+	}
+
+	i.Rows = make([]*Row, i.Size)
+	for j := 0; j < i.Size; j++ {
+		i.Rows[j] = &Row{ItemID: 0, Count: 0}
+	}
+}
+
+func (i *Inventory) GetRows() []*Row {
+	return i.Rows
 }
 
 func (i *Inventory) Reset() {

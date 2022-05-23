@@ -24,12 +24,7 @@ func GetConfig() *ConfigData {
 
 func init() {
 	if b, err := os.ReadFile(filepath.Join(global.PWD, file)); err == nil {
-		if err = json.Unmarshal(b, &config); err != nil {
-			config.SaveDir = string(b)
-			if config.SaveDir != "" {
-				SaveConfig()
-			}
-		}
+		_ = json.Unmarshal(b, &config)
 	}
 }
 

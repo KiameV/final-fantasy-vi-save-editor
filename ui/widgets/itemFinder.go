@@ -30,39 +30,36 @@ func init() {
 	name.SingleLine = true
 }
 
+func AddItemFinder(w *nucular.Window, items map[string]int) {
+	if sw := w.GroupBegin("Item Finder", 0); sw != nil {
+		sw.Row(24).Static(100, 80)
+		sw.Label("Find By Name:", "LC")
+		if e := name.Edit(sw); e == nucular.EditActive || e == nucular.EditCommitted {
+			l := len(name.Buffer)
+			if l == 0 || l >= 2 {
+				nameResult = nameResult[:0]
+			}
+			if l >= 2 {
+				s := strings.ToLower(string(name.Buffer))
+				for n, v := range items {
+					if strings.Index(strings.ToLower(n), s) != -1 {
+						nameResult = append(nameResult, fmt.Sprintf("%d - %s", v, n))
+					}
+				}
+				sort.Strings(nameResult)
+			}
+		}
+
+		for _, s := range nameResult {
+			sw.Row(24).Static(150)
+			sw.Label(s, "LC")
+		}
+		sw.GroupEnd()
+	}
+}
+
 func DrawItemFinder(w *nucular.Window, x, y int) (count int) {
 	count = 6
-	/*w.LayoutSpacePush(rect.Rect{
-		X: x,
-		Y: y,
-		W: 80,
-		H: 18,
-	})
-	w.Label("Find By ID:", "LC")
-	y += 24
-
-	w.LayoutSpacePush(rect.Rect{
-		X: x,
-		Y: y,
-		W: 40,
-		H: 22,
-	})
-	if e := DrawAndValidateHexInput(w, &id); e == nucular.EditActive || e == nucular.EditCommitted {
-		if len(id.Buffer) == 2 {
-			idResult = consts.ItemsByID[string(id.Buffer)]
-		} else {
-			idResult = ""
-		}
-	}
-	w.LayoutSpacePush(rect.Rect{
-		X: x + 50,
-		Y: y,
-		W: 100,
-		H: 22,
-	})
-	w.Label(idResult, "LC")
-	y += 24
-	*/
 
 	w.LayoutSpacePush(rect.Rect{
 		X: x,

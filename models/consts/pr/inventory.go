@@ -312,25 +312,41 @@ Claw
 327 - Growth Egg
 328 - Tintinnabulum
 329 - Sprint Shoes`
+	ImportantItemsText = `39 - Cider
+40 - Old Clock Key
+41 - Fish
+42 - Fish
+43 - Fish
+44 - Fish
+45 - Lump of Metal
+46 - Lola's Letter
+47 - Coral
+48 - Books
+49 - Emperor's Letter
+50 - Rush-Rid
+58 - Pendant`
 )
 
 var (
-	ItemsByName = make(map[string]int)
-	ItemsByID   = map[int]string{}
+	ItemsByName          = make(map[string]int)
+	ItemsByID            = make(map[int]string)
+	ImportantItemsByName = make(map[string]int)
+	ImportantItemsByID   = make(map[int]string)
 )
 
 func init() {
-	loadItems(EmptyText)
-	loadItems(ItemsText)
-	loadItems(WeaponShieldText1)
-	loadItems(WeaponShieldText2)
-	loadItems(HelmetArmorText1)
-	loadItems(HelmetArmorText2)
-	loadItems(RelicText1)
-	loadItems(RelicText2)
+	loadItems(EmptyText, ItemsByName, ItemsByID)
+	loadItems(ItemsText, ItemsByName, ItemsByID)
+	loadItems(WeaponShieldText1, ItemsByName, ItemsByID)
+	loadItems(WeaponShieldText2, ItemsByName, ItemsByID)
+	loadItems(HelmetArmorText1, ItemsByName, ItemsByID)
+	loadItems(HelmetArmorText2, ItemsByName, ItemsByID)
+	loadItems(RelicText1, ItemsByName, ItemsByID)
+	loadItems(RelicText2, ItemsByName, ItemsByID)
+	loadItems(ImportantItemsText, ImportantItemsByName, ImportantItemsByID)
 }
 
-func loadItems(s string) {
+func loadItems(s string, byName map[string]int, byID map[int]string) {
 	var in []int
 	scanner := bufio.NewScanner(strings.NewReader(s))
 	for scanner.Scan() {
@@ -339,16 +355,15 @@ func loadItems(s string) {
 			if i, err := strconv.ParseInt(sl[0], 10, 32); err != nil {
 				panic(sl[1])
 			} else {
-				ItemsByName[sl[1]] = int(i)
-				ItemsByID[int(i)] = sl[1]
+				byName[sl[1]] = int(i)
+				byID[int(i)] = sl[1]
 				in = append(in, int(i))
 			}
 		}
 	}
-	ItemsByID[93] = "Empty"
-	ItemsByID[198] = "Empty"
-	ItemsByID[199] = "Empty"
-	ItemsByID[200] = "Empty"
+	byID[93] = "Empty"
+	byID[198] = "Empty"
+	byID[199] = "Empty"
+	byID[200] = "Empty"
 	sort.Ints(in)
-	return
 }

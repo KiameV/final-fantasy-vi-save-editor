@@ -13,13 +13,14 @@ var (
 )
 
 type Helpers struct {
-	MiscItemsHelp     nucular.TextEditor
-	WeaponShieldHelp1 nucular.TextEditor
-	WeaponShieldHelp2 nucular.TextEditor
-	HelmetArmorHelp1  nucular.TextEditor
-	HelmetArmorHelp2  nucular.TextEditor
-	RelicHelp1        nucular.TextEditor
-	RelicHelp2        nucular.TextEditor
+	MiscItemsHelp      nucular.TextEditor
+	WeaponShieldHelp1  nucular.TextEditor
+	WeaponShieldHelp2  nucular.TextEditor
+	HelmetArmorHelp1   nucular.TextEditor
+	HelmetArmorHelp2   nucular.TextEditor
+	RelicHelp1         nucular.TextEditor
+	RelicHelp2         nucular.TextEditor
+	ImportantItemsHelp nucular.TextEditor
 }
 
 func GetSnesHelpers() *Helpers {
@@ -64,6 +65,7 @@ func (h *Helpers) prInvInit() {
 	InitReadOnlyText(&h.HelmetArmorHelp2, pr.EmptyText+pr.HelmetArmorText2)
 	InitReadOnlyText(&h.RelicHelp1, pr.EmptyText+pr.RelicText1)
 	InitReadOnlyText(&h.RelicHelp2, pr.RelicText2Header+pr.RelicText2)
+	InitReadOnlyText(&h.ImportantItemsHelp, pr.ImportantItemsText)
 }
 
 func (h *Helpers) prEqInit() {

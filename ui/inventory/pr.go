@@ -8,175 +8,92 @@ import (
 	"ffvi_editor/ui"
 	"ffvi_editor/ui/widgets"
 	"github.com/aarzilli/nucular"
-	"github.com/aarzilli/nucular/rect"
 )
 
 func (u *inventoryUI) drawPR(w *nucular.Window) {
-	var (
-		y     int
-		count = 4
-	)
+	inv := pri.GetInventory()
 
 	// Top
-	w.Row(u.yLast).SpaceBegin(u.countLast)
-	w.LayoutSpacePush(rect.Rect{
-		X: 0,
-		Y: y,
-		W: 150,
-		H: 22,
-	})
-	w.CheckboxText("Reset Sort Order", &pri.GetInventory().ResetSortOrder)
-
-	w.LayoutSpacePush(rect.Rect{
-		X: 160,
-		Y: y,
-		W: 150,
-		H: 22,
-	})
-	w.CheckboxText("Remove Duplicates", &pri.GetInventory().RemoveDuplicates)
-
-	w.LayoutSpacePush(rect.Rect{
-		X: 320,
-		Y: y,
-		W: 100,
-		H: 22,
-	})
+	w.Row(24).Static(150, 10, 150, 10, 100, 10, 100)
+	w.CheckboxText("Reset Sort Order", &inv.ResetSortOrder)
+	w.Spacing(1)
+	w.CheckboxText("Remove Duplicates", &inv.RemoveDuplicates)
+	w.Spacing(1)
 	if w.ButtonText("Save") {
-		if result, err := json.Marshal(pri.GetInventory().Rows); err != nil {
+		if result, err := json.Marshal(inv.Rows); err != nil {
 			ui.DrawError = err
 		} else if err = io.SaveInvFile(w, result); err != nil {
 			ui.DrawError = err
 		}
 	}
-
-	w.LayoutSpacePush(rect.Rect{
-		X: 430,
-		Y: y,
-		W: 100,
-		H: 22,
-	})
+	w.Spacing(1)
 	if w.ButtonText("Load") {
 		if data, err := io.OpenInvFileDialog(w); err != nil {
 			ui.DrawError = err
-		} else if err = json.Unmarshal(data, &pri.GetInventory().Rows); err != nil {
+		} else if err = json.Unmarshal(data, &inv.Rows); err != nil {
 			ui.DrawError = err
 		}
-		pri.GetInventory().ResetSortOrder = true
+		inv.ResetSortOrder = true
 	}
-	y += 24
+
+	w.Row(500).Static(250, 450)
 
 	// Items
-	w.LayoutSpacePush(rect.Rect{
-		X: 0,
-		Y: y,
-		W: 75,
-		H: 22,
-	})
-	w.Label("Item ID", "LC")
+	if sw := w.GroupBegin("Inv", 0); sw != nil {
+		sw.Row(24).Static(100, 10, 100)
+		sw.Label("Item ID", "CC")
+		sw.Spacing(1)
+		sw.Label("Count", "CC")
 
-	w.LayoutSpacePush(rect.Rect{
-		X: 85,
-		Y: y,
-		W: 75,
-		H: 22,
-	})
-	w.Label("Count", "LC")
-	y += 24
+		isFirstEmptyRow := true
+		for _, r := range inv.GetRows() {
+			if r.ItemID == 93 || r.ItemID == 198 || r.ItemID == 199 || r.ItemID == 200 {
+				continue
+			}
 
-	for _, r := range pri.GetInventoryRows() {
-		if r.ItemID == 93 || r.ItemID == 198 || r.ItemID == 199 || r.ItemID == 200 {
-			continue
+			if r.ItemID == 0 && r.Count == 0 {
+				if isFirstEmptyRow {
+					isFirstEmptyRow = false
+				} else {
+					continue
+				}
+			}
+
+			sw.Row(24).Static(100, 10, 100)
+			sw.PropertyInt("", 0, &r.ItemID, 999, 1, 0)
+			sw.Spacing(1)
+			sw.PropertyInt("", 0, &r.Count, 999, 1, 0)
+
+			if r.ItemID != 0 {
+				if name, found := pr.ItemsByID[r.ItemID]; found {
+					sw.Row(24).Static(200)
+					sw.Label(name, "LC")
+					sw.Row(6).Static()
+				}
+			}
 		}
-		w.LayoutSpacePush(rect.Rect{
-			X: 0,
-			Y: y,
-			W: 75,
-			H: 24,
-		})
-		w.PropertyInt("", 0, &r.ItemID, 999, 1, 0)
-
-		w.LayoutSpacePush(rect.Rect{
-			X: 85,
-			Y: y,
-			W: 75,
-			H: 24,
-		})
-		w.PropertyInt("", 0, &r.Count, 999, 1, 0)
-		y += 24
-		count += 2
-		if item, found := pr.ItemsByID[r.ItemID]; found && item != "Empty" {
-			w.LayoutSpacePush(rect.Rect{
-				X: 0,
-				Y: y,
-				W: 160,
-				H: 22,
-			})
-			w.Label(item, "LC")
-			count++
-			y += 30
-		}
+		sw.GroupEnd()
 	}
-	u.yLast = y
 
 	// Helpers
-	helper := widgets.GetPrInvHelpers()
-	w.LayoutSpacePush(rect.Rect{
-		X: 170,
-		Y: 24,
-		W: 170,
-		H: 190,
-	})
-	helper.MiscItemsHelp.Edit(w)
+	if sw := w.GroupBegin("Inv Helpers", 0); sw != nil {
+		helper := widgets.GetPrInvHelpers()
+		sw.Row(190).Static(200, 200)
+		helper.MiscItemsHelp.Edit(sw)
+		widgets.AddItemFinder(sw, pr.ItemsByName)
 
-	w.LayoutSpacePush(rect.Rect{
-		X: 170,
-		Y: 224,
-		W: 170,
-		H: 190,
-	})
-	helper.WeaponShieldHelp1.Edit(w)
+		sw.Row(190).Static(200, 200)
+		helper.WeaponShieldHelp1.Edit(sw)
+		helper.WeaponShieldHelp2.Edit(sw)
 
-	w.LayoutSpacePush(rect.Rect{
-		X: 360,
-		Y: 224,
-		W: 170,
-		H: 190,
-	})
-	helper.WeaponShieldHelp2.Edit(w)
+		sw.Row(190).Static(200, 200)
+		helper.HelmetArmorHelp1.Edit(sw)
+		helper.HelmetArmorHelp2.Edit(sw)
 
-	w.LayoutSpacePush(rect.Rect{
-		X: 170,
-		Y: 424,
-		W: 170,
-		H: 190,
-	})
-	helper.HelmetArmorHelp1.Edit(w)
+		sw.Row(190).Static(200, 200)
+		helper.RelicHelp1.Edit(sw)
+		helper.RelicHelp2.Edit(sw)
 
-	w.LayoutSpacePush(rect.Rect{
-		X: 360,
-		Y: 424,
-		W: 170,
-		H: 190,
-	})
-	helper.HelmetArmorHelp2.Edit(w)
-
-	w.LayoutSpacePush(rect.Rect{
-		X: 170,
-		Y: 624,
-		W: 170,
-		H: 190,
-	})
-	helper.RelicHelp1.Edit(w)
-
-	w.LayoutSpacePush(rect.Rect{
-		X: 360,
-		Y: 624,
-		W: 170,
-		H: 190,
-	})
-	helper.RelicHelp2.Edit(w)
-	count += 7
-
-	// Finder
-	u.countLast = count + widgets.DrawItemFinder(w, 540, 24)
+		sw.GroupEnd()
+	}
 }

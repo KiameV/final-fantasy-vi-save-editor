@@ -116,3 +116,33 @@ const (
 	AdditionalMagicDef            = "addtionalMagicDefenseCount"
 	CurrentConditionList          = "currentConditionList"
 )
+
+// map data
+const (
+	MapID                    = "mapId"
+	PointIn                  = "pointIn"
+	TransportationID         = "transportationId"
+	CarryingHoverShip        = "carryingHoverShip"
+	PlayerEntity             = "playerEntity"
+	PlayerPosition           = "position"
+	PlayerDirection          = "direction"
+	GpsData                  = "gpsData"
+	GpsDataMapID             = "mapId"
+	GpsDataAreaID            = "areaId"
+	GpsDataID                = "gpsId"
+	GpsDataWidth             = "width"
+	GpsDataHeight            = "height"
+	MapMoveCount             = "moveCount"
+	MapSubtractSteps         = "subtractSteps"
+	PlayableCharacterCorpsID = "playableCharacterCorpsId"
+)
+
+// transportation
+const (
+	TransPosition       = "position"
+	TransDirection      = "direction"
+	TransID             = "id"
+	TransMapID          = "mapId"
+	TransEnable         = "enable"
+	TransTimeStampTicks = "timeStampTicks"
+)

@@ -6,27 +6,33 @@ import (
 	"ffvi_editor/ui/character"
 	"ffvi_editor/ui/cheats"
 	"ffvi_editor/ui/espers"
+	"ffvi_editor/ui/importantInventory"
 	"ffvi_editor/ui/inventory"
+	"ffvi_editor/ui/mapData"
 	"ffvi_editor/ui/misc"
 	"ffvi_editor/ui/party"
 	"ffvi_editor/ui/skills"
+	"ffvi_editor/ui/transportation"
 	"ffvi_editor/ui/veldt"
 	"github.com/aarzilli/nucular"
 )
 
 type mainMenu struct {
-	uis [8]ui.UI
+	uis []ui.UI
 }
 
 func NewUI() ui.UI {
 	return &mainMenu{
-		uis: [8]ui.UI{
+		uis: []ui.UI{
 			character.NewUI(),
 			inventory.NewUI(),
+			importantInventory.NewUI(),
 			skills.NewUI(),
 			espers.NewUI(),
 			misc.NewUI(),
 			party.NewUI(),
+			mapData.NewUI(),
+			transportation.NewUI(),
 			veldt.NewUI(),
 			cheats.NewUI(),
 		},
