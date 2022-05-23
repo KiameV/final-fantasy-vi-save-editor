@@ -28,7 +28,7 @@ func (u *cheatUI) Draw(w *nucular.Window) {
 	w.Row(6).Static()
 
 	w.Row(24).Static(250, 400)
-	_ = w.PropertyInt("Chests Opened", 0, &c.OpenedChestCount, 214, 1, 0)
+	_ = w.PropertyInt("Chests Opened", 0, &c.OpenedChestCount, 218, 1, 0)
 	w.Label("Set to 218 for steam achievement", "LC")
 
 	w.Row(6).Static()
