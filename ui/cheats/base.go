@@ -1,6 +1,8 @@
 package cheats
 
 import (
+	"ffvi_editor/io"
+	pre "ffvi_editor/io/pr"
 	"ffvi_editor/models/pr"
 	"ffvi_editor/ui"
 	"github.com/aarzilli/nucular"
@@ -39,6 +41,12 @@ func (u *cheatUI) Draw(w *nucular.Window) {
 	b2 := w.PropertyInt("Minutes", 0, &minutes, 59, 1, 0)
 	if b1 || b2 {
 		c.PlayTime = float64(hours*3600 + minutes*60)
+	}
+
+	w.Row(5).Static()
+	w.Row(24).Static(200)
+	if w.ButtonText("Beat All Encounters") {
+		pre.NewPR().CompleteAllEncounters(io.GetConfig().SaveDir)
 	}
 }
 

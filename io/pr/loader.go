@@ -965,7 +965,10 @@ func (p *PR) getSaveData(s string) (string, error) {
 		end   = strings.Index(s, `,"clearFlag`)
 	)
 	if end == -1 {
-		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+		end = strings.Index(s, "totalSubjugationCount")
+		if end == -1 {
+			return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+		}
 	}
 	for start < len(s) && s[start] != '{' {
 		start++
