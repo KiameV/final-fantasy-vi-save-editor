@@ -44,8 +44,8 @@ func (u *cheatUI) Draw(w *nucular.Window) {
 	}
 
 	w.Row(5).Static()
-	w.Row(24).Static(200)
-	if w.ButtonText("Beat All Encounters") {
+	w.Row(24).Static(300)
+	if w.ButtonText("Beat All Encounters & Visit All Locations") {
 		pre.NewPR().CompleteAllEncounters(io.GetConfig().SaveDir)
 	}
 }
