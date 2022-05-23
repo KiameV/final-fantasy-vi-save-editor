@@ -48,7 +48,7 @@ func (u *mapDataUI) Draw(w *nucular.Window) {
 	w.Spacing(1)
 	w.PropertyInt("Area ID", 0, &m.Gps.AreaID, math.MaxInt, 1, 0)
 	w.Spacing(1)
-	w.PropertyInt("GSP ID", 0, &m.Gps.GpsID, math.MaxInt, 1, 0)
+	w.PropertyInt("GPS ID", 0, &m.Gps.GpsID, math.MaxInt, 1, 0)
 
 	w.Row(24).Static(200, 10, 200)
 	w.PropertyInt("Width", 0, &m.Gps.Width, math.MaxInt, 1, 0)
