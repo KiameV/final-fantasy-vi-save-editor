@@ -13,6 +13,7 @@ type Misc struct {
 	CursedShieldFightCount int
 	EscapeCount            int
 	BattleCount            int
+	MonstersKilledCount    int
 }
 
 var misc *Misc

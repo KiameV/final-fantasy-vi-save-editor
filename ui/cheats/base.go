@@ -17,10 +17,6 @@ func NewUI() ui.UI {
 
 func (u *cheatUI) Draw(w *nucular.Window) {
 	c := pr.GetCheats()
-	w.Row(24).Static(300)
-	w.CheckboxText("Enable", &c.Enabled)
-
-	w.Row(10).Static()
 
 	w.Row(24).Static(300)
 	w.CheckboxText("Is Complete Flag", &c.IsCompleteFlag)
@@ -28,8 +24,9 @@ func (u *cheatUI) Draw(w *nucular.Window) {
 	w.Row(6).Static()
 
 	w.Row(24).Static(250, 400)
-	_ = w.PropertyInt("Chests Opened", 0, &c.OpenedChestCount, 218, 1, 0)
-	w.Label("Set to 218 for steam achievement", "LC")
+	w.Label("Chests Opened no longer works after the last patch.", "LC")
+	//_ = w.PropertyInt("Chests Opened", 0, &c.OpenedChestCount, 218, 1, 0)
+	//w.Label("Set to 218 for steam achievement", "LC")
 
 	w.Row(6).Static()
 
@@ -45,7 +42,7 @@ func (u *cheatUI) Draw(w *nucular.Window) {
 
 	w.Row(5).Static()
 	w.Row(24).Static(300)
-	if w.ButtonText("Beat All Encounters & Visit All Locations") {
+	if w.ButtonText("Beat All Encounters (may work) & Visit All Locations") {
 		pre.NewPR().CompleteAllEncounters(io.GetConfig().SaveDir)
 	}
 }

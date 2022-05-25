@@ -1,7 +1,6 @@
 package pr
 
 type Cheats struct {
-	Enabled          bool
 	OpenedChestCount int
 	//ClearFlag        bool
 	IsCompleteFlag bool

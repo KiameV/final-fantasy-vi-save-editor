@@ -486,7 +486,9 @@ func (p *PR) loadMiscStats() (err error) {
 	if models.GetMisc().NumberOfSaves, err = p.getInt(p.UserData, SaveCompleteCount); err != nil {
 		return
 	}
-
+	if models.GetMisc().MonstersKilledCount, err = p.getInt(p.UserData, MonstersKilledCount); err != nil {
+		return
+	}
 	if ds, ok := p.Base.GetValue(DataStorage); ok {
 		m := jo.NewOrderedMap()
 		if err = m.UnmarshalJSON([]byte(ds.(string))); err != nil {

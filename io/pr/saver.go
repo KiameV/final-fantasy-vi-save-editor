@@ -70,10 +70,8 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	if err = p.saveVeldt(); err != nil {
 		return
 	}
-	if pri.GetCheats().Enabled {
-		if err = p.saveCheats(); err != nil {
-			return
-		}
+	if err = p.saveCheats(); err != nil {
+		return
 	}
 
 	iSlice := make([]interface{}, 0, len(p.Characters))
@@ -645,7 +643,9 @@ func (p *PR) saveMiscStats() (err error) {
 	if err = p.setValue(p.UserData, SaveCompleteCount, models.GetMisc().NumberOfSaves); err != nil {
 		return
 	}
-
+	if err = p.setValue(p.UserData, MonstersKilledCount, models.GetMisc().MonstersKilledCount); err != nil {
+		return
+	}
 	if ds, ok := p.Base.GetValue(DataStorage); ok {
 		m := jo.NewOrderedMap()
 		if err = m.UnmarshalJSON([]byte(ds.(string))); err != nil {
