@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ffvi_editor/global"
+	"ffvi_editor/models"
 	"fmt"
 	"gitlab.com/c0b/go-ordered-json"
 	"io/ioutil"
@@ -29,28 +30,11 @@ func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
 	if out, err = p.readFile(toFile); err != nil {
 		return
 	}
-	//ioutil.WriteFile("loaded.json", out, 0644)
-	/*for i := 0; i < len(out); i++ {
-		if out[i] == '\\' && out[i+1] == 'x' {
-			j := string(out[i-20 : i+40])
-			print(j)
-			i += 50
-		}
-	}*/
+
 	if s, err = p.getSaveData(string(out)); err != nil {
 		return
 	}
-	//if err == nil {
-	//err = ioutil.WriteFile("loaded_pre.json", out, 0644)
-	//}
-	/*if strings.Contains(s, "\\x") {
-		// For foreign langauge, need to double-escape the x
-		p.getUnicodeNames(s)
-		//for i, n := range p.names {
-		//	s = strings.Replace(s, n, fmt.Sprintf(";;;%d;;;", i), 1)
-		//}
-		s = strings.ReplaceAll(s, "\\x", "x")
-	}*/
+
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
 	s = p.fixEscapeCharsForLoad(s)
 	if strings.Contains(s, "\\x") {
@@ -60,7 +44,6 @@ func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
 		}
 		s = string(b)
 	}
-	//s = p.fixFile(s)
 
 	if len(os.Args) >= 2 && os.Args[1] == "print" {
 		if _, err = os.Stat("encounters.json"); errors.Is(err, os.ErrNotExist) {
@@ -83,26 +66,52 @@ func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
 	if err = p.unmarshalFrom(base, "monsterDefeats", md); err != nil {
 		return errors.New("unable to parse encounters file, monsterDefeats")
 	}
+	keys := md.Get("keys")
+	if keys == nil {
+		return errors.New("unable to parse encounters file, monsterDefeats.keys")
+	}
+	sl := keys.([]interface{})
+	jn := make([]json.Number, len(sl))
+	definedIDs := make(map[int16]bool)
+	for i := range sl {
+		jn[i] = sl[i].(json.Number)
+		j, _ := jn[i].Int64()
+		definedIDs[int16(j)] = true
+	}
+	var idsToAdd []int16
+	for _, id := range models.MonsterIDs {
+		if _, found := definedIDs[id]; !found {
+			idsToAdd = append(idsToAdd, id)
+			jn = append(jn, json.Number(fmt.Sprintf("%d", id)))
+		}
+	}
+	md.Set("keys", jn)
+
 	vs := md.Get("values")
 	if vs == nil {
 		return errors.New("unable to parse encounters file, monsterDefeats.values")
 	}
-	sl := vs.([]interface{})
+	sl = vs.([]interface{})
+	jn = make([]json.Number, len(sl)+len(idsToAdd))
 	total := 2000
 	for i := range sl {
 		if i == 0 {
-			sl[i] = json.Number("2000")
+			jn[i] = "2000"
 			continue
 		}
 		if sl[i].(json.Number) == "0" {
-			sl[i] = json.Number("1")
+			jn[i] = "1"
 			total++
 		} else {
-			j, _ := sl[i].(json.Number).Int64()
+			jn[i] = sl[i].(json.Number)
+			j, _ := jn[i].Int64()
 			total += int(j)
 		}
 	}
-	md.Set("values", sl)
+	for i := 0; i < len(idsToAdd); i++ {
+		jn[i+len(sl)] = "1"
+	}
+	md.Set("values", jn)
 	base.Set("totalSubjugationCount", total)
 
 	var sf interface{}
