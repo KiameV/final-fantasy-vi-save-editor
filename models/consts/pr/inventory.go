@@ -118,7 +118,7 @@ Katana
 138 - Kotetsu
 139 - Kikuichimonji
 140 - Kazekiri
-141 - Masamane
+141 - Murasame
 142 - Masamune
 143 - Murakumo
 144 - Mutsunokami
