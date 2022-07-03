@@ -263,7 +263,11 @@ func (p *PR) loadCharacters() (err error) {
 			if j, err = v.(json.Number).Int64(); err != nil {
 				return
 			}
-			c.Commands[i] = pr.CommandLookupByValue[int(j)]
+			if i >= len(c.Commands) {
+				c.Commands = append(c.Commands, pr.CommandLookupByValue[int(j)])
+			} else {
+				c.Commands[i] = pr.CommandLookupByValue[int(j)]
+			}
 		}
 
 		if c.Vigor, err = p.getInt(params, AdditionalPower); err != nil {
