@@ -168,14 +168,6 @@ var (
 		},
 		{
 			ID:    22,
-			Name:  "Celes",
-			JobID: 7,
-			//Character: Celes,
-			HPBase: 44,
-			MPBase: 15,
-		},
-		{
-			ID:    23,
 			Name:  "Cyan",
 			JobID: 3,
 			//Character: Cyan,
@@ -183,7 +175,7 @@ var (
 			MPBase: 5,
 		},
 		{
-			ID:     24,
+			ID:     23,
 			Name:   "??????",
 			JobID:  17,
 			HPBase: 20,
@@ -191,12 +183,20 @@ var (
 			IsNPC:  true,
 		},
 		{
-			ID:    25,
+			ID:    24,
 			Name:  "Gau",
 			JobID: 12,
 			//Character: Gau,
 			HPBase: 45,
 			MPBase: 10,
+		},
+		{
+			ID:    25,
+			Name:  "Celes",
+			JobID: 7,
+			//Character: Celes,
+			HPBase: 44,
+			MPBase: 15,
 		},
 		{
 			ID:    26,
