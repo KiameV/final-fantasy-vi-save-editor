@@ -21,11 +21,12 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	var (
 		toFile = filepath.Join(io.GetConfig().SaveDir, fileName)
 		temp   = filepath.Join(global.PWD, "temp")
-		path   = strings.ReplaceAll(filepath.Join(global.PWD, "pr_io", "pr_io.exe"), "\\", "/")
-		cmd    = exec.Command("cmd", "/C", path, "obfuscateFile", toFile, temp)
+		cmd    = exec.Command("cmd", "/C", "pr_io.exe", "obfuscateFile", toFile, temp)
+
 		//needed   = make(map[int]int)
 		slTarget = jo.NewOrderedMap()
 	)
+	cmd.Dir = strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
 
 	/*/ TODO Test bulk item override
 	j := 0

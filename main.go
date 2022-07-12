@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const version = "2.0.0"
+const version = "2.0.1"
 
 var (
 	mainMenu      ui.UI
@@ -244,16 +244,7 @@ func popupErr(w *nucular.Window, err error) {
 		if c == 'U' || c == 'u' {
 			s := msg[i : i+5]
 			if s == "Users" || s == "users" {
-				for ; i < len(msg)-6; i++ {
-					c = msg[i]
-					if c == '\\' || c == '/' {
-						s = msg[i+1 : i+6]
-						if s == "io.py" {
-							i--
-							break
-						}
-					}
-				}
+				i += 10
 				sb.WriteString("...")
 				continue
 			}
