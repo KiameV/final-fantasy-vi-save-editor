@@ -56,7 +56,7 @@ func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
 		var prettyJSON bytes.Buffer
 		err = json.Indent(&prettyJSON, []byte(t), "", "\t")
 		if err == nil {
-			err = ioutil.WriteFile("encounters.json", prettyJSON.Bytes(), 0644)
+			err = ioutil.WriteFile("encounters.json", prettyJSON.Bytes(), 0755)
 		}
 	}
 
@@ -144,7 +144,7 @@ func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
 	}
 	defer os.Remove(temp)
 
-	if err = os.WriteFile(temp, data, 0644); err != nil {
+	if err = os.WriteFile(temp, data, 0755); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
 	}
 

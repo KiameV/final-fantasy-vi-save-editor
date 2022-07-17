@@ -3,23 +3,22 @@ package io
 import (
 	"ffvi_editor/global"
 	"github.com/aarzilli/nucular"
-	"github.com/sqweek/dialog"
+	"github.com/ncruces/zenity"
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
 )
 
 func OpenDirAndFileDialog(w *nucular.Window) (dir string, files []fs.FileInfo, err error) {
-	d := dialog.Directory()
-
-	if GetConfig().SaveDir != "" {
-		d = d.SetStartDir(GetConfig().SaveDir)
-	} else {
-		d = d.SetStartDir(".")
+	dir = GetConfig().SaveDir
+	if dir == "" {
+		dir = "."
 	}
-	d = d.Title("Select Save Directory")
-
-	if dir, err = d.Browse(); err == nil {
+	dir, err = zenity.SelectFile(
+		zenity.Title("Select Save Directory"),
+		zenity.Directory(),
+		zenity.Filename(dir))
+	if err == nil {
 		GetConfig().SaveDir = dir
 		SaveConfig()
 		files, err = ioutil.ReadDir(dir)
@@ -28,17 +27,16 @@ func OpenDirAndFileDialog(w *nucular.Window) (dir string, files []fs.FileInfo, e
 }
 
 func OpenFileDialog(w *nucular.Window, fileType global.SaveFileType) (fileName string, err error) {
-	if fileName, err = createDialog(fileType).Load(); err != nil {
+	if fileName, err = createDialog(fileType); err != nil {
 		return
 	}
-
 	err = OpenFileNoDialog(fileName, fileType)
 	return
 }
 
 func OpenInvFileDialog(w *nucular.Window) (data []byte, err error) {
 	var fn string
-	if fn, err = createInvDialog().Load(); err != nil {
+	if fn, err = openInvDialog(); err != nil {
 		return
 	}
 	return ioutil.ReadFile(fn)

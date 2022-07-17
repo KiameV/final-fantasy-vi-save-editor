@@ -133,7 +133,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 	var prettyJSON bytes.Buffer
 	err = json.Indent(&prettyJSON, []byte(s), "", "\t")
 	if err != nil {
-		err = ioutil.WriteFile("saved.json", prettyJSON.Bytes(), 0644)
+		err = ioutil.WriteFile("saved.json", prettyJSON.Bytes(), 0755)
 	}
 	// TODO END /*/
 
@@ -141,7 +141,7 @@ func (p *PR) Save(slot int, fileName string) (err error) {
 		data = p.revertUnicodeNames(data)
 	}
 
-	if err = os.WriteFile(temp, data, 0644); err != nil {
+	if err = os.WriteFile(temp, data, 0755); err != nil {
 		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
 	}
 

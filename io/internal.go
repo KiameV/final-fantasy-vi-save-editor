@@ -2,18 +2,18 @@ package io
 
 import (
 	"ffvi_editor/global"
-	"github.com/sqweek/dialog"
+	"github.com/ncruces/zenity"
 )
 
-func createDialog(fileType global.SaveFileType) *dialog.FileBuilder {
-	d := dialog.File()
-	dir := GetConfig().SaveDir
+func createDialog(fileType global.SaveFileType) (dir string, err error) {
+	var (
+		title  string
+		filter zenity.FileFilters
+	)
+	dir = GetConfig().SaveDir
 	if dir == "" {
-		d = d.SetStartDir(".")
-	} else {
-		d = d.SetStartDir(dir)
+		dir = "."
 	}
-
 	switch fileType {
 	/*case offsets.Snes9xSaveState15, offsets.Snes9xSaveState16:
 	d.Title("Select the Save State")
@@ -22,23 +22,52 @@ func createDialog(fileType global.SaveFileType) *dialog.FileBuilder {
 		Extensions: []string{"*.0*"},
 	}}*/
 	case global.SRMSlot1, global.SRMSlot2, global.SRMSlot3:
-		d = d.Title("Select the Save File").Filter("SRM File", "srm")
+		title = "Select the Save File"
+		filter = zenity.FileFilters{
+			{
+				Name:     "SRM File",
+				Patterns: []string{"*.srm"},
+			},
+		}
 	case global.ZnesSaveState:
-		d = d.Title("Select the Save State").Filter("ZST File", "zs*").Filter("All", "*")
+		title = "Select the Save State"
+		filter = zenity.FileFilters{
+			{
+				Name:     "ZST File",
+				Patterns: []string{"*.zs*"},
+			},
+			{
+				Name:     "All",
+				Patterns: []string{"*.*"},
+			},
+		}
 	}
-	return d
+	return zenity.SelectFile(
+		zenity.Title(title),
+		zenity.Filename(dir),
+		filter)
 }
 
-func createInvDialog() *dialog.FileBuilder {
-	d := dialog.File()
-	d = d.SetStartDir(".")
-	d = d.Title("Select the Inventory Save File").Filter("FF6INV File", "ff6inv")
-	return d
+func openInvDialog() (string, error) {
+	return zenity.SelectFile(
+		zenity.Title("Select the Inventory Save File"),
+		zenity.Filename("."),
+		zenity.FileFilter{
+			Name:     "FF6INV File",
+			Patterns: []string{getExt()},
+		})
 }
 
-func createDialogInv() *dialog.FileBuilder {
-	d := dialog.File()
-	d = d.SetStartDir(".")
-	d = d.Title("Select the Inventory Save File").Filter("FF6INV File", "ff6inv")
-	return d
+func saveDialogInv() (string, error) {
+	return zenity.SelectFileSave(
+		zenity.Title("Select the Inventory Save File"),
+		zenity.Filename("."),
+		zenity.FileFilter{
+			Name:     "FF6INV File",
+			Patterns: []string{getExt()},
+		})
+}
+
+func getExt() string {
+	return "*.ff6inv"
 }

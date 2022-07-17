@@ -10,7 +10,7 @@ import (
 )
 
 func SaveFileSnes(w *nucular.Window) error {
-	fn, err := createDialog(global.FileType).Save()
+	fn, err := createDialog(global.FileType)
 	if err != nil {
 		return err
 	}
@@ -31,12 +31,13 @@ func SaveFileSnesNoDialog(fileName string) error {
 }
 
 func SaveInvFile(w *nucular.Window, text []byte) error {
-	fn, err := createDialogInv().Save()
+	fn, err := saveDialogInv()
 	if err != nil {
 		return err
 	}
-	if !strings.Contains(fn, ".ff6inv") {
-		fn += ".ff6inv"
+	ext := getExt()
+	if !strings.Contains(fn, ext) {
+		fn += ext
 	}
-	return ioutil.WriteFile(fn, text, 0644)
+	return ioutil.WriteFile(fn, text, 0755)
 }
