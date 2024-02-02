@@ -12,7 +12,6 @@ import (
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
 	"fmt"
-	jo "gitlab.com/c0b/go-ordered-json"
 	io "io"
 	"io/ioutil"
 	"net/http"
@@ -23,6 +22,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	jo "gitlab.com/c0b/go-ordered-json"
 )
 
 func (p *PR) Load(fileName string) (err error) {
@@ -950,7 +951,7 @@ func (p *PR) execLoad(fileName string, omitFirstBytes bool) ([]byte, error) {
 	}
 
 	path := strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
-	cmd := exec.Command("cmd", "/C", "./pr_io.exe", "deobfuscateFile", `'`+fileName+`'`, s)
+	cmd := exec.Command("cmd", "/C", "./pr_io.exe", "deobfuscateFile", fileName, s)
 	cmd.Dir = path
 	cmd.Run()
 	return os.ReadFile("./pr_io/temp.txt")
