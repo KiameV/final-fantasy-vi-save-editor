@@ -38,11 +38,11 @@ func (p *PR) Load(fileName string) (err error) {
 	}
 	//ioutil.WriteFile("loaded.json", out, 0755)
 	/*for i := 0; i < len(out); i++ {
-		if out[i] == '\\' && out[i+1] == 'x' {
-			j := string(out[i-20 : i+40])
-			print(j)
-			i += 50
-		}
+	if out[i] == '\\' && out[i+1] == 'x' {
+	j := string(out[i-20 : i+40])
+	print(j)
+	i += 50
+	}
 	}*/
 	if s, err = p.getSaveData(string(out)); err != nil {
 		return
@@ -59,7 +59,8 @@ func (p *PR) Load(fileName string) (err error) {
 		s = strings.ReplaceAll(s, "\\x", "x")
 	}*/
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
-	s = p.fixEscapeCharsForLoad(s)
+	// UTF8 output obliviates all of the below:
+	/* s = p.fixEscapeCharsForLoad(s)
 	if strings.Contains(s, "\\x") {
 		b := []byte(s)
 		if b, err = p.replaceUnicodeNames(b, &names); err != nil {
@@ -68,6 +69,7 @@ func (p *PR) Load(fileName string) (err error) {
 		s = string(b)
 	}
 	//s = p.fixFile(s)
+	*/
 
 	if len(os.Args) >= 2 && os.Args[1] == "print" {
 		if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
@@ -948,9 +950,10 @@ func (p *PR) execLoad(fileName string, omitFirstBytes bool) ([]byte, error) {
 	}
 
 	path := strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
-	cmd := exec.Command("cmd", "/C", "pr_io.exe", "deobfuscateFile", fileName, s)
+	cmd := exec.Command("cmd", "/C", "./pr_io.exe", "deobfuscateFile", `'`+fileName+`'`, s)
 	cmd.Dir = path
-	return cmd.Output()
+	cmd.Run()
+	return os.ReadFile("./pr_io/temp.txt")
 }
 
 func handleCmdError(err error) error {
@@ -972,7 +975,7 @@ func (p *PR) getSaveData(s string) (string, error) {
 	if end == -1 {
 		end = strings.Index(s, "totalSubjugationCount")
 		if end == -1 {
-			return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+			return "", errors.New("total subjugation is negative. unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
 		}
 	}
 	for start < len(s) && s[start] != '{' {
@@ -982,8 +985,8 @@ func (p *PR) getSaveData(s string) (string, error) {
 	for end >= 0 && s[end] != '}' {
 		end--
 	}
-	if end+1 >= len(s) {
-		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+	if end >= len(s) {
+		return "", errors.New("end is past length. unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
 	}
 	return s[start : end+1], nil // + `,"playTime":0.0,"clearFlag":0}`, nil
 }
@@ -1074,7 +1077,7 @@ type unicodeNameReplace struct {
 
 func (p *PR) downloadPyExe() error {
 	var (
-		resp, err = http.Get("https://github.com/KiameV/pr_save_io/releases/download/latest/pr_io.zip")
+		resp, err = http.Get("https://github.com/yakaru/pr_save_io_jp/releases/download/latest/pr_io.zip")
 		out       *os.File
 		r         *zip.ReadCloser
 	)
