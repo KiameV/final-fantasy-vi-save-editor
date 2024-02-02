@@ -951,7 +951,7 @@ func (p *PR) execLoad(fileName string, omitFirstBytes bool) ([]byte, error) {
 	}
 
 	path := strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
-	cmd := exec.Command("cmd", "/C", "./pr_io.exe", "deobfuscateFile", fileName, s)
+	cmd := exec.Command("cmd", "/C", "pr_io.exe", "deobfuscateFile", fileName, s)
 	cmd.Dir = path
 	cmd.Run()
 	return os.ReadFile("./pr_io/temp.txt")
