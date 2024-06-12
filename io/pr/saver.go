@@ -1,14 +1,12 @@
 package pr
 
 import (
-	"bytes"
-	"compress/flate"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"ffvi_editor/global"
@@ -16,19 +14,18 @@ import (
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
-	"github.com/kiamev/ffpr-save-cypher/rijndael"
 	jo "gitlab.com/c0b/go-ordered-json"
 )
 
 func (p *PR) Save(slot int, toFile string) (err error) {
 	var (
-		// temp = filepath.Join(global.PWD, "temp")
-		// !!cmd    = exec.Command("cmd", "/C", "pr_io.exe", "obfuscateFile", toFile, temp)
+		temp = filepath.Join(global.PWD, "temp")
+		cmd  = exec.Command("cmd", "/C", "pr_io.exe", "obfuscateFile", toFile, temp)
 
 		// needed   = make(map[int]int)
 		slTarget = jo.NewOrderedMap()
 	)
-	// !!cmd.Dir = strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
+	cmd.Dir = strings.ReplaceAll(global.PWD, "\\", "/")
 
 	/*/ TODO Test bulk item override
 	j := 0
@@ -115,58 +112,52 @@ func (p *PR) Save(slot int, toFile string) (err error) {
 		return
 	}
 
-	if data, err = p.encrypt(data); err != nil {
-		return
+	if _, err = os.Stat(temp); errors.Is(err, os.ErrNotExist) {
+		if _, err = os.Create(temp); err != nil {
+			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
+		}
+	}
+	defer os.Remove(temp)
+
+	/*/ TODO Debug
+	if _, err = os.Stat("saved.json"); errors.Is(err, os.ErrNotExist) {
+		if _, err = os.Create("saved.json"); err != nil {
+			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
+		}
+	}
+	s := string(p.data)
+	s = strings.ReplaceAll(s, `\`, ``)
+	s = strings.ReplaceAll(s, `"{`, `{`)
+	s = strings.ReplaceAll(s, `}"`, `}`)
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, []byte(s), "", "\t")
+	if err != nil {
+		err = ioutil.WriteFile("saved.json", prettyJSON.Bytes(), 0755)
+	}
+	// TODO END /*/
+
+	if len(p.names) > 0 {
+		data = p.revertUnicodeNames(data)
 	}
 
-	// if err = os.WriteFile(temp, data, 0755); err != nil {
-	// 	return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
-	// }
+	if err = os.WriteFile(temp, data, 0755); err != nil {
+		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
+	}
 
 	if _, err = os.Stat(toFile); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create(toFile); err != nil {
 			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
 		}
 	}
-	if err = os.WriteFile(toFile, data, 0755); err != nil {
-		return fmt.Errorf("failed to write save file %s: %v", toFile, err)
-	}
-	return
-}
 
-func (p *PR) encrypt(in []byte) (out []byte, err error) {
-	var (
-		zw    *flate.Writer
-		b     = new(bytes.Buffer)
-		enc   []byte
-		coded []byte
-	)
-	if zw, err = flate.NewWriter(b, 6); err != nil {
-		return
-	}
-	defer func() {
-		_ = zw.Close()
-	}()
-	_, err = zw.Write(in)
-	if e := zw.Flush(); e != nil {
-		fmt.Println(e)
-	}
+	var out []byte
+	out, err = cmd.Output()
 	if err != nil {
-		return
-	}
-	if out, err = io.ReadAll(b); err != nil {
-		return
-	}
-	if enc, err = rijndael.New().Encrypt(out); err != nil {
-		return
-	}
-	coded = make([]byte, base64.StdEncoding.EncodedLen(len(enc)))
-	base64.StdEncoding.Encode(coded, enc)
-	out = make([]byte, 0, len(p.fileTrimmed)+len(coded)+3)
-	out = append(out, p.fileTrimmed...)
-	out = append(out, coded...)
-	for len(out)%4 != 0 {
-		out = append(out, '=')
+		if ee, ok := err.(*exec.ExitError); ok {
+			err = errors.New(string(ee.Stderr))
+		} else {
+			err = fmt.Errorf("%s: %v", string(out), err)
+		}
 	}
 	return
 }
@@ -734,7 +725,6 @@ func (p *PR) saveMapData() (err error) {
 	}
 
 	gps := jo.NewOrderedMap()
-	gps.Set(TransportationID, md.Gps.TransportationID)
 	gps.Set(GpsDataMapID, md.Gps.MapID)
 	gps.Set(GpsDataAreaID, md.Gps.AreaID)
 	gps.Set(GpsDataID, md.Gps.GpsID)

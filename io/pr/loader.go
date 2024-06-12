@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -579,7 +578,7 @@ func (p *PR) loadMapData() (err error) {
 		return
 	}
 	if md.Gps.TransportationID, err = p.getInt(gps, GpsTransportationID); err != nil {
-		return
+		err = nil
 	}
 	if md.Gps.MapID, err = p.getInt(gps, GpsDataMapID); err != nil {
 		return
@@ -972,35 +971,31 @@ func (p *PR) loadBase(s string) (err error) {
 func (p *PR) readFile(fileName string) (out []byte, err error) {
 	var (
 		b []byte
-		c []byte
-		d []byte
-		i int
 	)
 	if b, err = os.ReadFile(fileName); err != nil {
 		return
 	}
-	c = b
-	for i = 0; len(c) > 1 && c[0] > 127; i++ {
-		c = b[i:]
-	}
-	d = b[:i-1]
-	p.fileTrimmed = make([]byte, len(d))
-	for i, j := range d {
-		p.fileTrimmed[i] = j
-	}
-	for len(c)%4 != 0 {
-		c = append(c, '=')
-	}
-	d, _ = base64.StdEncoding.DecodeString(string(c))
-	if len(d) == 0 {
-		return nil, errors.New("unable to load file")
-	}
-	if d, err = rijndael.New().Decrypt(d); err != nil {
+	if len(b) < 10 {
+		err = errors.New("unable to load file")
 		return
 	}
-	zr := flate.NewReader(bytes.NewReader(d))
+	if b[0] == 239 && b[1] == 187 && b[2] == 191 {
+		p.fileTrimmed = []byte{239, 187, 191}
+		b = b[3:]
+	}
+	for len(b)%4 != 0 {
+		b = append(b, '=')
+	}
+	b, _ = base64.StdEncoding.DecodeString(string(b))
+	if len(b) == 0 {
+		return nil, errors.New("unable to load file")
+	}
+	if b, err = rijndael.New().Decrypt(b); err != nil {
+		return
+	}
+	zr := flate.NewReader(bytes.NewReader(b))
 	defer func() { _ = zr.Close() }()
-	out, _ = io.ReadAll(zr)
+	out, err = io.ReadAll(zr)
 	return
 }
 
@@ -1075,50 +1070,6 @@ func (p *PR) replaceUnicodeNames(b []byte, names *[]unicodeNameReplace) ([]byte,
 type unicodeNameReplace struct {
 	Original string
 	Replaced string
-}
-
-func (p *PR) downloadPyExe() error {
-	var (
-		resp, err = http.Get("https://github.com/KiameV/pr_save_io/releases/download/latest/pr_io.zip")
-		out       *os.File
-		r         *zip.ReadCloser
-	)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	fmt.Println("status", resp.Status)
-	if resp.StatusCode != 200 {
-		return errors.New("failed to download the save file reader")
-	}
-
-	// Create the file
-	if out, err = os.Create("pr_io.zip"); err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Write the body to file
-	if _, err = io.Copy(out, resp.Body); err != nil {
-		return err
-	}
-
-	if r, err = zip.OpenReader("pr_io.zip"); err != nil {
-		return err
-	}
-	defer func() { _ = r.Close() }()
-
-	if err = os.Mkdir("./pr_io", 0755); err != nil {
-		return err
-	}
-
-	// Closure to address file descriptors issue with all the deferred .Close() methods
-	for _, f := range r.File {
-		if err = extractArchiveFile(".", f); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func extractArchiveFile(dest string, f *zip.File) (err error) {
