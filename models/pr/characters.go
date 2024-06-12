@@ -1,6 +1,8 @@
 package pr
 
 import (
+	"slices"
+
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
@@ -10,7 +12,7 @@ var Characters []*models.Character
 
 func init() {
 	Characters = make([]*models.Character, len(pr.Characters))
-	//defaultCommand := consts.CommandLookupByValue[0xFF]
+	// defaultCommand := consts.CommandLookupByValue[0xFF]
 	for i, name := range pr.Characters {
 		o, ok := CharacterOffsetByName[name]
 		if !ok {
@@ -57,4 +59,13 @@ func GetCharacterByID(id int) (c *models.Character) {
 		}
 	}
 	return
+}
+
+func CharacterNames() []string {
+	names := make([]string, len(Characters))
+	for i, c := range Characters {
+		names[i] = c.RootName
+	}
+	slices.Sort(names)
+	return names
 }

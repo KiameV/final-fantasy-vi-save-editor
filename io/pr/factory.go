@@ -5,16 +5,16 @@ import (
 )
 
 type PR struct {
-	//data       []byte
-	Base       *jo.OrderedMap
-	UserData   *jo.OrderedMap
-	MapData    *jo.OrderedMap
-	Characters []*jo.OrderedMap
-	names      []unicodeNameReplace
-	//fileEnd    string
+	// data       []byte
+	Base        *jo.OrderedMap
+	UserData    *jo.OrderedMap
+	MapData     *jo.OrderedMap
+	Characters  []*jo.OrderedMap
+	names       []unicodeNameReplace
+	fileTrimmed []byte
 }
 
-func NewPR() *PR {
+func New() *PR {
 	return &PR{
 		Base:       jo.NewOrderedMap(),
 		UserData:   jo.NewOrderedMap(),

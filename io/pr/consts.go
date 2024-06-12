@@ -21,8 +21,8 @@ const (
 	ClearFlag                      = "clearFlag"
 	IsCompleteFlag                 = "isCompleteFlag"
 	MapData                        = "mapData"
-	//ConfigData                   = "configData"
-	//PlayTime                     = "playTime"
+	// ConfigData                   = "configData"
+	// PlayTime                     = "playTime"
 )
 
 // user data keys
@@ -53,7 +53,7 @@ const (
 	MonstersKilledCount       = "monstersKilledCount"
 	TotalGil                  = "totalGil"
 	PlayTime                  = "playTime"
-	//ConfigData              = "configData"
+	// ConfigData              = "configData"
 )
 
 // character data keys
@@ -127,6 +127,7 @@ const (
 	PlayerPosition           = "position"
 	PlayerDirection          = "direction"
 	GpsData                  = "gpsData"
+	GpsTransportationID      = "transportationId"
 	GpsDataMapID             = "mapId"
 	GpsDataAreaID            = "areaId"
 	GpsDataID                = "gpsId"

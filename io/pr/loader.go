@@ -3,26 +3,28 @@ package pr
 import (
 	"archive/zip"
 	"bytes"
+	"compress/flate"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"ffvi_editor/global"
-	pIO "ffvi_editor/io"
-	"ffvi_editor/models"
-	"ffvi_editor/models/consts"
-	"ffvi_editor/models/consts/pr"
-	pri "ffvi_editor/models/pr"
 	"fmt"
-	jo "gitlab.com/c0b/go-ordered-json"
-	io "io"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
+
+	"ffvi_editor/io/config"
+	"ffvi_editor/models"
+	"ffvi_editor/models/consts"
+	"ffvi_editor/models/consts/pr"
+	pri "ffvi_editor/models/pr"
+	"github.com/kiamev/ffpr-save-cypher/rijndael"
+	jo "gitlab.com/c0b/go-ordered-json"
 )
 
 func (p *PR) Load(fileName string) (err error) {
@@ -32,11 +34,13 @@ func (p *PR) Load(fileName string) (err error) {
 		s     string
 		names []unicodeNameReplace
 	)
-	//p.names = make([][]rune, 0, 40)
+	// p.names = make([][]rune, 0, 40)
 	if out, err = p.readFile(fileName); err != nil {
 		return
 	}
-	//ioutil.WriteFile("loaded.json", out, 0755)
+	s = string(out)
+	// DEBUG write out
+	// p.debug_WriteOut(out)
 	/*for i := 0; i < len(out); i++ {
 		if out[i] == '\\' && out[i+1] == 'x' {
 			j := string(out[i-20 : i+40])
@@ -44,12 +48,12 @@ func (p *PR) Load(fileName string) (err error) {
 			i += 50
 		}
 	}*/
-	if s, err = p.getSaveData(string(out)); err != nil {
-		return
-	}
-	//if err == nil {
-	//err = ioutil.WriteFile("loaded_pre.json", out, 0755)
-	//}
+	// if s, err = p.getSaveData(string(out)); err != nil {
+	// 	return
+	// }
+	// if err == nil {
+	// err = ioutil.WriteFile("loaded_pre.json", out, 0755)
+	// }
 	/*if strings.Contains(s, "\\x") {
 		// For foreign langauge, need to double-escape the x
 		p.getUnicodeNames(s)
@@ -59,7 +63,7 @@ func (p *PR) Load(fileName string) (err error) {
 		s = strings.ReplaceAll(s, "\\x", "x")
 	}*/
 	s = strings.ReplaceAll(s, `\\r\\n`, "")
-	s = p.fixEscapeCharsForLoad(s)
+	// s = p.fixEscapeCharsForLoad(s)
 	if strings.Contains(s, "\\x") {
 		b := []byte(s)
 		if b, err = p.replaceUnicodeNames(b, &names); err != nil {
@@ -67,7 +71,7 @@ func (p *PR) Load(fileName string) (err error) {
 		}
 		s = string(b)
 	}
-	//s = p.fixFile(s)
+	// s = p.fixFile(s)
 
 	if len(os.Args) >= 2 && os.Args[1] == "print" {
 		if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
@@ -88,9 +92,9 @@ func (p *PR) Load(fileName string) (err error) {
 		return
 	}
 
-	//if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
+	// if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
 	//	return
-	//}
+	// }
 
 	if err = p.unmarshalFrom(p.Base, UserData, p.UserData); err != nil {
 		return
@@ -156,8 +160,8 @@ func (p *PR) Load(fileName string) (err error) {
 func (p *PR) loadParty() (err error) {
 	var (
 		party = pri.GetParty()
-		//id     int
-		//name   string
+		// id     int
+		// name   string
 		i      interface{}
 		member pri.Member
 	)
@@ -184,7 +188,9 @@ func (p *PR) loadParty() (err error) {
 		if err = json.Unmarshal([]byte(c.(string)), &member); err != nil {
 			return
 		}
-		party.SetMemberByID(slot, member.CharacterID)
+		if err = party.SetMemberByID(slot, member.CharacterID); err != nil {
+			return
+		}
 	}
 	return
 }
@@ -211,18 +217,18 @@ func (p *PR) loadCharacters() (err error) {
 		}
 
 		c := pri.GetCharacter(o.Name)
-		c.EnableCommandsSave = pIO.GetConfig().AutoEnableCmd
+		c.EnableCommandsSave = config.AutoEnableCmd()
 
 		if c.Name, err = p.getString(d, Name); err != nil {
 			return
 		}
 
-		//if pr.IsMainCharacter(c.Name) {
+		// if pr.IsMainCharacter(c.Name) {
 		pri.GetParty().AddPossibleMember(&pri.Member{
 			CharacterID: id,
 			Name:        c.Name,
 		})
-		//}
+		// }
 
 		if c.IsEnabled, err = p.getBool(d, IsEnableCorps); err != nil {
 			return
@@ -572,6 +578,9 @@ func (p *PR) loadMapData() (err error) {
 	if err = p.unmarshalFrom(p.MapData, GpsData, gps); err != nil {
 		return
 	}
+	if md.Gps.TransportationID, err = p.getInt(gps, GpsTransportationID); err != nil {
+		return
+	}
 	if md.Gps.MapID, err = p.getInt(gps, GpsDataMapID); err != nil {
 		return
 	}
@@ -821,7 +830,7 @@ func (p *PR) unmarshalFrom(from *jo.OrderedMap, key string, m *jo.OrderedMap) (e
 }
 
 func (p *PR) unmarshal(i interface{}, m *map[string]interface{}) error {
-	//s := strings.ReplaceAll(i.(string), `\\"`, `\"`)
+	// s := strings.ReplaceAll(i.(string), `\\"`, `\"`)
 	return json.Unmarshal([]byte(i.(string)), m)
 }
 
@@ -932,70 +941,66 @@ type idCount struct {
 	Count     int `json:"count"`
 }
 
-func (p *PR) execLoad(fileName string, omitFirstBytes bool) ([]byte, error) {
-	if _, err := os.Stat("pr_io"); err != nil {
-		if err = p.downloadPyExe(); err != nil {
-			return nil, err
-		}
-	}
-	if _, err := os.Stat("pr_io.zip"); err != nil {
-		_ = os.Remove("pr_io.zip")
-	}
-
-	s := "0"
-	if omitFirstBytes {
-		s = "1"
-	}
-
-	path := strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
-	cmd := exec.Command("cmd", "/C", "pr_io.exe", "deobfuscateFile", fileName, s)
-	cmd.Dir = path
-	return cmd.Output()
-}
-
-func handleCmdError(err error) error {
-	if e, ok := err.(*exec.ExitError); ok {
-		return fmt.Errorf("failed to load file: " + string(e.Stderr))
-	}
-	return fmt.Errorf("failed to load file: " + err.Error())
-}
-
 func (p *PR) loadBase(s string) (err error) {
 	return p.Base.UnmarshalJSON([]byte(s))
 }
 
-func (p *PR) getSaveData(s string) (string, error) {
-	var (
-		start int
-		end   = strings.Index(s, `,"clearFlag`)
-	)
-	if end == -1 {
-		end = strings.Index(s, "totalSubjugationCount")
-		if end == -1 {
-			return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
-		}
-	}
-	for start < len(s) && s[start] != '{' {
-		start++
-	}
-	end = len(s) - 1
-	for end >= 0 && s[end] != '}' {
-		end--
-	}
-	if end+1 >= len(s) {
-		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
-	}
-	return s[start : end+1], nil // + `,"playTime":0.0,"clearFlag":0}`, nil
-}
+// func (p *PR) getSaveData(s string) (string, error) {
+// 	var (
+// 		start int
+// 		end   = strings.Index(s, `,"clearFlag`)
+// 	)
+// 	if end == -1 {
+// 		end = strings.Index(s, "totalSubjugationCount")
+// 		if end == -1 {
+// 			return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+// 		}
+// 	}
+// 	for start < len(s) && s[start] != '{' {
+// 		start++
+// 	}
+// 	end = len(s) - 1
+// 	for end >= 0 && s[end] != '}' {
+// 		end--
+// 	}
+// 	if end+1 >= len(s) {
+// 		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
+// 	}
+// 	return s[start : end+1], nil // + `,"playTime":0.0,"clearFlag":0}`, nil
+// }
 
 func (p *PR) readFile(fileName string) (out []byte, err error) {
-	if out, err = p.execLoad(fileName, true); err != nil {
-		e1 := handleCmdError(err)
-		if out, err = p.execLoad(fileName, false); err != nil {
-			err = e1
-			return
-		}
+	var (
+		b []byte
+		c []byte
+		d []byte
+		i int
+	)
+	if b, err = os.ReadFile(fileName); err != nil {
+		return
 	}
+	c = b
+	for i = 0; len(c) > 1 && c[0] > 127; i++ {
+		c = b[i:]
+	}
+	d = b[:i-1]
+	p.fileTrimmed = make([]byte, len(d))
+	for i, j := range d {
+		p.fileTrimmed[i] = j
+	}
+	for len(c)%4 != 0 {
+		c = append(c, '=')
+	}
+	d, _ = base64.StdEncoding.DecodeString(string(c))
+	if len(d) == 0 {
+		return nil, errors.New("unable to load file")
+	}
+	if d, err = rijndael.New().Decrypt(d); err != nil {
+		return
+	}
+	zr := flate.NewReader(bytes.NewReader(d))
+	defer func() { _ = zr.Close() }()
+	out, _ = io.ReadAll(zr)
 	return
 }
 
@@ -1148,6 +1153,81 @@ func extractArchiveFile(dest string, f *zip.File) (err error) {
 		}
 	}
 	return
+}
+
+func (p *PR) debug_WriteOut(out []byte) {
+	var m map[string]any
+	if err := json.Unmarshal(out, &m); err == nil {
+		p.debug_WriteSection("configData", &m)
+		p.debug_WriteSection("dataStorage", &m)
+		if md, loaded := p.debug_LoadMap("mapData", &m); loaded {
+			p.debug_WriteSection("gpsData", &md)
+			p.debug_WriteSection("playerEntity", &md)
+			m["mapData"] = md
+		}
+		if ud, loaded := p.debug_LoadMap("userData", &m, true); loaded {
+			p.debug_WriteSection("corpsList", &ud, true)
+			if cp, l := p.debug_LoadMap("corpsSlots", &ud, true); l {
+				p.debug_LoadValue("values", &cp)
+				ud["corpsSlots"] = cp
+			}
+			// p.debug_WriteSection("learnedAbilityList", &ud)
+			// p.debug_WriteSection("importantOwendItemList", &ud)
+			// p.debug_WriteSection("normalOwnedItemList", &ud)
+			// p.debug_WriteSection("normalOwnedItemSortIdList", &ud)
+			if ow, l := p.debug_LoadMap("ownedCharacterList", &ud, true); l {
+				p.debug_LoadValue("target", &ow)
+				sl := ow["target"].([]map[string]any)
+				for _, v := range sl {
+					p.debug_WriteSection("abilitySlotDataList", &v, true)
+				}
+				ud["ownedCharacterList"] = ow
+			}
+			// p.debug_WriteSection("ownedKeyWaordList", &ud)
+			// p.debug_WriteSection("ownedMagicList", &ud)
+			// p.debug_WriteSection("ownedMagicStoneList", &ud)
+			// p.debug_WriteSection("releasedJobs", &ud)
+			// p.debug_WriteSection("warehouseItemList", &ud)
+			m["userData"] = ud
+		}
+		out, _ = json.MarshalIndent(m, "", "  ")
+	}
+	_ = os.WriteFile("loaded.json", out, 0755)
+}
+
+func (p *PR) debug_WriteSection(key string, parent *map[string]any, skip ...bool) {
+	if m, loaded := p.debug_LoadMap(key, parent, skip...); loaded {
+		(*parent)[key] = m
+	}
+}
+
+func (p *PR) debug_LoadMap(key string, parent *map[string]any, skip ...bool) (m map[string]any, loaded bool) {
+	var v any
+	if v, loaded = (*parent)[key]; loaded {
+		s := v.(string)
+		// for strings.Contains(s, `\\"`) {
+		if len(skip) == 0 {
+			s = strings.ReplaceAll(s, `\"`, `"`)
+		}
+		// }
+		loaded = json.Unmarshal([]byte(s), &m) == nil
+	}
+	return
+}
+
+func (p *PR) debug_LoadValue(key string, parent *map[string]any) {
+	var v []any
+	if j, ok := (*parent)[key]; ok {
+		if v, ok = j.([]any); ok {
+			a := make([]map[string]any, len(v))
+			for i, s := range v {
+				if loaded := json.Unmarshal([]byte(s.(string)), &a[i]) == nil; !loaded {
+					return
+				}
+			}
+			(*parent)[key] = a
+		}
+	}
 }
 
 /*

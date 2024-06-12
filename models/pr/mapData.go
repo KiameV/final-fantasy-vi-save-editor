@@ -5,11 +5,12 @@ type V3 struct {
 }
 
 type GPS struct {
-	MapID  int
-	AreaID int
-	GpsID  int
-	Width  int
-	Height int
+	TransportationID int
+	MapID            int
+	AreaID           int
+	GpsID            int
+	Width            int
+	Height           int
 }
 
 type MapData struct {
@@ -20,7 +21,7 @@ type MapData struct {
 	Player            V3
 	PlayerDirection   int
 	Gps               GPS
-	//MoveCount                int
+	// MoveCount                int
 	PlayableCharacterCorpsID int
 }
 

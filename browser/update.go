@@ -14,11 +14,15 @@ import (
 const (
 	tagUrl = `https://api.github.com/repos/KiameV/final-fantasy-vi-save-editor/tags`
 	relUrl = `https://github.com/KiameV/final-fantasy-vi-save-editor/releases/%s`
+
+	version = "3.0.0"
 )
 
-type tag struct {
-	Name string `json:"name"`
-}
+type (
+	tag struct {
+		Name string `json:"name"`
+	}
+)
 
 func CheckForUpdate(current string) (hasNewer bool, version string, err error) {
 	var (

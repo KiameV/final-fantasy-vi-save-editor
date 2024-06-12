@@ -2,6 +2,7 @@ package io
 
 import (
 	"ffvi_editor/global"
+	"ffvi_editor/io/config"
 	"github.com/ncruces/zenity"
 )
 
@@ -10,7 +11,7 @@ func createDialog(fileType global.SaveFileType) (dir string, err error) {
 		title  string
 		filter zenity.FileFilters
 	)
-	dir = GetConfig().SaveDir
+	dir = config.SaveDir()
 	if dir == "" {
 		dir = "."
 	}

@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"ffvi_editor/global"
-	"ffvi_editor/models"
 	"fmt"
-	"gitlab.com/c0b/go-ordered-json"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"ffvi_editor/global"
+	"ffvi_editor/models"
+	"gitlab.com/c0b/go-ordered-json"
 )
 
 func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
@@ -26,12 +27,8 @@ func (p *PR) CompleteAllEncounters(saveDir string) (err error) {
 		temp    = filepath.Join(global.PWD, "temp")
 		saveCmd = exec.Command("python", "./io/python/io.py", "obfuscateFile", toFile, temp)
 	)
-	//p.names = make([][]rune, 0, 40)
+	// p.names = make([][]rune, 0, 40)
 	if out, err = p.readFile(toFile); err != nil {
-		return
-	}
-
-	if s, err = p.getSaveData(string(out)); err != nil {
 		return
 	}
 
