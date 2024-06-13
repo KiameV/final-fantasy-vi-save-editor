@@ -2,14 +2,10 @@ package pr
 
 import (
 	"archive/zip"
-	"bytes"
-	"compress/flate"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -18,82 +14,30 @@ import (
 	"strings"
 
 	"ffvi_editor/io/config"
+	"ffvi_editor/io/file"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
 	pri "ffvi_editor/models/pr"
-	"github.com/kiamev/ffpr-save-cypher/rijndael"
 	jo "gitlab.com/c0b/go-ordered-json"
 )
 
-func (p *PR) Load(fileName string) (err error) {
+func (p *PR) Load(fromFile string) (err error) {
 	var (
 		out   []byte
 		i     interface{}
 		s     string
 		names []unicodeNameReplace
 	)
-	// p.names = make([][]rune, 0, 40)
-	if out, err = p.readFile(fileName); err != nil {
+
+	if out, p.fileTrimmed, err = file.LoadFile(fromFile); err != nil {
 		return
 	}
 	s = string(out)
-	// DEBUG write out
-	// p.debug_WriteOut(out)
-	/*for i := 0; i < len(out); i++ {
-		if out[i] == '\\' && out[i+1] == 'x' {
-			j := string(out[i-20 : i+40])
-			print(j)
-			i += 50
-		}
-	}*/
-	// if s, err = p.getSaveData(string(out)); err != nil {
-	// 	return
-	// }
-	// if err == nil {
-	// err = ioutil.WriteFile("loaded_pre.json", out, 0755)
-	// }
-	/*if strings.Contains(s, "\\x") {
-		// For foreign langauge, need to double-escape the x
-		p.getUnicodeNames(s)
-		//for i, n := range p.names {
-		//	s = strings.Replace(s, n, fmt.Sprintf(";;;%d;;;", i), 1)
-		//}
-		s = strings.ReplaceAll(s, "\\x", "x")
-	}*/
-	s = strings.ReplaceAll(s, `\\r\\n`, "")
-	// s = p.fixEscapeCharsForLoad(s)
-	if strings.Contains(s, "\\x") {
-		b := []byte(s)
-		if b, err = p.replaceUnicodeNames(b, &names); err != nil {
-			return
-		}
-		s = string(b)
-	}
-	// s = p.fixFile(s)
-
-	if len(os.Args) >= 2 && os.Args[1] == "print" {
-		if _, err = os.Stat("loaded.json"); errors.Is(err, os.ErrNotExist) {
-			if _, err = os.Create("loaded.json"); err != nil {
-			}
-		}
-		t := strings.ReplaceAll(s, `\`, ``)
-		t = strings.ReplaceAll(t, `"{`, `{`)
-		t = strings.ReplaceAll(t, `}"`, `}`)
-		var prettyJSON bytes.Buffer
-		err = json.Indent(&prettyJSON, []byte(t), "", "\t")
-		if err == nil {
-			_ = ioutil.WriteFile("loaded.json", prettyJSON.Bytes(), 0755)
-		}
-	}
 
 	if err = p.loadBase(s); err != nil {
 		return
 	}
-
-	// if err = p.Base.UnmarshalJSON([]byte(s)); err != nil {
-	//	return
-	// }
 
 	if err = p.unmarshalFrom(p.Base, UserData, p.UserData); err != nil {
 		return
@@ -942,61 +886,6 @@ type idCount struct {
 
 func (p *PR) loadBase(s string) (err error) {
 	return p.Base.UnmarshalJSON([]byte(s))
-}
-
-// func (p *PR) getSaveData(s string) (string, error) {
-// 	var (
-// 		start int
-// 		end   = strings.Index(s, `,"clearFlag`)
-// 	)
-// 	if end == -1 {
-// 		end = strings.Index(s, "totalSubjugationCount")
-// 		if end == -1 {
-// 			return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
-// 		}
-// 	}
-// 	for start < len(s) && s[start] != '{' {
-// 		start++
-// 	}
-// 	end = len(s) - 1
-// 	for end >= 0 && s[end] != '}' {
-// 		end--
-// 	}
-// 	if end+1 >= len(s) {
-// 		return "", errors.New("unable to load file. Please try resaving to a new unused game slot and try loading that slot instead")
-// 	}
-// 	return s[start : end+1], nil // + `,"playTime":0.0,"clearFlag":0}`, nil
-// }
-
-func (p *PR) readFile(fileName string) (out []byte, err error) {
-	var (
-		b []byte
-	)
-	if b, err = os.ReadFile(fileName); err != nil {
-		return
-	}
-	if len(b) < 10 {
-		err = errors.New("unable to load file")
-		return
-	}
-	if b[0] == 239 && b[1] == 187 && b[2] == 191 {
-		p.fileTrimmed = []byte{239, 187, 191}
-		b = b[3:]
-	}
-	for len(b)%4 != 0 {
-		b = append(b, '=')
-	}
-	b, _ = base64.StdEncoding.DecodeString(string(b))
-	if len(b) == 0 {
-		return nil, errors.New("unable to load file")
-	}
-	if b, err = rijndael.New().Decrypt(b); err != nil {
-		return
-	}
-	zr := flate.NewReader(bytes.NewReader(b))
-	defer func() { _ = zr.Close() }()
-	out, err = io.ReadAll(zr)
-	return
 }
 
 func (p *PR) uncheckAll(rages []*consts.NameValueChecked) {

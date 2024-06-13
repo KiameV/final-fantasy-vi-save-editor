@@ -13,3 +13,5 @@ ffvi_editor.exe
 encounters.json
 pr_io*
 *.tt*
+saved.file
+loaded.file

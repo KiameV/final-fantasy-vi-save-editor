@@ -1,8 +1,6 @@
 package pr
 
 import (
-	"slices"
-
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
@@ -61,11 +59,37 @@ func GetCharacterByID(id int) (c *models.Character) {
 	return
 }
 
-func CharacterNames() []string {
-	names := make([]string, len(Characters))
-	for i, c := range Characters {
-		names[i] = c.RootName
+func CharacterNamesHumanSelect() []string {
+	return []string{
+		"Celes",
+		"Cyan",
+		"Edgar",
+		"Gau",
+		"Gogo",
+		"Locke",
+		"Mog",
+		"Relm",
+		"Sabin",
+		"Setzer",
+		"Shadow",
+		"Strago",
+		"Terra",
+		"Umaro",
+		"??????",
+		"Banon",
+		"Biggs",
+		"Cosmog",
+		"Leo",
+		"Maduin",
+		"Moggie",
+		"Moghan",
+		"Moglin",
+		"Mogret",
+		"Mogsy",
+		"Moguel",
+		"Mogwin",
+		"Molulu",
+		"Mugmug",
+		"Wedge",
 	}
-	slices.Sort(names)
-	return names
 }

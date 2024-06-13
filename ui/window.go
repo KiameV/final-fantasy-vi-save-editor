@@ -124,7 +124,7 @@ func (g *gui) Load() {
 				g.prev = nil
 				g.save.Disabled = false
 				g.pr = p
-				g.canvas.Add(selections.NewCharacters())
+				g.canvas.Add(selections.NewEditor())
 			}
 		}, func() {
 			defer func() { g.open.Disabled = false }()

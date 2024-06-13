@@ -2,14 +2,11 @@ package pr
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"ffvi_editor/global"
+	"ffvi_editor/io/file"
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
@@ -19,13 +16,9 @@ import (
 
 func (p *PR) Save(slot int, toFile string) (err error) {
 	var (
-		temp = filepath.Join(global.PWD, "temp")
-		cmd  = exec.Command("cmd", "/C", "pr_io.exe", "obfuscateFile", toFile, temp)
-
 		// needed   = make(map[int]int)
 		slTarget = jo.NewOrderedMap()
 	)
-	cmd.Dir = strings.ReplaceAll(global.PWD, "\\", "/")
 
 	/*/ TODO Test bulk item override
 	j := 0
@@ -112,54 +105,7 @@ func (p *PR) Save(slot int, toFile string) (err error) {
 		return
 	}
 
-	if _, err = os.Stat(temp); errors.Is(err, os.ErrNotExist) {
-		if _, err = os.Create(temp); err != nil {
-			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
-		}
-	}
-	defer os.Remove(temp)
-
-	/*/ TODO Debug
-	if _, err = os.Stat("saved.json"); errors.Is(err, os.ErrNotExist) {
-		if _, err = os.Create("saved.json"); err != nil {
-			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
-		}
-	}
-	s := string(p.data)
-	s = strings.ReplaceAll(s, `\`, ``)
-	s = strings.ReplaceAll(s, `"{`, `{`)
-	s = strings.ReplaceAll(s, `}"`, `}`)
-	var prettyJSON bytes.Buffer
-	err = json.Indent(&prettyJSON, []byte(s), "", "\t")
-	if err != nil {
-		err = ioutil.WriteFile("saved.json", prettyJSON.Bytes(), 0755)
-	}
-	// TODO END /*/
-
-	if len(p.names) > 0 {
-		data = p.revertUnicodeNames(data)
-	}
-
-	if err = os.WriteFile(temp, data, 0755); err != nil {
-		return fmt.Errorf("failed to create temp file %s: %v", toFile, err)
-	}
-
-	if _, err = os.Stat(toFile); errors.Is(err, os.ErrNotExist) {
-		if _, err = os.Create(toFile); err != nil {
-			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
-		}
-	}
-
-	var out []byte
-	out, err = cmd.Output()
-	if err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
-			err = errors.New(string(ee.Stderr))
-		} else {
-			err = fmt.Errorf("%s: %v", string(out), err)
-		}
-	}
-	return
+	return file.SaveFile(data, toFile, p.fileTrimmed)
 }
 
 func (p *PR) saveCharacters(addedItems *[]int) (err error) {

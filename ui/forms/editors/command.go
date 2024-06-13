@@ -4,7 +4,7 @@ import (
 	"slices"
 
 	"ffvi_editor/models"
-	"ffvi_editor/ui/forms/input"
+	"ffvi_editor/ui/forms/inputs"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -17,7 +17,7 @@ type (
 	}
 	cmdSelect struct {
 		selection *widget.Select
-		entry     *input.IntEntry
+		entry     *inputs.IntEntry
 	}
 )
 
@@ -57,7 +57,7 @@ func newCmdSelect(options []string, cmd *models.Command) (s cmdSelect) {
 				s.entry.SetInt(i)
 			}
 		}),
-		entry: input.NewIntEntry(),
+		entry: inputs.NewIntEntry(),
 	}
 	s.entry.OnChanged = func(v string) {
 		cmd.Value = s.entry.Int()

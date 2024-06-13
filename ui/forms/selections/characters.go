@@ -3,7 +3,7 @@ package selections
 import (
 	"ffvi_editor/models/pr"
 	"ffvi_editor/ui/forms/editors"
-	"ffvi_editor/ui/forms/input"
+	"ffvi_editor/ui/forms/inputs"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -23,7 +23,7 @@ func NewCharacters() *Characters {
 		middle: container.NewStack(),
 	}
 	s.ExtendBaseWidget(s)
-	s.top.Add(input.NewLabeledEntry("Character:", widget.NewSelect(pr.CharacterNames(), func(name string) {
+	s.top.Add(inputs.NewLabeledEntry("Character:", widget.NewSelect(pr.CharacterNamesHumanSelect(), func(name string) {
 		s.middle.RemoveAll()
 		c := pr.GetCharacter(name)
 		s.middle.Add(container.NewAppTabs(

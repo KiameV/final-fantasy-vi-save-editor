@@ -2,7 +2,7 @@ package editors
 
 import (
 	"ffvi_editor/models"
-	"ffvi_editor/ui/forms/input"
+	"ffvi_editor/ui/forms/inputs"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
@@ -14,16 +14,16 @@ type (
 		widget.BaseWidget
 		name      binding.String
 		isEnabled binding.Bool
-		level     input.IntEntryBinding
-		exp       input.IntEntryBinding
-		currentHP input.IntEntryBinding
-		maxHP     input.IntEntryBinding
-		currentMP input.IntEntryBinding
-		maxMP     input.IntEntryBinding
-		strength  input.IntEntryBinding
-		stamina   input.IntEntryBinding
-		agility   input.IntEntryBinding
-		magic     input.IntEntryBinding
+		level     inputs.IntEntryBinding
+		exp       inputs.IntEntryBinding
+		currentHP inputs.IntEntryBinding
+		maxHP     inputs.IntEntryBinding
+		currentMP inputs.IntEntryBinding
+		maxMP     inputs.IntEntryBinding
+		strength  inputs.IntEntryBinding
+		stamina   inputs.IntEntryBinding
+		agility   inputs.IntEntryBinding
+		magic     inputs.IntEntryBinding
 	}
 )
 
@@ -32,16 +32,16 @@ func NewCharacter(c *models.Character) *Character {
 		BaseWidget: widget.BaseWidget{},
 		name:       binding.BindString(&c.Name),
 		isEnabled:  binding.BindBool(&c.IsEnabled),
-		level:      input.NewIntEntryBinding(&c.Level),
-		exp:        input.NewIntEntryBinding(&c.Exp),
-		currentHP:  input.NewIntEntryBinding(&c.HP.Current),
-		maxHP:      input.NewIntEntryBinding(&c.HP.Max),
-		currentMP:  input.NewIntEntryBinding(&c.MP.Current),
-		maxMP:      input.NewIntEntryBinding(&c.MP.Max),
-		strength:   input.NewIntEntryBinding(&c.Vigor),
-		stamina:    input.NewIntEntryBinding(&c.Stamina),
-		agility:    input.NewIntEntryBinding(&c.Speed),
-		magic:      input.NewIntEntryBinding(&c.Magic),
+		level:      inputs.NewIntEntryBinding(&c.Level),
+		exp:        inputs.NewIntEntryBinding(&c.Exp),
+		currentHP:  inputs.NewIntEntryBinding(&c.HP.Current),
+		maxHP:      inputs.NewIntEntryBinding(&c.HP.Max),
+		currentMP:  inputs.NewIntEntryBinding(&c.MP.Current),
+		maxMP:      inputs.NewIntEntryBinding(&c.MP.Max),
+		strength:   inputs.NewIntEntryBinding(&c.Vigor),
+		stamina:    inputs.NewIntEntryBinding(&c.Stamina),
+		agility:    inputs.NewIntEntryBinding(&c.Speed),
+		magic:      inputs.NewIntEntryBinding(&c.Magic),
 	}
 	e.ExtendBaseWidget(e)
 	return e
@@ -54,18 +54,18 @@ func (e *Character) CreateRenderer() fyne.WidgetRenderer {
 		container.NewBorder(nil, nil, nil,
 			container.NewGridWithRows(2, container.NewVScroll(widget.NewRichTextWithText(lvlToExp))),
 			container.NewVBox(
-				input.NewLabeledEntry("Name:", name),
-				input.NewLabeledEntry("Experience:", input.NewIntEntryWithBinding(e.exp)),
-				input.NewLabeledEntry("Level:", input.NewIntEntryWithBinding(e.level)),
-				input.NewLabeledEntry("HP Current/Max:", container.NewGridWithColumns(2,
-					input.NewIntEntryWithBinding(e.currentHP),
-					input.NewIntEntryWithBinding(e.maxHP))),
-				input.NewLabeledEntry("MP Current/Max:", container.NewGridWithColumns(2,
-					input.NewIntEntryWithBinding(e.currentMP),
-					input.NewIntEntryWithBinding(e.maxMP))),
-				input.NewLabeledEntry("Strength:", input.NewIntEntryWithBinding(e.strength)),
-				input.NewLabeledEntry("Agility:", input.NewIntEntryWithBinding(e.agility)),
-				input.NewLabeledEntry("Reset:", container.NewHBox(
+				inputs.NewLabeledEntry("Name:", name),
+				inputs.NewLabeledEntry("Experience:", inputs.NewIntEntryWithBinding(e.exp)),
+				inputs.NewLabeledEntry("Level:", inputs.NewIntEntryWithBinding(e.level)),
+				inputs.NewLabeledEntry("HP Current/Max:", container.NewGridWithColumns(2,
+					inputs.NewIntEntryWithBinding(e.currentHP),
+					inputs.NewIntEntryWithBinding(e.maxHP))),
+				inputs.NewLabeledEntry("MP Current/Max:", container.NewGridWithColumns(2,
+					inputs.NewIntEntryWithBinding(e.currentMP),
+					inputs.NewIntEntryWithBinding(e.maxMP))),
+				inputs.NewLabeledEntry("Strength:", inputs.NewIntEntryWithBinding(e.strength)),
+				inputs.NewLabeledEntry("Agility:", inputs.NewIntEntryWithBinding(e.agility)),
+				inputs.NewLabeledEntry("Reset:", container.NewHBox(
 					container.NewPadded(widget.NewButton("Exp", func() {
 						// TODO
 						e.exp.Set(0)
@@ -78,8 +78,8 @@ func (e *Character) CreateRenderer() fyne.WidgetRenderer {
 						// TODO
 						e.maxMP.Set(0)
 					})))),
-				input.NewLabeledEntry("Stamina:", input.NewIntEntryWithBinding(e.stamina)),
-				input.NewLabeledEntry("Magic:", input.NewIntEntryWithBinding(e.magic)),
+				inputs.NewLabeledEntry("Stamina:", inputs.NewIntEntryWithBinding(e.stamina)),
+				inputs.NewLabeledEntry("Magic:", inputs.NewIntEntryWithBinding(e.magic)),
 			)))
 }
 

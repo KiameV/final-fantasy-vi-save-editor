@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"ffvi_editor/models"
-	"ffvi_editor/ui/forms/input"
+	"ffvi_editor/ui/forms/inputs"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -30,14 +30,14 @@ func NewMagic(c *models.Character) *Magic {
 	}
 	e.ExtendBaseWidget(e)
 
-	bindings := make([]input.IntEntryBinding, len(c.SpellsSorted))
+	bindings := make([]inputs.IntEntryBinding, len(c.SpellsSorted))
 	spells := make(map[string]fyne.CanvasObject)
 	include := make([]fyne.CanvasObject, len(c.SpellsSorted))
 	for i, s := range c.SpellsSorted {
-		b := input.NewIntEntryBinding(&s.Value)
-		in := input.NewIntEntryWithBinding(b)
+		b := inputs.NewIntEntryBinding(&s.Value)
+		in := inputs.NewIntEntryWithBinding(b)
 		bindings[i] = b
-		spells[s.Name] = input.NewLabeledEntry(s.Name, in)
+		spells[s.Name] = inputs.NewLabeledEntry(s.Name, in)
 		include[i] = spells[s.Name]
 	}
 	e.populate(include)
@@ -92,7 +92,7 @@ func (e *Magic) populate(include []fyne.CanvasObject) {
 func (e *Magic) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(container.NewBorder(
 		container.NewGridWithColumns(5,
-			input.NewLabeledEntry("Search:", e.search),
+			inputs.NewLabeledEntry("Search:", e.search),
 			container.NewPadded(e.learn),
 			container.NewPadded(e.unlearn)), nil, nil, nil,
 		container.NewVScroll(
