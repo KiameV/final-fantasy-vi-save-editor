@@ -1,6 +1,6 @@
 # Final Fantasy VI Save Editor
 
-Supports the editing `Final Fantasy VI Pixel Remastered` Save files.
+Supports editing `Final Fantasy VI Pixel Remastered` Save files.
 - Character Stats, Magic, Equipment, and Commands
 - Inventory and Important items
 - Toggle Skills/Abilities
