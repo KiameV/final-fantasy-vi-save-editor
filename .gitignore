@@ -9,7 +9,7 @@ save.json
 saved.json
 loaded.json
 ff6editor.config
-ffvi_editor.exe
+*.exe
 encounters.json
 pr_io*
 *.tt*
