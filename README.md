@@ -8,6 +8,8 @@ Supports the editing `Final Fantasy VI Pixel Remastered` Save files.
 - Change Party members (currently only party 1)
 - Map data including player world/map/position/facing, Black Jack world/position/facing, and Falcon world/position/facing.
 - Toggle Veldt encounters
+
+
 ![cstats](https://github.com/KiameV/final-fantasy-vi-save-editor/assets/26260306/43dcf594-7d91-4005-b17b-b2f14b25c643)
 ![cmagic](https://github.com/KiameV/final-fantasy-vi-save-editor/assets/26260306/daf516e6-bed1-4535-8678-3a7f209fca1a)
 ![cequip](https://github.com/KiameV/final-fantasy-vi-save-editor/assets/26260306/59bdf6cb-86a3-48b9-ab6f-b0a4713b0290)
