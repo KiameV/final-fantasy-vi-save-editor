@@ -9,6 +9,10 @@ Supports the editing `Final Fantasy VI Pixel Remastered` Save files.
 - Map data including player world/map/position/facing, Black Jack world/position/facing, and Falcon world/position/facing.
 - Toggle Veldt encounters
 
+Known Issue:
+Better multi-lingual support is coming with an update for the GUI API. For now, if a certain language is needed, download a TTF of that language and place it in the same directory as `FFVIPR Save Editor.exe` and then start the application.
+Google search with `"free [language] fonts"` for TTF downloads. Replace `[lanugage]` with what you need, ie: `"free japanese fonts"`
+
 
 ![cstats](https://github.com/KiameV/final-fantasy-vi-save-editor/assets/26260306/43dcf594-7d91-4005-b17b-b2f14b25c643)
 ![cmagic](https://github.com/KiameV/final-fantasy-vi-save-editor/assets/26260306/daf516e6-bed1-4535-8678-3a7f209fca1a)
