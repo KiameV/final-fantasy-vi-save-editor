@@ -1,10 +1,12 @@
 package ui
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"ffvi_editor/browser"
 	"ffvi_editor/io/config"
 	"ffvi_editor/io/pr"
 	"ffvi_editor/ui/forms"
@@ -65,7 +67,7 @@ func New() Gui {
 		a = app.New()
 		g = &gui{
 			app:    a,
-			window: a.NewWindow("Final Fantasy VI Save Editor"),
+			window: a.NewWindow(fmt.Sprintf("Final Fantasy VI Save Editor - v%s", browser.Version)),
 			canvas: container.NewStack(),
 		}
 	)

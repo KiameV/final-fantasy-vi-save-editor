@@ -25,5 +25,9 @@ func (s *Editor) CreateRenderer() fyne.WidgetRenderer {
 			container.NewTabItem("Characters", NewCharacters()),
 			container.NewTabItem("Inventory", NewInventory()),
 			container.NewTabItem("Skills", editors.NewSkills()),
+			container.NewTabItem("Espers", editors.NewEsper()),
+			container.NewTabItem("Party", editors.NewParty()),
+			container.NewTabItem("Map", editors.NewMapData()),
+			container.NewTabItem("Veldt", editors.NewVeldt()),
 		))
 }

@@ -15,21 +15,24 @@ const (
 	tagUrl = `https://api.github.com/repos/KiameV/final-fantasy-vi-save-editor/tags`
 	relUrl = `https://github.com/KiameV/final-fantasy-vi-save-editor/releases/%s`
 
-	version = "3.0.0"
+	Version = "3.0.0"
 )
 
 type (
 	tag struct {
 		Name string `json:"name"`
 	}
+	comparable struct {
+		version [3]int
+	}
 )
 
-func CheckForUpdate(current string) (hasNewer bool, version string, err error) {
+func CheckForUpdate() (hasNewer bool, version string, err error) {
 	var (
-		r    *http.Response
-		b    []byte
-		tags []tag
-		vn   = versionToInt(current)
+		r          *http.Response
+		b          []byte
+		tags       []tag
+		current, _ = newComparable(Version)
 	)
 	if r, err = http.Get(tagUrl); err != nil {
 		return
@@ -43,23 +46,47 @@ func CheckForUpdate(current string) (hasNewer bool, version string, err error) {
 
 	for _, t := range tags {
 		if strings.Contains(t.Name, ".") {
-			i := versionToInt(t.Name)
-			if i > vn {
-				hasNewer = true
-				version = t.Name
-				vn = i
+			if other, ok := newComparable(t.Name); ok {
+				if !current.IsNewer(other) {
+					current = other
+					hasNewer = true
+					version = t.Name
+				}
 			}
 		}
 	}
 	return
 }
 
-func versionToInt(v string) int {
-	if i, err := strconv.ParseInt(strings.ReplaceAll(v, ".", ""), 10, 32); err != nil {
-		return 0
-	} else {
-		return int(i)
+func newComparable(v string) (c comparable, found bool) {
+	if strings.Contains(v, ".") && !strings.Contains(v, "_") {
+		var (
+			sb  strings.Builder
+			err error
+		)
+		for _, r := range v {
+			if r == '.' || (r >= '0' && r <= '9') {
+				sb.WriteRune(r)
+			}
+		}
+		for i, j := range strings.Split(sb.String(), ".") {
+			if c.version[i], err = strconv.Atoi(j); err != nil {
+				found = false
+				return
+			}
+		}
+		found = true
 	}
+	return
+}
+
+func (c comparable) IsNewer(other comparable) bool {
+	for i := 0; i < 3; i++ {
+		if c.version[i] < other.version[i] {
+			return true
+		}
+	}
+	return false
 }
 
 func Update(tag string) (err error) {
