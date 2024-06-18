@@ -6,15 +6,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"ffvi_editor/browser"
-	"ffvi_editor/io/config"
-	"ffvi_editor/io/pr"
-	"ffvi_editor/ui/forms"
-	"ffvi_editor/ui/forms/selections"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"pixel-remastered-save-editor/browser"
+	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/save"
+	"pixel-remastered-save-editor/save/config"
+	"pixel-remastered-save-editor/save/file"
+	"pixel-remastered-save-editor/ui/bundled"
+	"pixel-remastered-save-editor/ui/forms/io"
+	"pixel-remastered-save-editor/ui/forms/selections"
 )
 
 type (
@@ -33,7 +36,7 @@ type (
 		open   *fyne.MenuItem
 		save   *fyne.MenuItem
 		prev   fyne.CanvasObject
-		pr     *pr.PR
+		data   *save.Data
 	}
 	MenuItem interface {
 		Item() *fyne.MenuItem
@@ -67,27 +70,45 @@ func New() Gui {
 		a = app.New()
 		g = &gui{
 			app:    a,
-			window: a.NewWindow(fmt.Sprintf("Final Fantasy VI Save Editor - v%s", browser.Version)),
+			window: a.NewWindow(fmt.Sprintf("Final Fantasy Pixel Remastered Save Editor - v%s", browser.Version)),
 			canvas: container.NewStack(),
 		}
 	)
-	g.window.SetIcon(fyne.NewStaticResource("icon", resourceIconIco.StaticContent))
+	g.window.SetIcon(fyne.NewStaticResource("icon", bundled.ResourceIcon16Png.StaticContent))
 	g.window.SetContent(g.canvas)
 	g.open = fyne.NewMenuItem("Open", func() {
 		g.Load()
 	})
+	g.open.ChildMenu = fyne.NewMenu("Open",
+		fyne.NewMenuItem("I", func() {
+			g.gameSelected(global.One)
+		}),
+		fyne.NewMenuItem("II", func() {
+			g.gameSelected(global.Two)
+		}),
+		fyne.NewMenuItem("III", func() {
+			g.gameSelected(global.Three)
+		}),
+		fyne.NewMenuItem("IV", func() {
+			g.gameSelected(global.Four)
+		}),
+		fyne.NewMenuItem("V", func() {
+			g.gameSelected(global.Five)
+		}),
+		fyne.NewMenuItem("VI", func() {
+			g.gameSelected(global.Six)
+		}))
 	g.save = fyne.NewMenuItem("Save", func() {
 		g.Save()
 	})
 	g.save.Disabled = true
-	x, y := config.WindowSize()
-	g.window.Resize(fyne.NewSize(x, y))
 	g.window.SetMainMenu(fyne.NewMainMenu(
 		fyne.NewMenu("File",
 			g.open,
 			fyne.NewMenuItemSeparator(),
 			g.save,
 		)))
+	g.window.Resize(fyne.NewSize(float32(global.WindowWidth), float32(global.WindowHeight)))
 	return g
 }
 
@@ -109,34 +130,38 @@ func (g *gui) Load() {
 	}
 	g.open.Disabled = true
 	g.canvas.RemoveAll()
-	g.canvas.Add(
-		forms.NewFileIO(forms.Load, g.window, config.SaveDir(), func(name, dir, file string, _ int) {
-			defer func() { g.open.Disabled = false }()
-			// Load file
-			config.SetSaveDir(dir)
-			p := pr.New()
-			if err := p.Load(filepath.Join(dir, file)); err != nil {
-				if g.prev != nil {
-					g.canvas.RemoveAll()
-					g.canvas.Add(g.prev)
-				}
-				dialog.NewError(err, g.window).Show()
-			} else {
-				// Success
-				g.canvas.RemoveAll()
-				g.prev = nil
-				g.save.Disabled = false
-				g.pr = p
-				g.canvas.Add(selections.NewEditor())
-			}
-		}, func() {
-			defer func() { g.open.Disabled = false }()
-			// Cancel
+	g.canvas.Add(io.NewGameSelect(g.gameSelected))
+}
+
+func (g *gui) gameSelected(game global.Game) {
+	g.prev = g.canvas.Objects[0]
+	g.canvas.RemoveAll()
+	g.canvas.Add(io.NewFileIO(io.Load, game, g.window, config.Dir(game), func(game global.Game, name, dir, f string, slot int) {
+		defer func() { g.open.Disabled = false }()
+		// Load file
+		config.SetSaveDir(game, dir)
+		if data, err := file.LoadSave(game, filepath.Join(dir, f)); err != nil {
 			if g.prev != nil {
 				g.canvas.RemoveAll()
 				g.canvas.Add(g.prev)
 			}
-		}))
+			dialog.NewError(err, g.window).Show()
+		} else {
+			// Success
+			g.canvas.RemoveAll()
+			g.prev = nil
+			g.save.Disabled = false
+			g.data = data
+			g.canvas.Add(selections.NewEditor(data.Save))
+		}
+	}, func() {
+		defer func() { g.open.Disabled = false }()
+		// Cancel
+		if g.prev != nil {
+			g.canvas.RemoveAll()
+			g.canvas.Add(g.prev)
+		}
+	}))
 }
 
 func (g *gui) Save() {
@@ -147,14 +172,14 @@ func (g *gui) Save() {
 	g.save.Disabled = true
 	g.canvas.RemoveAll()
 	g.canvas.Add(
-		forms.NewFileIO(forms.Save, g.window, config.SaveDir(), func(name, dir, file string, slot int) {
+		io.NewFileIO(io.Save, g.data.Game, g.window, config.Dir(g.data.Game), func(game global.Game, name, dir, f string, slot int) {
 			defer func() {
 				g.open.Disabled = false
 				g.save.Disabled = false
 			}()
 			// Save file
-			config.SetSaveDir(dir)
-			if err := g.pr.Save(slot, filepath.Join(dir, file)); err != nil {
+			config.SetSaveDir(game, dir)
+			if err := file.SaveSave(g.data, slot, filepath.Join(dir, f)); err != nil {
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)

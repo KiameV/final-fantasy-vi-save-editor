@@ -1,12 +1,12 @@
 package selections
 
 import (
-	"ffvi_editor/models/pr"
-	"ffvi_editor/ui/forms/editors"
-	"ffvi_editor/ui/forms/inputs"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"pixel-remastered-save-editor/models/core"
+	"pixel-remastered-save-editor/ui/forms/editors/character"
+	"pixel-remastered-save-editor/ui/forms/inputs"
 )
 
 type (
@@ -17,21 +17,18 @@ type (
 	}
 )
 
-func NewCharacters() *Characters {
+func NewCharacters(save *core.Save) *Characters {
 	s := &Characters{
 		top:    container.NewHBox(),
 		middle: container.NewStack(),
 	}
 	s.ExtendBaseWidget(s)
-	s.top.Add(inputs.NewLabeledEntry("Character:", widget.NewSelect(pr.CharacterNamesHumanSelect(), func(name string) {
+	s.top.Add(inputs.NewLabeledEntry("Character:", widget.NewSelect(save.Characters.Names(), func(name string) {
+		c, _ := save.Characters.GetByName(name)
 		s.middle.RemoveAll()
-		c := pr.GetCharacter(name)
 		s.middle.Add(container.NewAppTabs(
-			container.NewTabItem("Stats", editors.NewCharacter(c)),
-			container.NewTabItem("Magic", editors.NewMagic(c)),
-			container.NewTabItem("Equipment", editors.NewEquipment(c)),
-			container.NewTabItem("Commands", editors.NewCommands(c)),
-		))
+			container.NewTabItem("Stats", character.NewCoreStats(c)),
+			container.NewTabItem("Abilities", character.NewCoreAbilities(c))))
 	})))
 	return s
 }

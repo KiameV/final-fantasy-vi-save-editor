@@ -3,7 +3,6 @@ package inputs
 import (
 	"strconv"
 
-	"ffvi_editor/io/pr"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -24,15 +23,11 @@ func NewLabeledEntry(label string, entry fyne.CanvasObject) fyne.CanvasObject {
 	return container.NewGridWithColumns(2, widget.NewLabel(label), entry)
 }
 
-func NewLabeledIntEntryWithHint(label string, entry *IntEntry, args ...HintArgs) fyne.CanvasObject {
-	var a HintArgs
-	if len(args) > 0 {
-		a = args[0]
+func NewLabeledIntEntryWithHint(label string, entry *IntEntry, args HintArgs) fyne.CanvasObject {
+	if args.Align == nil {
+		args.Align = NewAlign(fyne.TextAlignTrailing)
 	}
-	if a.Align == nil {
-		a.Align = NewAlign(fyne.TextAlignTrailing)
-	}
-	h := newHinter(a)
+	h := newHinter(args)
 	h.hint(entry.Text)
 	entry.OnChanged = func(s string) {
 		h.hint(s)
@@ -40,15 +35,11 @@ func NewLabeledIntEntryWithHint(label string, entry *IntEntry, args ...HintArgs)
 	return container.NewVBox(NewLabeledEntry(label, entry), h.label)
 }
 
-func NewKeyValueIntEntryWithHint(key *IntEntry, value *IntEntry, args ...HintArgs) fyne.CanvasObject {
-	var a HintArgs
-	if len(args) > 0 {
-		a = args[0]
+func NewKeyValueIntEntryWithHint(key *IntEntry, value *IntEntry, args HintArgs) fyne.CanvasObject {
+	if args.Align == nil {
+		args.Align = NewAlign(fyne.TextAlignLeading)
 	}
-	if a.Align == nil {
-		a.Align = NewAlign(fyne.TextAlignLeading)
-	}
-	h := newHinter(a)
+	h := newHinter(args)
 	h.hint(key.Text)
 	key.OnChanged = func(s string) {
 		h.hint(s)
@@ -71,18 +62,10 @@ func (h *hinter) hint(s string) {
 		if i == 0 {
 			h.label.SetText("[Empty]")
 		} else {
-			if m := h.hints; m != nil && len(*m) > 0 {
-				if j, ok := (*m)[i]; ok {
-					h.label.SetText(j)
-				} else {
-					h.label.SetText("-")
-				}
+			if j, ok := (*h.hints)[i]; ok {
+				h.label.SetText(j)
 			} else {
-				if j, ok := pr.AllNormalItems[i]; ok {
-					h.label.SetText(j)
-				} else {
-					h.label.SetText("-")
-				}
+				h.label.SetText("-")
 			}
 		}
 	}

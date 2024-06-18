@@ -1,4 +1,4 @@
-module ffvi_editor
+module pixel-remastered-save-editor
 
 go 1.21
 

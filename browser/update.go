@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	// TODO
 	tagUrl = `https://api.github.com/repos/KiameV/final-fantasy-vi-save-editor/tags`
 	relUrl = `https://github.com/KiameV/final-fantasy-vi-save-editor/releases/%s`
 

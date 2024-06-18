@@ -1,11 +1,11 @@
 package inputs
 
 import (
-	"ffvi_editor/models/consts"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
+	"pixel-remastered-save-editor/models/consts"
 )
 
 type (
