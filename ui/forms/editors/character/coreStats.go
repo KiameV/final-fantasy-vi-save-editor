@@ -28,6 +28,7 @@ func NewCoreStats(c *core.Character) *Character {
 	name.Validator = nil
 	e.left = []fyne.CanvasObject{
 		inputs.NewLabeledEntry("Name:", name),
+		inputs.NewLabeledEntry("Job ID:", inputs.NewIntEntryWithData(&c.JobID)),
 		inputs.NewLabeledEntry("Level:", inputs.NewIntEntryWithData(&c.Level)),
 		inputs.NewLabeledEntry("Experience:", inputs.NewIntEntryWithData(&c.Exp)),
 		inputs.NewLabeledEntry("HP Current:", inputs.NewIntEntryWithData(&c.CurrentHP)),

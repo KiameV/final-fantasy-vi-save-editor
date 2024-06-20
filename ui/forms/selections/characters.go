@@ -28,7 +28,9 @@ func NewCharacters(save *core.Save) *Characters {
 		s.middle.RemoveAll()
 		s.middle.Add(container.NewAppTabs(
 			container.NewTabItem("Stats", character.NewCoreStats(c)),
-			container.NewTabItem("Abilities", character.NewCoreAbilities(c))))
+			container.NewTabItem("Equipment", character.NewCoreEquipment(c)),
+			container.NewTabItem("Abilities", character.NewCoreAbilities(c)),
+		))
 	})))
 	return s
 }

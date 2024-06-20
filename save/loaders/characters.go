@@ -156,14 +156,23 @@ func Characters(data *save.Data, party *core.Party) (characters *core.Characters
 			return
 		}
 
-		if err = loadSpells(d, c); err != nil {
+		if err = loadAbilities(d, c); err != nil {
+			return
+		}
+
+		if err = loadEquipment(d, c); err != nil {
 			return
 		}
 	}
 	return
 }
 
-func loadSpells(d *jo.OrderedMap, c *core.Character) (err error) {
+func loadEquipment(d *jo.OrderedMap, c *core.Character) (err error) {
+	c.Equipment, err = util.UnmarshalEquipment(d)
+	return
+}
+
+func loadAbilities(d *jo.OrderedMap, c *core.Character) (err error) {
 	var i interface{}
 	if i, err = util.FromTarget(d, util.AbilityList); err != nil {
 		return nil

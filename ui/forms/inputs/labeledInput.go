@@ -6,16 +6,22 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"pixel-remastered-save-editor/models/core"
 )
 
 type (
 	hinter struct {
 		label *widget.Label
-		hints *map[int]string
+		hints core.Find
 	}
 	HintArgs struct {
 		Align *fyne.TextAlign
-		Hints *map[int]string
+		Hints core.Find
+	}
+	InvEntry struct {
+		ID    *IntEntry
+		Count *IntEntry
+		Label *widget.Label
 	}
 )
 
@@ -35,7 +41,7 @@ func NewLabeledIntEntryWithHint(label string, entry *IntEntry, args HintArgs) fy
 	return container.NewVBox(NewLabeledEntry(label, entry), h.label)
 }
 
-func NewKeyValueIntEntryWithHint(key *IntEntry, value *IntEntry, args HintArgs) fyne.CanvasObject {
+func NewKeyValueIntEntryWithHint(key *IntEntry, value *IntEntry, args HintArgs) *InvEntry {
 	if args.Align == nil {
 		args.Align = NewAlign(fyne.TextAlignLeading)
 	}
@@ -44,7 +50,11 @@ func NewKeyValueIntEntryWithHint(key *IntEntry, value *IntEntry, args HintArgs) 
 	key.OnChanged = func(s string) {
 		h.hint(s)
 	}
-	return container.NewVBox(container.NewGridWithColumns(2, key, value), h.label)
+	return &InvEntry{
+		ID:    key,
+		Count: value,
+		Label: h.label,
+	}
 }
 
 func newHinter(args HintArgs) *hinter {
@@ -58,14 +68,16 @@ func newHinter(args HintArgs) *hinter {
 }
 
 func (h *hinter) hint(s string) {
-	if i, err := strconv.Atoi(s); err == nil {
-		if i == 0 {
-			h.label.SetText("[Empty]")
-		} else {
-			if j, ok := (*h.hints)[i]; ok {
-				h.label.SetText(j)
+	if h.hints != nil {
+		if i, err := strconv.Atoi(s); err == nil {
+			if i == 0 {
+				h.label.SetText("[Empty]")
 			} else {
-				h.label.SetText("-")
+				if j, ok := h.hints(i); ok {
+					h.label.SetText(j)
+				} else {
+					h.label.SetText("-")
+				}
 			}
 		}
 	}

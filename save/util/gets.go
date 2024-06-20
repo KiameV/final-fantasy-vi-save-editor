@@ -2,11 +2,13 @@ package util
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
 
 	jo "gitlab.com/c0b/go-ordered-json"
+	"pixel-remastered-save-editor/models"
 )
 
 func GetString(c *jo.OrderedMap, key string) (s string, err error) {
@@ -172,7 +174,7 @@ func Unmarshal(i interface{}, m *map[string]interface{}) error {
 	return json.Unmarshal([]byte(i.(string)), m)
 }
 
-func UnmarshalEquipment(m *jo.OrderedMap) (idCounts []idCount, err error) {
+func UnmarshalEquipment(m *jo.OrderedMap) (idCounts []*models.IdCount, err error) {
 	i, ok := m.GetValue(EquipmentList)
 	if !ok {
 		return nil, fmt.Errorf("%s not found", EquipmentList)
@@ -184,7 +186,11 @@ func UnmarshalEquipment(m *jo.OrderedMap) (idCounts []idCount, err error) {
 	}
 
 	if i, ok = eq.GetValue("values"); ok && i != nil {
-		idCounts = make([]idCount, len(i.([]interface{})))
+		l, ok := i.([]interface{})
+		if !ok {
+			return nil, errors.New("unable to load equipment, try saving again")
+		}
+		idCounts = make([]*models.IdCount, len(l))
 		for j, v := range i.([]interface{}) {
 			if err = json.Unmarshal([]byte(v.(string)), &idCounts[j]); err != nil {
 				return

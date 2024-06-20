@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"pixel-remastered-save-editor/browser"
 	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/models/core"
 	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/save/config"
 	"pixel-remastered-save-editor/save/file"
@@ -152,6 +153,7 @@ func (g *gui) gameSelected(game global.Game) {
 			g.prev = nil
 			g.save.Disabled = false
 			g.data = data
+			core.LoadFinders(game)
 			g.canvas.Add(selections.NewEditor(data.Save))
 		}
 	}, func() {
@@ -179,7 +181,7 @@ func (g *gui) Save() {
 			}()
 			// Save file
 			config.SetSaveDir(game, dir)
-			if err := file.SaveSave(g.data, slot, filepath.Join(dir, f)); err != nil {
+			if err := file.SaveSave(game, g.data, slot, filepath.Join(dir, f)); err != nil {
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)

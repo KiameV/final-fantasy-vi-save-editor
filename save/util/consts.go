@@ -146,10 +146,3 @@ const (
 	TransEnable         = "enable"
 	TransTimeStampTicks = "timeStampTicks"
 )
-
-type (
-	idCount struct {
-		ContentID int `json:"contentId"`
-		Count     int `json:"count"`
-	}
-)

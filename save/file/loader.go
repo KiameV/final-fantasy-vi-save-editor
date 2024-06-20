@@ -7,14 +7,17 @@ import (
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/kiamev/ffpr-save-cypher/rijndael"
 	jo "gitlab.com/c0b/go-ordered-json"
 	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/models"
 	"pixel-remastered-save-editor/models/core"
 	"pixel-remastered-save-editor/save"
+	"pixel-remastered-save-editor/save/config"
 	"pixel-remastered-save-editor/save/loaders"
 	"pixel-remastered-save-editor/save/util"
 )
@@ -27,7 +30,7 @@ func LoadSave(game global.Game, fileName string) (data *save.Data, err error) {
 	)
 	data = save.New(game)
 
-	if out, data.Trimmed, err = loadFile(fileName); err != nil {
+	if out, data.Trimmed, err = loadFile(game, fileName); err != nil {
 		return
 	}
 	s = string(out)
@@ -75,7 +78,7 @@ func LoadSave(game global.Game, fileName string) (data *save.Data, err error) {
 	return
 }
 
-func loadFile(fromFile string) (out []byte, trimmed []byte, err error) {
+func loadFile(game global.Game, fromFile string) (out []byte, trimmed []byte, err error) {
 	var (
 		b []byte
 	)
@@ -109,7 +112,7 @@ func loadFile(fromFile string) (out []byte, trimmed []byte, err error) {
 	zr := flate.NewReader(bytes.NewReader(b))
 	defer func() { _ = zr.Close() }()
 	out, err = io.ReadAll(zr)
-	// printFile(filepath.Join(config.Dir(game), "loaded.file"), out)
+	printFile(filepath.Join(config.Dir(game), "_loaded.file"), out)
 	return
 }
 
@@ -183,7 +186,7 @@ func loadBase(base *jo.OrderedMap, s string) (err error) {
 	return base.UnmarshalJSON([]byte(s))
 }
 
-func uncheckAll(rages []*core.NameValueChecked) {
+func uncheckAll(rages []*models.NameValueChecked) {
 	for _, r := range rages {
 		r.Checked = false
 	}

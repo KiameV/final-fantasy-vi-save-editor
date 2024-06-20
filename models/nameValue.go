@@ -1,21 +1,28 @@
-package consts
+package models
 
-type NameValue struct {
-	Name  string
-	Value int
-}
-
-type NameValueChecked struct {
-	NameValue
-	Checked bool
-}
+type (
+	NameValue struct {
+		Name  string
+		Value int
+	}
+	NameValueChecked struct {
+		NameValue
+		Checked bool
+	}
+	NameSlotMask8 struct {
+		Name    string
+		Slot    int
+		Mask    uint8
+		Checked bool
+	}
+)
 
 func NewNameValue(name string, value int) NameValue {
 	return NameValue{Name: name, Value: value}
 }
 
-func NewValueName(value int, name string) *NameValue {
-	return &NameValue{Name: name, Value: value}
+func NewValueName(value int, name string) NameValue {
+	return NameValue{Name: name, Value: value}
 }
 
 func NewNameValueChecked(name string, value int) *NameValueChecked {
@@ -32,13 +39,6 @@ func NewNameValues(names ...string) []NameValue {
 		result[i] = NewNameValue(n, i)
 	}
 	return result
-}
-
-type NameSlotMask8 struct {
-	Name    string
-	Slot    int
-	Mask    uint8
-	Checked bool
 }
 
 func NewNameSlotMask8(name string, slot int, mask uint8) NameSlotMask8 {

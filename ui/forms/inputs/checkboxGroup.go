@@ -5,19 +5,19 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
-	"pixel-remastered-save-editor/models/consts"
+	"pixel-remastered-save-editor/models"
 )
 
 type (
 	CheckboxGroup struct {
 		widget.BaseWidget
-		options   []*consts.NameValueChecked
+		options   []*models.NameValueChecked
 		container *fyne.Container
 		checks    []binding.Bool
 	}
 )
 
-func NewCheckboxGroup(options []*consts.NameValueChecked) *CheckboxGroup {
+func NewCheckboxGroup(options []*models.NameValueChecked) *CheckboxGroup {
 	s := &CheckboxGroup{
 		options:   options,
 		container: container.NewVBox(),

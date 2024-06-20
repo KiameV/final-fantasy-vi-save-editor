@@ -23,6 +23,12 @@ func (i *Inventory) Reset() {
 	}
 }
 
+func (i *Inventory) AppendEmptyRows() {
+	for j := 0; j < 20; j++ {
+		i.Rows = append(i.Rows, &Row{})
+	}
+}
+
 func (i *Inventory) Set(index int, row Row) {
 	if len(i.Rows) <= index {
 		i.Rows = append(i.Rows, &row)

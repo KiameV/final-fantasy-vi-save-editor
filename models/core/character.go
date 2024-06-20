@@ -3,6 +3,8 @@ package core
 import (
 	"errors"
 	"slices"
+
+	"pixel-remastered-save-editor/models"
 )
 
 type (
@@ -43,6 +45,7 @@ type (
 		Exp       int
 		CurrentHP int
 		CurrentMP int
+		Equipment []*models.IdCount
 	}
 	Ability struct {
 		ID         int

@@ -1,10 +1,10 @@
 package core
 
 import (
-	"pixel-remastered-save-editor/models/consts"
+	"pixel-remastered-save-editor/models"
 )
 
 type Command struct {
-	consts.NameValue
+	models.NameValue
 	SortedIndex int
 }

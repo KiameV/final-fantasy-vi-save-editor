@@ -21,7 +21,7 @@ import (
 	"pixel-remastered-save-editor/save/util"
 )
 
-func SaveSave(data *save.Data, slot int, fileName string) (err error) {
+func SaveSave(game global.Game, data *save.Data, slot int, fileName string) (err error) {
 	var (
 		toFile = filepath.Join(config.Dir(data.Game), fileName)
 		temp   = filepath.Join(global.PWD, "temp")
@@ -88,15 +88,15 @@ func SaveSave(data *save.Data, slot int, fileName string) (err error) {
 	}
 	defer func() { _ = os.Remove(temp) }()
 
-	return saveFile(out, fileName, data.Trimmed)
+	return saveFile(game, out, fileName, data.Trimmed)
 }
 
-func saveFile(data []byte, toFile string, trimmed []byte) (err error) {
+func saveFile(game global.Game, data []byte, toFile string, trimmed []byte) (err error) {
 	var (
 		b  bytes.Buffer
 		zw *flate.Writer
 	)
-	// printFile("save.file", data)
+	printFile(filepath.Join(config.Dir(game), "_save.file"), data)
 	// Flate
 	if zw, err = flate.NewWriter(&b, 6); err != nil {
 		return

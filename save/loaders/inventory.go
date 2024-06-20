@@ -23,5 +23,6 @@ func Inventory(data *save.Data, key string) (inv *core.Inventory, err error) {
 		}
 		inv.Set(i, row)
 	}
+	inv.AppendEmptyRows()
 	return
 }

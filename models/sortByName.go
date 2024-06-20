@@ -2,15 +2,13 @@ package models
 
 import (
 	"sort"
-
-	"pixel-remastered-save-editor/models/core"
 )
 
-func SortByName(nsms []*core.NameSlotMask8) []*core.NameSlotMask8 {
+func SortByName(nsms []*NameSlotMask8) []*NameSlotMask8 {
 	var (
-		lookup      = make(map[string]*core.NameSlotMask8)
+		lookup      = make(map[string]*NameSlotMask8)
 		sortedNames = make([]string, len(nsms))
-		sorted      = make([]*core.NameSlotMask8, len(nsms))
+		sorted      = make([]*NameSlotMask8, len(nsms))
 	)
 	for i, s := range nsms {
 		lookup[s.Name] = s
@@ -24,11 +22,11 @@ func SortByName(nsms []*core.NameSlotMask8) []*core.NameSlotMask8 {
 	return sorted
 }
 
-func SortByNameChecked(nsms []*core.NameValueChecked) []*core.NameValueChecked {
+func SortByNameChecked(nsms []*NameValueChecked) []*NameValueChecked {
 	var (
-		lookup      = make(map[string]*core.NameValueChecked)
+		lookup      = make(map[string]*NameValueChecked)
 		sortedNames = make([]string, len(nsms))
-		sorted      = make([]*core.NameValueChecked, len(nsms))
+		sorted      = make([]*NameValueChecked, len(nsms))
 	)
 	for i, s := range nsms {
 		lookup[s.Name] = s
@@ -44,11 +42,11 @@ func SortByNameChecked(nsms []*core.NameValueChecked) []*core.NameValueChecked {
 	return sorted
 }
 
-func SortByNameValue(nvs []*core.NameValue) []*core.NameValue {
+func SortByNameValue(nvs []*NameValue) []*NameValue {
 	var (
-		lookup      = make(map[string]*core.NameValue)
+		lookup      = make(map[string]*NameValue)
 		sortedNames = make([]string, len(nvs))
-		sorted      = make([]*core.NameValue, len(nvs))
+		sorted      = make([]*NameValue, len(nvs))
 	)
 	for i, s := range nvs {
 		lookup[s.Name] = s

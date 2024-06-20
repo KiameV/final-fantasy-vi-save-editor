@@ -24,6 +24,6 @@ func NewInventory(save *core.Save) *Inventory {
 func (s *Inventory) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(
 		container.NewAppTabs(
-			container.NewTabItem("Inventory", inventory.NewCore(s.save.Inventory)),
-			container.NewTabItem("Important", inventory.NewCore(s.save.ImportantInventory))))
+			container.NewTabItem("Inventory", inventory.NewCore(s.save.Inventory, core.FindItems)),
+			container.NewTabItem("Important", inventory.NewCore(s.save.ImportantInventory, core.FindImportantItems))))
 }

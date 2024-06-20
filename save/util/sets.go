@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"gitlab.com/c0b/go-ordered-json"
+	"pixel-remastered-save-editor/models"
 )
 
 func SetIntInSlice(to *ordered.OrderedMap, key string, value int) (err error) {
@@ -62,7 +63,7 @@ func Floor0(i int) int {
 }
 
 func InvCount(eq *[]string, counts map[int]int, addedItems *[]int, id int, emptyID int) {
-	var i idCount
+	var i models.IdCount
 	if id == 0 {
 		i.ContentID = emptyID
 		i.Count = counts[emptyID]
