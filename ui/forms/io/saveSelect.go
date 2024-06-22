@@ -97,7 +97,7 @@ func (w *saveSelect) CreateRenderer() fyne.WidgetRenderer {
 	top := container.NewBorder(nil, nil,
 		widget.NewLabel("Directory:"),
 		widget.NewButton("Change", func() {
-			if dir, err := dialog.Directory().Title("Load images").Browse(); err != nil && dir != "" {
+			if dir, err := dialog.Directory().Title("Load images").Browse(); err == nil && dir != "" {
 				_ = w.dir.Set(dir)
 			}
 		}),

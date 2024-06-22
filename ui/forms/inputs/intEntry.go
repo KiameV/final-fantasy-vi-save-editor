@@ -26,13 +26,6 @@ func NewIntEntry() *IntEntry {
 	return entry
 }
 
-func NewIntEntryWithBinding(data IntEntryBinding) *IntEntry {
-	entry := NewIntEntry()
-	entry.Bind(data.s)
-	entry.Entry.Validator = nil
-	return entry
-}
-
 func NewIntEntryWithData(i *int) *IntEntry {
 	entry := NewIntEntry()
 	data := NewIntEntryBinding(i)

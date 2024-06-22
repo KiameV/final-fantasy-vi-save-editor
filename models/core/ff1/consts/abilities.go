@@ -6,10 +6,6 @@ import (
 
 var (
 	Abilities = []models.NameValue{
-		models.NewValueName(1, "Attack"),
-		models.NewValueName(2, "Defend"),
-		models.NewValueName(3, "Flee"),
-		models.NewValueName(4, "Row"),
 		models.NewValueName(5, "Cure"),
 		models.NewValueName(6, "Protect"),
 		models.NewValueName(7, "Dia"),

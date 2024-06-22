@@ -31,7 +31,7 @@ func SaveSave(game global.Game, data *save.Data, slot int, fileName string) (err
 	)
 	cmd.Dir = strings.ReplaceAll(filepath.Join(global.PWD, "pr_io"), "\\", "/")
 
-	if err = savers.Character(data); err == nil {
+	if err = savers.Character(game, data); err == nil {
 		if err = savers.Inventory(data, util.NormalOwnedItemList, util.NormalOwnedItemSortIdList, data.Save.Inventory); err == nil {
 			if err = savers.Inventory(data, util.ImportantOwnedItemList, "", data.Save.ImportantInventory); err == nil {
 				if err = savers.MapData(data); err == nil {

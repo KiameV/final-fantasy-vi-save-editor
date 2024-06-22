@@ -6,21 +6,25 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"pixel-remastered-save-editor/models/core"
+	"pixel-remastered-save-editor/models/finder"
 )
 
 type (
 	hinter struct {
 		label *widget.Label
-		hints core.Find
+		hints finder.Find
 	}
 	HintArgs struct {
 		Align *fyne.TextAlign
-		Hints core.Find
+		Hints finder.Find
 	}
-	InvEntry struct {
+	IdCountEntry struct {
 		ID    *IntEntry
 		Count *IntEntry
+		Label *widget.Label
+	}
+	IdEntry struct {
+		ID    *IntEntry
 		Label *widget.Label
 	}
 )
@@ -29,11 +33,12 @@ func NewLabeledEntry(label string, entry fyne.CanvasObject) fyne.CanvasObject {
 	return container.NewGridWithColumns(2, widget.NewLabel(label), entry)
 }
 
-func NewLabeledIntEntryWithHint(label string, entry *IntEntry, args HintArgs) fyne.CanvasObject {
+func NewLabeledIntEntryWithHint(label string, i *int, args HintArgs) fyne.CanvasObject {
 	if args.Align == nil {
 		args.Align = NewAlign(fyne.TextAlignTrailing)
 	}
 	h := newHinter(args)
+	entry := NewIntEntryWithData(i)
 	h.hint(entry.Text)
 	entry.OnChanged = func(s string) {
 		h.hint(s)
@@ -41,19 +46,41 @@ func NewLabeledIntEntryWithHint(label string, entry *IntEntry, args HintArgs) fy
 	return container.NewVBox(NewLabeledEntry(label, entry), h.label)
 }
 
-func NewKeyValueIntEntryWithHint(key *IntEntry, value *IntEntry, args HintArgs) *InvEntry {
-	if args.Align == nil {
-		args.Align = NewAlign(fyne.TextAlignLeading)
-	}
-	h := newHinter(args)
-	h.hint(key.Text)
+func NewIdCountEntryWithHint(key *IntEntry, value *IntEntry, find finder.Find) *IdCountEntry {
+	label := widget.NewLabel("")
 	key.OnChanged = func(s string) {
-		h.hint(s)
+		hint(s, label, find)
 	}
-	return &InvEntry{
+	return &IdCountEntry{
 		ID:    key,
 		Count: value,
-		Label: h.label,
+		Label: label,
+	}
+}
+
+func NewIdCountEntryWithDataWithHint(key *int, value *int, find finder.Find) *IdCountEntry {
+	id := NewIntEntryWithData(key)
+	count := NewIntEntryWithData(value)
+	label := widget.NewLabel("")
+	id.OnChanged = func(s string) {
+		hint(s, label, find)
+	}
+	return &IdCountEntry{
+		ID:    id,
+		Count: count,
+		Label: label,
+	}
+}
+
+func NewIdEntryWithDataWithHint(key *int, find finder.Find) *IdEntry {
+	id := NewIntEntryWithData(key)
+	label := widget.NewLabel("")
+	id.OnChanged = func(s string) {
+		hint(s, label, find)
+	}
+	return &IdEntry{
+		ID:    id,
+		Label: label,
 	}
 }
 
@@ -68,15 +95,19 @@ func newHinter(args HintArgs) *hinter {
 }
 
 func (h *hinter) hint(s string) {
-	if h.hints != nil {
+	hint(s, h.label, h.hints)
+}
+
+func hint(s string, label *widget.Label, find finder.Find) {
+	if find != nil {
 		if i, err := strconv.Atoi(s); err == nil {
 			if i == 0 {
-				h.label.SetText("[Empty]")
+				label.SetText("[Empty]")
 			} else {
-				if j, ok := h.hints(i); ok {
-					h.label.SetText(j)
+				if j, ok := find(i); ok {
+					label.SetText(j)
 				} else {
-					h.label.SetText("-")
+					label.SetText("-")
 				}
 			}
 		}

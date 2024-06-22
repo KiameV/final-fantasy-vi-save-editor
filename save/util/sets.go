@@ -81,7 +81,7 @@ func InvCount(eq *[]string, counts map[int]int, addedItems *[]int, id int, empty
 	*eq = append(*eq, string(b))
 }
 
-func SetTarget(d *ordered.OrderedMap, key string, value []interface{}) (err error) {
+func SetTarget(d *ordered.OrderedMap, key string, value []any) (err error) {
 	var (
 		t = ordered.NewOrderedMap()
 		b []byte

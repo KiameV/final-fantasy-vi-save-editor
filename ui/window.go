@@ -12,13 +12,17 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"pixel-remastered-save-editor/browser"
 	"pixel-remastered-save-editor/global"
-	"pixel-remastered-save-editor/models/core"
+	"pixel-remastered-save-editor/models/finder"
 	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/save/config"
 	"pixel-remastered-save-editor/save/file"
 	"pixel-remastered-save-editor/ui/bundled"
 	"pixel-remastered-save-editor/ui/forms/io"
 	"pixel-remastered-save-editor/ui/forms/selections"
+)
+
+const (
+	appName = "Final Fantasy Pixel Remastered Save Editor"
 )
 
 type (
@@ -71,7 +75,7 @@ func New() Gui {
 		a = app.New()
 		g = &gui{
 			app:    a,
-			window: a.NewWindow(fmt.Sprintf("Final Fantasy Pixel Remastered Save Editor - v%s", browser.Version)),
+			window: a.NewWindow(fmt.Sprintf("%s - v%s", appName, browser.Version)),
 			canvas: container.NewStack(),
 		}
 	)
@@ -153,8 +157,9 @@ func (g *gui) gameSelected(game global.Game) {
 			g.prev = nil
 			g.save.Disabled = false
 			g.data = data
-			core.LoadFinders(game)
-			g.canvas.Add(selections.NewEditor(data.Save))
+			finder.Load(game)
+			g.canvas.Add(selections.NewEditor(game, data.Save))
+			g.window.SetTitle(fmt.Sprintf("%s - FF%d - slot %d", appName, game, slot))
 		}
 	}, func() {
 		defer func() { g.open.Disabled = false }()
@@ -193,6 +198,7 @@ func (g *gui) Save() {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)
 				}
+				g.window.SetTitle(fmt.Sprintf("%s - FF%d - slot %d", appName, game, slot))
 			}
 		}, func() {
 			defer func() {

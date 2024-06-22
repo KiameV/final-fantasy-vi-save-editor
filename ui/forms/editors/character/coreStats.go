@@ -6,6 +6,8 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
+	"pixel-remastered-save-editor/models/core/ff1/consts"
+	"pixel-remastered-save-editor/models/finder"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
 
@@ -26,49 +28,52 @@ func NewCoreStats(c *core.Character) *Character {
 	e.ExtendBaseWidget(e)
 	name := widget.NewEntryWithData(binding.BindString(&c.Name))
 	name.Validator = nil
+	job := inputs.NewIdEntryWithDataWithHint(&c.JobID, finder.Jobs)
 	e.left = []fyne.CanvasObject{
-		inputs.NewLabeledEntry("Name:", name),
-		inputs.NewLabeledEntry("Job ID:", inputs.NewIntEntryWithData(&c.JobID)),
-		inputs.NewLabeledEntry("Level:", inputs.NewIntEntryWithData(&c.Level)),
-		inputs.NewLabeledEntry("Experience:", inputs.NewIntEntryWithData(&c.Exp)),
-		inputs.NewLabeledEntry("HP Current:", inputs.NewIntEntryWithData(&c.CurrentHP)),
-		inputs.NewLabeledEntry("HP Max:", inputs.NewIntEntryWithData(&c.MaxHP)),
-		inputs.NewLabeledEntry("MP Current:", inputs.NewIntEntryWithData(&c.CurrentMP)),
-		inputs.NewLabeledEntry("MP Max:", inputs.NewIntEntryWithData(&c.MaxMP)),
-		inputs.NewLabeledEntry("Agility:", inputs.NewIntEntryWithData(&c.Agility)),
-		inputs.NewLabeledEntry("Intelligence:", inputs.NewIntEntryWithData(&c.Intelligence)),
-		inputs.NewLabeledEntry("Luck:", inputs.NewIntEntryWithData(&c.Luck)),
-		inputs.NewLabeledEntry("Magic:", inputs.NewIntEntryWithData(&c.Magic)),
-		inputs.NewLabeledEntry("Power:", inputs.NewIntEntryWithData(&c.Power)),
-		inputs.NewLabeledEntry("Spirit:", inputs.NewIntEntryWithData(&c.Spirit)),
-		inputs.NewLabeledEntry("Vitality:", inputs.NewIntEntryWithData(&c.Vitality)),
+		container.NewGridWithColumns(3, widget.NewLabel("Name:"), name),
+		container.NewGridWithColumns(3, widget.NewLabel("Job:"), job.ID, job.Label),
+		container.NewGridWithColumns(3, widget.NewLabel("Level:"), inputs.NewIntEntryWithData(&c.Level)),
+		container.NewGridWithColumns(3, widget.NewLabel("Experience:"), inputs.NewIntEntryWithData(&c.Exp)),
+		container.NewGridWithColumns(3, widget.NewLabel("HP Current:"), inputs.NewIntEntryWithData(&c.CurrentHP)),
+		container.NewGridWithColumns(3, widget.NewLabel("HP Max:"), inputs.NewIntEntryWithData(&c.MaxHP)),
+		container.NewGridWithColumns(3, widget.NewLabel("MP Current:"), inputs.NewIntEntryWithData(&c.CurrentMP)),
+		container.NewGridWithColumns(3, widget.NewLabel("MP Max:"), inputs.NewIntEntryWithData(&c.MaxMP)),
+		container.NewGridWithColumns(3, widget.NewLabel("Agility:"), inputs.NewIntEntryWithData(&c.Agility)),
+		container.NewGridWithColumns(3, widget.NewLabel("Intelligence:"), inputs.NewIntEntryWithData(&c.Intelligence)),
+		container.NewGridWithColumns(3, widget.NewLabel("Luck:"), inputs.NewIntEntryWithData(&c.Luck)),
+		container.NewGridWithColumns(3, widget.NewLabel("Magic:"), inputs.NewIntEntryWithData(&c.Magic)),
+		container.NewGridWithColumns(3, widget.NewLabel("Power:"), inputs.NewIntEntryWithData(&c.Power)),
+		container.NewGridWithColumns(3, widget.NewLabel("Spirit:"), inputs.NewIntEntryWithData(&c.Spirit)),
+		container.NewGridWithColumns(3, widget.NewLabel("Vitality:"), inputs.NewIntEntryWithData(&c.Vitality)),
 	}
 	e.right = []fyne.CanvasObject{
-		inputs.NewLabeledEntry("Ability Defense:", inputs.NewIntEntryWithData(&c.AbilityDefence)),
-		inputs.NewLabeledEntry("Ability Defense Rate:", inputs.NewIntEntryWithData(&c.AbilityDefenseRate)),
-		inputs.NewLabeledEntry("Ability Disturbed Rate:", inputs.NewIntEntryWithData(&c.AbilityDisturbedRate)),
-		inputs.NewLabeledEntry("Ability Evasion Rate:", inputs.NewIntEntryWithData(&c.AbilityEvasionRate)),
-		inputs.NewLabeledEntry("Accuracy Count:", inputs.NewIntEntryWithData(&c.AccuracyCount)),
-		inputs.NewLabeledEntry("Accuracy Rate:", inputs.NewIntEntryWithData(&c.AccuracyRate)),
-		inputs.NewLabeledEntry("Attack:", inputs.NewIntEntryWithData(&c.Attack)),
-		inputs.NewLabeledEntry("Critical Rate:", inputs.NewIntEntryWithData(&c.CriticalRate)),
-		inputs.NewLabeledEntry("Damage Dirmeter:", inputs.NewIntEntryWithData(&c.DamageDirmeter)),
-		inputs.NewLabeledEntry("Defense:", inputs.NewIntEntryWithData(&c.Defense)),
-		inputs.NewLabeledEntry("Defense Count:", inputs.NewIntEntryWithData(&c.DefenseCount)),
-		inputs.NewLabeledEntry("Evasion Count:", inputs.NewIntEntryWithData(&c.EvasionCount)),
-		inputs.NewLabeledEntry("Evasion Rate:", inputs.NewIntEntryWithData(&c.EvasionRate)),
-		inputs.NewLabeledEntry("Magic Defense Count:", inputs.NewIntEntryWithData(&c.MagicDefenseCount)),
-		inputs.NewLabeledEntry("Weight:", inputs.NewIntEntryWithData(&c.Weight)),
+		container.NewGridWithColumns(3, widget.NewLabel("Ability Defense:"), inputs.NewIntEntryWithData(&c.AbilityDefence)),
+		container.NewGridWithColumns(3, widget.NewLabel("Ability Defense Rate:"), inputs.NewIntEntryWithData(&c.AbilityDefenseRate)),
+		container.NewGridWithColumns(3, widget.NewLabel("Ability Disturbed Rate:"), inputs.NewIntEntryWithData(&c.AbilityDisturbedRate)),
+		container.NewGridWithColumns(3, widget.NewLabel("Ability Evasion Rate:"), inputs.NewIntEntryWithData(&c.AbilityEvasionRate)),
+		container.NewGridWithColumns(3, widget.NewLabel("Accuracy Count:"), inputs.NewIntEntryWithData(&c.AccuracyCount)),
+		container.NewGridWithColumns(3, widget.NewLabel("Accuracy Rate:"), inputs.NewIntEntryWithData(&c.AccuracyRate)),
+		container.NewGridWithColumns(3, widget.NewLabel("Attack:"), inputs.NewIntEntryWithData(&c.Attack)),
+		container.NewGridWithColumns(3, widget.NewLabel("Critical Rate:"), inputs.NewIntEntryWithData(&c.CriticalRate)),
+		container.NewGridWithColumns(3, widget.NewLabel("Damage Dirmeter:"), inputs.NewIntEntryWithData(&c.DamageDirmeter)),
+		container.NewGridWithColumns(3, widget.NewLabel("Defense:"), inputs.NewIntEntryWithData(&c.Defense)),
+		container.NewGridWithColumns(3, widget.NewLabel("Defense Count:"), inputs.NewIntEntryWithData(&c.DefenseCount)),
+		container.NewGridWithColumns(3, widget.NewLabel("Evasion Count:"), inputs.NewIntEntryWithData(&c.EvasionCount)),
+		container.NewGridWithColumns(3, widget.NewLabel("Evasion Rate:"), inputs.NewIntEntryWithData(&c.EvasionRate)),
+		container.NewGridWithColumns(3, widget.NewLabel("Magic Defense Count:"), inputs.NewIntEntryWithData(&c.MagicDefenseCount)),
+		container.NewGridWithColumns(3, widget.NewLabel("Weight:"), inputs.NewIntEntryWithData(&c.Weight)),
 	}
 	return e
 }
 
 func (e *Character) CreateRenderer() fyne.WidgetRenderer {
+	search := inputs.NewSearch(consts.Jobs)
 	return widget.NewSimpleRenderer(
 		container.NewBorder(
 			container.NewHBox(widget.NewCheckWithData("Enabled", e.isEnabled)),
 			nil, nil, nil,
-			container.NewVScroll(container.NewGridWithColumns(2,
+			container.NewVScroll(container.NewGridWithColumns(3,
 				container.NewVBox(e.left...),
-				container.NewVBox(e.right...)))))
+				container.NewVBox(e.right...),
+				search.Fields()))))
 }

@@ -4,22 +4,21 @@ import (
 	"encoding/json"
 
 	jo "gitlab.com/c0b/go-ordered-json"
+	"pixel-remastered-save-editor/global"
 	"pixel-remastered-save-editor/models/core"
 	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/save/util"
 )
 
-func Characters(data *save.Data, party *core.Party) (characters *core.Characters, err error) {
+func Characters(game global.Game, data *save.Data, party *core.Party) (characters *core.Characters, err error) {
 	characters = core.NewCharacters(len(data.Characters))
-	for i, d := range data.Characters {
+	for _, d := range data.Characters {
 		if d == nil {
 			continue
 		}
 
-		c := &core.Character{}
-		if err = characters.SetCharacter(i, c); err != nil {
-			return
-		}
+		c := core.NewCharacter()
+		characters.AddCharacter(c)
 
 		if c.ID, err = util.GetInt(d, util.ID); err != nil {
 			return
@@ -160,8 +159,38 @@ func Characters(data *save.Data, party *core.Party) (characters *core.Characters
 			return
 		}
 
+		if err = loadAdditionOrderOwnedAbilityIds(d, c); err != nil {
+			return
+		}
+
+		if err = loadAbilitySlotData(game, d, c); err != nil {
+			return
+		}
+
 		if err = loadEquipment(d, c); err != nil {
 			return
+		}
+
+		if err = loadCommands(d, c); err != nil {
+			return
+		}
+	}
+	return
+}
+
+func loadCommands(d *jo.OrderedMap, c *core.Character) (err error) {
+	var values any
+	if values, err = util.FromTarget(d, util.CommandList); err != nil {
+		return
+	}
+	if sl, ok := values.([]any); ok && len(sl) > 0 {
+		c.Commands = core.NewCommands(len(sl))
+		for i, v := range sl {
+			var j int64
+			if j, err = v.(json.Number).Int64(); err != nil {
+				return
+			}
+			c.Commands.Set(i, int(j))
 		}
 	}
 	return
@@ -183,11 +212,75 @@ func loadAbilities(d *jo.OrderedMap, c *core.Character) (err error) {
 		if err = m.UnmarshalJSON([]byte(sli[j].(string))); err != nil {
 			return
 		}
-		c.AddAbility(core.Ability{
+		c.AddAbility(&core.Ability{
 			ID:         valueAsInt(m, "abilityId"),
 			ContentID:  valueAsInt(m, "contentId"),
 			SkillLevel: valueAsInt(m, "skillLevel"),
 		})
+	}
+	return
+}
+
+func loadAbilitySlotData(game global.Game, d *jo.OrderedMap, c *core.Character) (err error) {
+	var i any
+	if i, err = util.FromTarget(d, util.AbilitySlotDataList); err != nil {
+		return nil
+	}
+	if game == global.One {
+		return loadAbilitySlotDataFF1(i.([]any), c)
+	}
+	return
+}
+
+func loadAdditionOrderOwnedAbilityIds(d *jo.OrderedMap, c *core.Character) (err error) {
+	var a any
+	if a, err = util.FromTarget(d, util.AdditionOrderOwnedAbilityIds); err == nil {
+		if sl, ok := a.([]any); ok && len(sl) > 0 {
+			c.OwnedAbilityIds = make([]int, len(a.([]any)))
+			for i, j := range a.([]any) {
+				k, _ := j.(json.Number).Int64()
+				c.OwnedAbilityIds[i] = int(k)
+			}
+		}
+	}
+	return
+}
+
+func loadAbilitySlotDataFF1(levels []any, c *core.Character) (err error) {
+	var (
+		a  any
+		ok bool
+	)
+	for i, s := range levels {
+		m := jo.NewOrderedMap()
+		if err = m.UnmarshalJSON([]byte(s.(string))); err != nil {
+			return
+		}
+		if a, ok = m.GetValue("slotInfo"); ok {
+			if err = m.UnmarshalJSON([]byte(a.(string))); err != nil {
+				return
+			}
+			if a, ok = m.GetValue("values"); ok {
+				var sl []any
+				if sl, ok = a.([]any); ok {
+					for j, ability := range sl {
+						if ability != "" {
+							k := jo.NewOrderedMap()
+							if err = k.UnmarshalJSON([]byte(ability.(string))); err != nil {
+								return
+							}
+							c.FF1.TrainedAbilities[i][j] = &core.Ability{
+								ID:         valueAsInt(k, "abilityId"),
+								ContentID:  valueAsInt(k, "contentId"),
+								SkillLevel: valueAsInt(k, "skillLevel"),
+							}
+						} else {
+							c.FF1.TrainedAbilities[i][j] = &core.Ability{}
+						}
+					}
+				}
+			}
+		}
 	}
 	return
 }

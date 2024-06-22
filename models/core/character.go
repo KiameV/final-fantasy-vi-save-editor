@@ -1,7 +1,6 @@
 package core
 
 import (
-	"errors"
 	"slices"
 
 	"pixel-remastered-save-editor/models"
@@ -33,41 +32,68 @@ type (
 		EvasionCount         int
 		DefenseCount         int
 		MagicDefenseCount    int
-		Abilities            []Ability
+		Abilities            []*Ability
 	}
 	Character struct {
 		AdditionalParams
-		ID        int
-		JobID     int
-		IsEnabled bool
-		Name      string
-		Level     int
-		Exp       int
-		CurrentHP int
-		CurrentMP int
-		Equipment []*models.IdCount
+		ID              int
+		JobID           int
+		IsEnabled       bool
+		Name            string
+		Level           int
+		Exp             int
+		CurrentHP       int
+		CurrentMP       int
+		Equipment       []*models.IdCount
+		OwnedAbilityIds []int
+		FF1             struct {
+			TrainedAbilities [8][3]*Ability `json:"trainedAbilities"`
+		}
+		Commands *Commands
 	}
 	Ability struct {
-		ID         int
-		ContentID  int
-		SkillLevel int
+		ID         int `json:"abilityId"`
+		ContentID  int `json:"contentID"`
+		SkillLevel int `json:"skillLevel"`
 	}
 	Characters struct {
 		characters []*Character
+	}
+	Commands struct {
+		EnableSave bool
+		commands   []*int
 	}
 )
 
 func NewCharacters(size int) *Characters {
 	return &Characters{
-		characters: make([]*Character, size),
+		characters: make([]*Character, 0, size),
 	}
 }
 
-func (c *Character) AddAbility(ability Ability) {
+func NewCharacter() *Character {
+	return &Character{}
+}
+
+func (c *Character) AddAbility(ability *Ability) {
 	c.Abilities = append(c.Abilities, ability)
 }
 
-func (c *Characters) Characters() []*Character {
+func (c *Character) RemoveAbility(index int) {
+	c.Abilities = append(c.Abilities[:index], c.Abilities[index+1:]...)
+}
+
+func (c *Character) AbilitiesToSave() []*Ability {
+	a := make([]*Ability, 0, len(c.Abilities))
+	for _, i := range c.Abilities {
+		if i.ID != 0 {
+			a = append(a, i)
+		}
+	}
+	return a
+}
+
+func (c *Characters) All() []*Character {
 	return c.characters
 }
 
@@ -82,12 +108,8 @@ func (c *Characters) Names() []string {
 	return names
 }
 
-func (c *Characters) SetCharacter(i int, character *Character) error {
-	if i < 0 || i >= len(c.characters) {
-		return errors.New("index out of range")
-	}
-	c.characters[i] = character
-	return nil
+func (c *Characters) AddCharacter(character *Character) {
+	c.characters = append(c.characters, character)
 }
 
 func (c *Characters) GetByID(id int) (character *Character, found bool) {
@@ -106,4 +128,34 @@ func (c *Characters) GetByName(name string) (character *Character, found bool) {
 		}
 	}
 	return nil, false
+}
+
+func NewCommands(size int) *Commands {
+	c := &Commands{
+		commands: make([]*int, size),
+	}
+	for i := 0; i < size; i++ {
+		c.commands[i] = new(int)
+	}
+	return c
+}
+
+func (c *Commands) All() []any {
+	commands := make([]any, len(c.commands))
+	for i, j := range c.commands {
+		commands[i] = *j
+	}
+	return commands
+}
+
+func (c *Commands) Get(i int) *int {
+	return c.commands[i]
+}
+
+func (c *Commands) Len() int {
+	return len(c.commands)
+}
+
+func (c *Commands) Set(i int, value int) {
+	*c.commands[i] = value
 }

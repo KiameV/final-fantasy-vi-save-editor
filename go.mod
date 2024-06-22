@@ -7,7 +7,7 @@ go 1.21
 require (
 	fyne.io/fyne/v2 v2.4.5
 	github.com/kiamev/ffpr-save-cypher v1.0.0
-	github.com/ncruces/zenity v0.10.12
+	github.com/spf13/cast v1.3.1
 	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 )
@@ -15,9 +15,7 @@ require (
 require (
 	fyne.io/systray v1.10.1-0.20231115130155-104f5ef7839e // indirect
 	github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf // indirect
-	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f // indirect
 	github.com/fredbi/uri v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fyne-io/gl-js v0.0.0-20230506162202-1fdaa286a934 // indirect
@@ -29,10 +27,8 @@ require (
 	github.com/go-text/typesetting v0.1.1 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
-	github.com/josephspurrier/goversioninfo v1.4.0 // indirect
 	github.com/jsummers/gobmp v0.0.0-20230614200233-a9de23ed2e25 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.9.0 // indirect

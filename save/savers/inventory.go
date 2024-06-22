@@ -49,13 +49,13 @@ func invNormal(inv *core.Inventory) (sl []any, err error) {
 	sl = make([]any, 0, len(rows))
 	for _, r := range rows {
 		if removeDuplicates {
-			if _, f := found[r.ItemID]; f {
+			if _, f := found[r.ContentID]; f {
 				continue
 			}
-			found[r.ItemID] = true
+			found[r.ContentID] = true
 		}
 		// Skip Empty rows
-		if r.ItemID == 0 || r.Count == 0 {
+		if r.ContentID == 0 || r.Count == 0 {
 			continue
 		}
 		if b, err = json.Marshal(r); err != nil {
@@ -76,10 +76,10 @@ func invResetSort(data *save.Data, key string) (err error) {
 
 func invDebugSortInv(rows []core.Row) []core.Row {
 	sort.Slice(rows, func(i, j int) bool {
-		return rows[i].ItemID < rows[j].ItemID
+		return rows[i].ContentID < rows[j].ContentID
 	})
 	for i := 0; i < len(rows); i++ {
-		c := rows[i].ItemID
+		c := rows[i].ContentID
 		for c >= 100 {
 			c -= 100
 		}

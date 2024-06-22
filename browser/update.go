@@ -13,17 +13,17 @@ import (
 
 const (
 	// TODO
-	tagUrl = `https://api.github.com/repos/KiameV/final-fantasy-vi-save-editor/tags`
-	relUrl = `https://github.com/KiameV/final-fantasy-vi-save-editor/releases/%s`
+	tagUrl = `https://api.github.com/repos/KiameV/final-fantasy-pr-save-editor/tags`
+	relUrl = `https://github.com/KiameV/final-fantasy-pr-save-editor/releases/%s`
 
-	Version = "3.0.0"
+	Version = "0.4.7"
 )
 
 type (
 	tag struct {
 		Name string `json:"name"`
 	}
-	comparable struct {
+	comp struct {
 		version [3]int
 	}
 )
@@ -48,7 +48,7 @@ func CheckForUpdate() (hasNewer bool, version string, err error) {
 	for _, t := range tags {
 		if strings.Contains(t.Name, ".") {
 			if other, ok := newComparable(t.Name); ok {
-				if !current.IsNewer(other) {
+				if IsNewer(current, other) {
 					current = other
 					hasNewer = true
 					version = t.Name
@@ -59,7 +59,7 @@ func CheckForUpdate() (hasNewer bool, version string, err error) {
 	return
 }
 
-func newComparable(v string) (c comparable, found bool) {
+func newComparable(v string) (c comp, found bool) {
 	if strings.Contains(v, ".") && !strings.Contains(v, "_") {
 		var (
 			sb  strings.Builder
@@ -81,10 +81,14 @@ func newComparable(v string) (c comparable, found bool) {
 	return
 }
 
-func (c comparable) IsNewer(other comparable) bool {
+func IsNewer(current, other comp) bool {
 	for i := 0; i < 3; i++ {
-		if c.version[i] < other.version[i] {
+		c := current.version[i]
+		o := other.version[i]
+		if c < o {
 			return true
+		} else if c != o {
+			return false
 		}
 	}
 	return false

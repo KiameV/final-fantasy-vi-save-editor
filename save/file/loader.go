@@ -63,7 +63,7 @@ func LoadSave(game global.Game, fileName string) (data *save.Data, err error) {
 
 	data.Save = core.NewSave()
 	if data.Save.Party, err = loaders.Party(data); err == nil {
-		if data.Save.Characters, err = loaders.Characters(data, data.Save.Party); err == nil {
+		if data.Save.Characters, err = loaders.Characters(game, data, data.Save.Party); err == nil {
 			if data.Save.Misc, err = loaders.Misc(data); err == nil {
 				if data.Save.Inventory, err = loaders.Inventory(data, util.NormalOwnedItemList); err == nil {
 					if data.Save.ImportantInventory, err = loaders.Inventory(data, util.ImportantOwnedItemList); err == nil {
