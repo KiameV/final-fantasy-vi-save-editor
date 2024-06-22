@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"os"
 
+	"ffvi_editor/io/config"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -44,6 +45,7 @@ func NewFileIO(kind Kind, window fyne.Window, dir string, onSelected OnSelect, o
 	}
 	w.ExtendBaseWidget(w)
 	w.dir.OnChanged = w.dirChange
+	w.dir.SetText(config.SaveDir())
 	return w
 }
 
