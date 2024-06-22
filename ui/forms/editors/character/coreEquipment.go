@@ -13,14 +13,12 @@ type (
 	Equipment struct {
 		widget.BaseWidget
 		inputs []*inputs.IdEntry
-		search *inputs.Search
 	}
 )
 
-func NewCoreEquipment(c *core.Character, search *inputs.Search) *Equipment {
+func NewCoreEquipment(c *core.Character) *Equipment {
 	e := &Equipment{
 		inputs: make([]*inputs.IdEntry, len(c.Equipment)),
-		search: search,
 	}
 	e.ExtendBaseWidget(e)
 	for i, j := range c.Equipment {
@@ -31,12 +29,13 @@ func NewCoreEquipment(c *core.Character, search *inputs.Search) *Equipment {
 
 func (e *Equipment) CreateRenderer() fyne.WidgetRenderer {
 	rows := container.NewVBox()
+	search := inputs.GetSearches().Items
 	for _, i := range e.inputs {
 		rows.Add(container.NewGridWithColumns(3, i.Label, i.ID))
 	}
 	return widget.NewSimpleRenderer(container.NewStack(
 		container.NewGridWithColumns(3,
 			container.NewVScroll(rows),
-			e.search.Fields(),
-			e.search.Filter())))
+			search.Fields(),
+			search.Filter())))
 }

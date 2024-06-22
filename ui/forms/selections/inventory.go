@@ -5,7 +5,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
-	"pixel-remastered-save-editor/models/core/ff1/consts"
 	"pixel-remastered-save-editor/models/finder"
 	"pixel-remastered-save-editor/ui/forms/editors/inventory"
 	"pixel-remastered-save-editor/ui/forms/inputs"
@@ -14,15 +13,13 @@ import (
 type (
 	Inventory struct {
 		widget.BaseWidget
-		save      *core.Save
-		allSearch *inputs.Search
+		save *core.Save
 	}
 )
 
-func NewInventory(save *core.Save, allSearch *inputs.Search) *Inventory {
+func NewInventory(save *core.Save) *Inventory {
 	s := &Inventory{
-		save:      save,
-		allSearch: allSearch,
+		save: save,
 	}
 	s.ExtendBaseWidget(s)
 	return s
@@ -31,6 +28,6 @@ func NewInventory(save *core.Save, allSearch *inputs.Search) *Inventory {
 func (s *Inventory) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(
 		container.NewAppTabs(
-			container.NewTabItem("Inventory", inventory.NewCore(s.save.Inventory, finder.Items, s.allSearch)),
-			container.NewTabItem("Important", inventory.NewCore(s.save.ImportantInventory, finder.ImportantItems, inputs.NewSearch(consts.ImportantItems)))))
+			container.NewTabItem("Inventory", inventory.NewCore(s.save.Inventory, finder.Items, inputs.GetSearches().Items)),
+			container.NewTabItem("Important", inventory.NewCore(s.save.ImportantInventory, finder.ImportantItems, inputs.GetSearches().ImportantItems))))
 }

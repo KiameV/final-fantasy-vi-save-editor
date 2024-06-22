@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
-	"pixel-remastered-save-editor/models/core/ff1/consts"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
 
@@ -46,7 +45,7 @@ func NewCore(data *core.MapData) *MapData {
 }
 
 func (e *MapData) CreateRenderer() fyne.WidgetRenderer {
-	search := inputs.NewSearch(consts.Maps)
+	search := inputs.GetSearches().Maps
 	return widget.NewSimpleRenderer(
 		container.NewGridWithColumns(3,
 			container.NewVScroll(container.NewVBox(

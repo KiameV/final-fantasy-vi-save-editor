@@ -2,6 +2,7 @@ package savers
 
 import (
 	"encoding/json"
+	"os"
 	"sort"
 
 	jo "gitlab.com/c0b/go-ordered-json"
@@ -19,33 +20,27 @@ func Inventory(data *save.Data, key string, sortKey string, inv *core.Inventory)
 		return
 	}
 
-	if inv.ResetSortOrder {
-		_ = invResetSort(data, sortKey)
-	}
-
 	slTarget.Set(util.TargetKey, sl)
 	if err = util.MarshalTo(data.UserData, key, slTarget); err != nil {
 		return
 	}
 
 	if inv.ResetSortOrder && sortKey != "" {
-		slTarget = jo.NewOrderedMap()
-		slTarget.Set(util.TargetKey, make([]interface{}, 0))
-		if err = util.MarshalTo(data.UserData, sortKey, slTarget); err != nil {
-			return
-		}
+		err = invResetSort(data, sortKey)
 	}
 	return
 }
 
 func invNormal(inv *core.Inventory) (sl []any, err error) {
 	var (
-		rows = inv.RowsForPrSave()
-		// rows             = debugSortInv(inv.RowsForPrSave())
+		rows             = inv.RowsForPrSave()
 		b                []byte
 		found            = make(map[int]bool)
 		removeDuplicates = inv.RemoveDuplicates
 	)
+	if os.Getenv("PR_SORT_INV") == "true" {
+		rows = debugSortInv(inv.RowsForPrSave())
+	}
 	sl = make([]any, 0, len(rows))
 	for _, r := range rows {
 		if removeDuplicates {
@@ -68,13 +63,20 @@ func invNormal(inv *core.Inventory) (sl []any, err error) {
 
 func invResetSort(data *save.Data, key string) (err error) {
 	slTarget := jo.NewOrderedMap()
-	slTarget.Set(util.TargetKey, make([]interface{}, 0))
-	err = util.MarshalTo(data.UserData, key, slTarget)
+	// slTarget.Set(util.TargetKey, make([]interface{}, 0))
+	// err = util.MarshalTo(data.UserData, key, slTarget)
+	l := len(data.Save.Inventory.Rows)
+	order := make([]int, l)
+	for i := 0; i < l; i++ {
+		order[i] = i + 1
+	}
+	slTarget.Set(util.TargetKey, order)
+	_ = util.MarshalTo(data.UserData, key, slTarget)
 	return
 
 }
 
-func invDebugSortInv(rows []core.Row) []core.Row {
+func debugSortInv(rows []core.Row) []core.Row {
 	sort.Slice(rows, func(i, j int) bool {
 		return rows[i].ContentID < rows[j].ContentID
 	})

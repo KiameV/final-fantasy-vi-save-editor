@@ -84,6 +84,19 @@ func NewIdEntryWithDataWithHint(key *int, find finder.Find) *IdEntry {
 	}
 }
 
+func NewIdEntryWithDataWithHintWithChange(key *int, find finder.Find, onChange func(s string)) *IdEntry {
+	id := NewIntEntryWithData(key)
+	label := widget.NewLabel("")
+	id.OnChanged = func(s string) {
+		hint(s, label, find)
+		onChange(s)
+	}
+	return &IdEntry{
+		ID:    id,
+		Label: label,
+	}
+}
+
 func newHinter(args HintArgs) *hinter {
 	l := widget.NewLabel("")
 	l.Alignment = *args.Align

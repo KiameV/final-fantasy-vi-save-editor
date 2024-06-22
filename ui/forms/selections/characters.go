@@ -18,7 +18,7 @@ type (
 	}
 )
 
-func NewCharacters(game global.Game, save *core.Save, allSearch *inputs.Search) *Characters {
+func NewCharacters(game global.Game, save *core.Save) *Characters {
 	s := &Characters{
 		top:    container.NewHBox(),
 		middle: container.NewStack(),
@@ -31,6 +31,8 @@ func NewCharacters(game global.Game, save *core.Save, allSearch *inputs.Search) 
 		)
 		if game == global.One {
 			abilities = character.NewFF1Abilities(c)
+		} else if game == global.Two {
+			abilities = character.NewFF2Abilities(c)
 		} else {
 			abilities = character.NewCoreAbilities(c)
 		}
@@ -38,7 +40,7 @@ func NewCharacters(game global.Game, save *core.Save, allSearch *inputs.Search) 
 		s.middle.Add(container.NewAppTabs(
 			container.NewTabItem("Stats", character.NewCoreStats(c)),
 			container.NewTabItem("Abilities", abilities),
-			container.NewTabItem("Equipment", character.NewCoreEquipment(c, allSearch)),
+			container.NewTabItem("Equipment", character.NewCoreEquipment(c)),
 			container.NewTabItem("Commands", character.NewCoreCommands(c)),
 		))
 	})))

@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
-	"pixel-remastered-save-editor/models/core/ff1/consts"
 	"pixel-remastered-save-editor/models/finder"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
@@ -67,7 +66,7 @@ func NewCoreStats(c *core.Character) *Character {
 }
 
 func (e *Character) CreateRenderer() fyne.WidgetRenderer {
-	search := inputs.NewSearch(consts.Jobs)
+	search := inputs.GetSearches().Jobs
 	return widget.NewSimpleRenderer(
 		container.NewBorder(
 			container.NewHBox(widget.NewCheckWithData("Enabled", e.isEnabled)),

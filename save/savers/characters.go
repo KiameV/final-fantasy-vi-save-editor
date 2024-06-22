@@ -236,6 +236,12 @@ func preCharacterSave(game global.Game, c *core.Character) (err error) {
 				}
 			}
 		}
+	} else if game == global.Two {
+		for _, a := range c.Abilities {
+			if a.ContentID == 0 && a.ID > 0 {
+				a.ContentID = a.ID + 207
+			}
+		}
 	}
 	return
 }
@@ -337,40 +343,3 @@ func saveAbilitySlotDataFF1(d *jo.OrderedMap, c *core.Character) (err error) {
 func saveCommands(d *jo.OrderedMap, c *core.Character) error {
 	return util.SetTarget(d, util.CommandList, c.Commands.All())
 }
-
-/*
-var (
-		a  any
-		ok bool
-	)
-	for i, s := range levels {
-		m := jo.NewOrderedMap()
-		if err = m.UnmarshalJSON([]byte(s.(string))); err != nil {
-			return
-		}
-		if a, ok = m.GetValue("slotInfo"); ok {
-			if err = m.UnmarshalJSON([]byte(a.(string))); err != nil {
-				return
-			}
-			if a, ok = m.GetValue("values"); ok {
-				if _, ok = a.([]any); ok {
-					for j, ability := range a.([]any) {
-						if ability != "" {
-							k := jo.NewOrderedMap()
-							if err = k.UnmarshalJSON([]byte(ability.(string))); err != nil {
-								return
-							}
-							c.FF1.TrainedAbilities[i][j] = &core.Ability{
-								ID:         valueAsInt(k, "abilityId"),
-								ContentID:  valueAsInt(k, "contentId"),
-								SkillLevel: valueAsInt(k, "skillLevel"),
-							}
-						} else {
-							c.FF1.TrainedAbilities[i][j] = &core.Ability{}
-						}
-					}
-				}
-			}
-		}
-	}
-*/

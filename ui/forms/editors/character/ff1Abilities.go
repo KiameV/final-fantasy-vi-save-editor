@@ -8,7 +8,6 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
-	"pixel-remastered-save-editor/models/core/ff1/consts"
 	"pixel-remastered-save-editor/models/finder"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
@@ -88,7 +87,7 @@ func (e *FF1Abilities) addAbilityTable(body fyne.CanvasObject, includeButton boo
 }
 
 func (e *FF1Abilities) CreateRenderer() fyne.WidgetRenderer {
-	search := inputs.NewSearch(consts.Abilities)
+	search := inputs.GetSearches().Abilities
 	return widget.NewSimpleRenderer(container.NewStack(
 		container.NewGridWithColumns(4,
 			container.NewVScroll(e.bodyLeft),

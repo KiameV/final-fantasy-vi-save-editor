@@ -6,9 +6,7 @@ import (
 
 func main() {
 	defer func() {
-		if err := recover(); err != nil {
-			panic(err)
-		}
+		_ = recover()
 	}()
 	gui := ui.New()
 	gui.Load()
