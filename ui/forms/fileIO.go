@@ -6,7 +6,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"github.com/sqweek/dialog"
 )
@@ -21,7 +20,7 @@ type (
 		widget.BaseWidget
 		kind       Kind
 		window     fyne.Window
-		dir        binding.String
+		dir        *widget.Entry
 		buttons    *fyne.Container
 		onSelected OnSelect
 		onCancel   func()
@@ -38,33 +37,31 @@ func NewFileIO(kind Kind, window fyne.Window, dir string, onSelected OnSelect, o
 	w := &FileIO{
 		kind:       kind,
 		window:     window,
-		dir:        binding.BindString(&dir),
+		dir:        widget.NewEntry(),
 		onSelected: onSelected,
 		onCancel:   onCancel,
 		buttons:    container.NewVBox(),
 	}
 	w.ExtendBaseWidget(w)
-	w.dir.AddListener(w)
+	w.dir.OnChanged = w.dirChange
 	return w
 }
 
-func (w *FileIO) DataChanged() {
+func (w *FileIO) dirChange(s string) {
 	var (
-		d        []fs.DirEntry
-		dir, err = w.dir.Get()
-		m        = make(map[string]fs.FileInfo)
-		fi       fs.FileInfo
-		found    bool
+		d     []fs.DirEntry
+		m     = make(map[string]fs.FileInfo)
+		fi    fs.FileInfo
+		found bool
+		err   error
 	)
-	if err != nil {
-		return
+	if d, err = os.ReadDir(s); err != nil {
+		w.buttons.RemoveAll()
 	}
-	if d, err = os.ReadDir(dir); err == nil {
-		for _, f := range d {
-			if !f.IsDir() {
-				if fi, err = f.Info(); err == nil {
-					m[f.Name()] = fi
-				}
+	for _, f := range d {
+		if !f.IsDir() {
+			if fi, err = f.Info(); err == nil {
+				m[f.Name()] = fi
 			}
 		}
 	}
@@ -82,7 +79,7 @@ func (w *FileIO) DataChanged() {
 				}
 				func(name string, uuid string, slot int) {
 					w.buttons.Add(widget.NewButton(name, func() {
-						w.onSelected(name, dir, uuid, slot)
+						w.onSelected(name, s, uuid, slot)
 					}))
 				}(name, save.UUID, save.Slot)
 			}
@@ -94,11 +91,11 @@ func (w *FileIO) CreateRenderer() fyne.WidgetRenderer {
 	top := container.NewBorder(nil, nil,
 		widget.NewLabel("Directory:"),
 		widget.NewButton("Change", func() {
-			if dir, err := dialog.Directory().Title("Load images").Browse(); err != nil && dir != "" {
-				_ = w.dir.Set(dir)
+			if dir, err := dialog.Directory().Title("Save Location").Browse(); err == nil && dir != "" {
+				w.dir.SetText(dir)
 			}
 		}),
-		widget.NewEntryWithData(w.dir))
+		w.dir)
 	bottom := widget.NewButton("Cancel", func() {
 		w.onCancel()
 	})
