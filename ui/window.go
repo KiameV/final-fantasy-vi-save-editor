@@ -12,8 +12,8 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"pixel-remastered-save-editor/browser"
 	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/models/core"
 	"pixel-remastered-save-editor/models/finder"
-	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/save/config"
 	"pixel-remastered-save-editor/save/file"
 	"pixel-remastered-save-editor/ui/bundled"
@@ -41,7 +41,7 @@ type (
 		open   *fyne.MenuItem
 		save   *fyne.MenuItem
 		prev   fyne.CanvasObject
-		data   *save.Data
+		data   *core.Save
 	}
 	MenuItem interface {
 		Item() *fyne.MenuItem
@@ -152,14 +152,21 @@ func (g *gui) gameSelected(game global.Game) {
 			}
 			dialog.NewError(err, g.window).Show()
 		} else {
-			// Success
-			g.canvas.RemoveAll()
-			g.prev = nil
-			g.save.Disabled = false
-			g.data = data
-			finder.Load(game)
-			g.canvas.Add(selections.NewEditor(game, data.Save))
-			g.window.SetTitle(fmt.Sprintf("%s - FF%d - slot %d", appName, game, slot))
+			if g.data, err = core.NewSave(data); err != nil {
+				if g.prev != nil {
+					g.canvas.RemoveAll()
+					g.canvas.Add(g.prev)
+				}
+				dialog.NewError(err, g.window).Show()
+			} else {
+				// Success
+				g.canvas.RemoveAll()
+				g.prev = nil
+				g.save.Disabled = false
+				finder.Load(game)
+				g.canvas.Add(selections.NewEditor(game, g.data))
+				g.window.SetTitle(fmt.Sprintf("%s - FF%d - slot %d", appName, game, slot))
+			}
 		}
 	}, func() {
 		defer func() { g.open.Disabled = false }()
@@ -179,14 +186,14 @@ func (g *gui) Save() {
 	g.save.Disabled = true
 	g.canvas.RemoveAll()
 	g.canvas.Add(
-		io.NewFileIO(io.Save, g.data.Game, g.window, config.Dir(g.data.Game), func(game global.Game, name, dir, f string, slot int) {
+		io.NewFileIO(io.Save, g.data.Data.Game, g.window, config.Dir(g.data.Data.Game), func(game global.Game, name, dir, f string, slot int) {
 			defer func() {
 				g.open.Disabled = false
 				g.save.Disabled = false
 			}()
 			// Save file
 			config.SetSaveDir(game, dir)
-			if err := file.SaveSave(game, g.data, slot, filepath.Join(dir, f)); err != nil {
+			if err := file.SaveSave(game, g.data.ToSave(), slot, filepath.Join(dir, f)); err != nil {
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)

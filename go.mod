@@ -7,8 +7,8 @@ go 1.21
 require (
 	fyne.io/fyne/v2 v2.4.5
 	github.com/kiamev/ffpr-save-cypher v1.0.0
-	github.com/spf13/cast v1.3.1
 	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627
+	github.com/virtuald/go-ordered-json v0.0.0-20170621173500-b18e6e673d74
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 )
 
@@ -37,6 +37,7 @@ require (
 	golang.org/x/image v0.17.0 // indirect
 	golang.org/x/mobile v0.0.0-20240604190613-2782386b8afd // indirect
 	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
