@@ -1,66 +1,34 @@
 package core
 
 import (
-	"sort"
-)
-
-var (
-	EmptyPartyMember = &Member{
-		CharacterID: 0,
-		Name:        "[Empty]",
-	}
+	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/save"
 )
 
 type (
-	Member struct {
-		CharacterID int `json:"characterId"`
-		Name        string
-		// EnableEquipment bool
-	}
 	Party struct {
-		Members       []*Member
-		Possible      map[string]*Member
-		PossibleNames []string
-		// PossibleNamesWithNPCs []string
-		// Enabled bool
-		// IncludeNPCs bool
+		Members []*save.CorpsSlotInfo
 	}
 )
 
-func NewParty(memberCount int) *Party {
-	return &Party{
-		Members: make([]*Member, memberCount),
+func NewParty(game global.Game, ud *save.UserData) (p *Party, err error) {
+	var cl *save.CorpsList
+	if cl, err = ud.CorpsList(); err != nil {
+		return
 	}
+	p = &Party{}
+	p.Members, err = save.UnmarshalMany[save.CorpsSlotInfo](cl.Target)
+	return
 }
 
-func (p *Party) AddPossibleMember(c *Character) {
-	if p != nil {
-		if _, found := p.Possible[c.Name]; !found || c.IsEnabled {
-			p.Possible[c.Name] = &Member{
-				CharacterID: c.ID,
-				Name:        c.Name,
-			}
-			if !found {
-				p.PossibleNames = append(p.PossibleNames, c.Name)
-				sort.Strings(p.PossibleNames)
-			}
-		}
-	}
+func (p *Party) SetMember(slot int, characterID int) {
+	p.Members[slot].CharacterID = characterID
 }
 
-func (p *Party) GetPossibleIndex(m *Member) int {
-	if p != nil {
-		for i, po := range p.PossibleNames {
-			if m.Name == po {
-				return i
-			}
-		}
+func (p *Party) ToSave(ud *save.UserData) (err error) {
+	cl := &save.CorpsList{}
+	if cl.Target, err = save.MarshalMany[save.CorpsSlotInfo](p.Members); err == nil {
+		err = ud.SetCorpsList(cl)
 	}
-	return 0
-}
-
-func (p *Party) SetMember(slot int, member *Member) {
-	if p != nil {
-		p.Members[slot] = member
-	}
+	return
 }

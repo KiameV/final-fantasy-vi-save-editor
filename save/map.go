@@ -14,6 +14,7 @@ type (
 		TelepoCacheData          string `json:"telepoCacheData"`
 		PlayableCharacterCorpsID int    `json:"playableCharacterCorpsId"`
 		TimerData                string `json:"timerData"`
+		EncountEnable            *bool  `json:"encountEnable,omitempty"`
 	}
 	GpsData struct {
 		MapID  int `json:"mapId"`
@@ -23,39 +24,25 @@ type (
 		Height int `json:"height"`
 	}
 	PlayerEntity struct {
-		PositionInternal string `json:"position"`
-		Direction        int    `json:"direction"`
-	}
-	Position struct {
-		X int `json:"x"`
-		Y int `json:"y"`
-		Z int `json:"z"`
+		Position  Position `json:"position"`
+		Direction int      `json:"direction"`
 	}
 )
 
 func (d *MapData) GpsData() (v *GpsData, err error) {
-	return unmarshalOne[GpsData](d.GpsDataInternal)
+	return UnmarshalOne[GpsData](d.GpsDataInternal)
 }
 
 func (d *MapData) SetGpsData(v *GpsData) (err error) {
-	d.GpsDataInternal, err = marshalOne(v)
+	d.GpsDataInternal, err = MarshalOne(v)
 	return
 }
 
 func (d *MapData) PlayerEntity() (v *PlayerEntity, err error) {
-	return unmarshalOne[PlayerEntity](d.PlayerEntityInternal)
+	return UnmarshalOne[PlayerEntity](d.PlayerEntityInternal)
 }
 
 func (d *MapData) SetPlayerEntity(v *PlayerEntity) (err error) {
-	d.PlayerEntityInternal, err = marshalOne(v)
-	return
-}
-
-func (d *PlayerEntity) Position() (v *Position, err error) {
-	return unmarshalOne[Position](d.PositionInternal)
-}
-
-func (d *PlayerEntity) SetPosition(v *Position) (err error) {
-	d.PositionInternal, err = marshalOne(v)
+	d.PlayerEntityInternal, err = MarshalOne(v)
 	return
 }

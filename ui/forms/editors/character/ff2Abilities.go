@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
 	"pixel-remastered-save-editor/models/finder"
+	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
 
@@ -38,7 +39,7 @@ func NewFF2Abilities(c *core.Character) *FF2Abilities {
 }
 
 func (e *FF2Abilities) addAbility() {
-	e.c.AddAbility(&core.Ability{})
+	e.c.AddAbility(&save.Ability{})
 	e.populate()
 }
 
@@ -50,9 +51,9 @@ func (e *FF2Abilities) removeAbility(index int) {
 func (e *FF2Abilities) populate() {
 	e.abilities.RemoveAll()
 	for i, a := range e.c.Abilities {
-		func(i int, a *core.Ability) {
+		func(i int, a *save.Ability) {
 			lvl := inputs.NewIntEntryWithData(&a.SkillLevel)
-			id := inputs.NewIdEntryWithDataWithHintWithChange(&a.ID, finder.Abilities, func(s string) {
+			id := inputs.NewIdEntryWithDataWithHintWithChange(&a.AbilityID, finder.Abilities, func(s string) {
 				if j, err := strconv.Atoi(s); err == nil && j > 0 {
 					if namelvl, ok := finder.Abilities(j); ok {
 						l, _ := strconv.Atoi(strings.Split(namelvl, " ")[1])

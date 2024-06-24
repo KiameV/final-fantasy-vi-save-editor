@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/kiamev/ffpr-save-cypher/rijndael"
+	oj "github.com/virtuald/go-ordered-json"
 	"pixel-remastered-save-editor/global"
 	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/save/config"
@@ -21,6 +22,10 @@ func SaveSave(game global.Game, data *save.Data, slot int, fileName string) (err
 		temp   = filepath.Join(global.PWD, "temp")
 		out    []byte
 	)
+
+	if out, err = oj.Marshal(data); err != nil {
+		return
+	}
 
 	if _, err = os.Stat(temp); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create(temp); err != nil {
@@ -38,7 +43,6 @@ func saveFile(game global.Game, data []byte, toFile string, trimmed []byte) (err
 		zw *flate.Writer
 	)
 	printFile(filepath.Join(config.Dir(game), "_save.file"), data)
-	return
 	// Flate
 	if zw, err = flate.NewWriter(&b, 6); err != nil {
 		return

@@ -100,12 +100,14 @@ type (
 		Target []string `json:"target"`
 	}
 	AbilitySlotData struct {
-		Level            int    `json:"level"`
-		SlotInfoInternal string `json:"slotInfo"`
+		Level            int          `json:"level"`
+		SlotInfoInternal string       `json:"slotInfo"`
+		SlotInfo         *AbilitySlot `json:"-"`
 	}
 	AbilitySlot struct {
-		Keys   []int    `json:"keys"`
-		Values []string `json:"values"`
+		Keys           []int      `json:"keys"`
+		ValuesInternal []string   `json:"values"`
+		Values         []*Ability `json:"-"`
 	}
 	JobList struct {
 		Target []string `json:"target"`
@@ -116,8 +118,9 @@ type (
 		CurrentProficiency int `json:"currentProficiency"`
 	}
 	EquipmentList struct {
-		Keys   []int    `json:"keys"`
-		Values []string `json:"values"`
+		Keys           []int        `json:"keys"`
+		ValuesInternal []string     `json:"values"`
+		Values         []*Equipment `json:"-"`
 	}
 	Equipment struct {
 		ContentID int `json:"contentId"`
@@ -146,208 +149,232 @@ type (
 )
 
 func (d *CorpsList) Corps() (v []*Corps, err error) {
-	return unmarshalMany[Corps](d.Target)
+	return UnmarshalMany[Corps](d.Target)
 }
 
 func (d *CorpsList) SetCorps(v []*Corps) (err error) {
-	d.Target, err = marshalMany[Corps](v)
+	d.Target, err = MarshalMany[Corps](v)
 	return
 }
 
 func (d *CorpsSlots) CorpsSlotsValues() (v []*CorpsSlotsValues, err error) {
-	return unmarshalMany[CorpsSlotsValues](d.Values)
+	return UnmarshalMany[CorpsSlotsValues](d.Values)
 }
 
 func (d *CorpsSlots) SetCorpsSlotsValues(v []*CorpsSlotsValues) (err error) {
-	d.Values, err = marshalMany[CorpsSlotsValues](v)
+	d.Values, err = MarshalMany[CorpsSlotsValues](v)
 	return
 }
 
 func (d *CorpsSlotsValues) CorpsSlotInfo() (v []*CorpsSlotInfo, err error) {
-	return unmarshalMany[CorpsSlotInfo](d.Target)
+	return UnmarshalMany[CorpsSlotInfo](d.Target)
 }
 
 func (d *CorpsSlotsValues) SetCorpsSlotInfo(v []*CorpsSlotInfo) (err error) {
-	d.Target, err = marshalMany[CorpsSlotInfo](v)
+	d.Target, err = MarshalMany[CorpsSlotInfo](v)
 	return
 }
 
 func (d *OwnedCharacterList) OwnedCharacters() (v []*OwnedCharacter, err error) {
-	return unmarshalMany[OwnedCharacter](d.Target)
+	return UnmarshalMany[OwnedCharacter](d.Target)
 }
 
 func (d *OwnedCharacterList) SetOwnedCharacters(v []*OwnedCharacter) (err error) {
-	d.Target, err = marshalMany[OwnedCharacter](v)
+	d.Target, err = MarshalMany[OwnedCharacter](v)
 	return
 }
 
 func (d *OwnedCharacter) CharacterParameters() (v *CharacterParameters, err error) {
-	return unmarshalOne[CharacterParameters](d.Parameter)
+	return UnmarshalOne[CharacterParameters](d.Parameter)
 }
 
 func (d *OwnedCharacter) SetCharacterParameters(v *CharacterParameters) (err error) {
-	d.Parameter, err = marshalOne[CharacterParameters](v)
+	d.Parameter, err = MarshalOne[CharacterParameters](v)
 	return
 }
 
 func (d *CharacterParameters) AdditionalMaxMpCountList() (v *CountList, err error) {
-	return unmarshalOne[CountList](d.AdditionalMaxMpCountListInternal)
+	return UnmarshalOne[CountList](d.AdditionalMaxMpCountListInternal)
 }
 
 func (d *CharacterParameters) SetAdditionalMaxMpCountList(v *CountList) (err error) {
-	d.AdditionalMaxMpCountListInternal, err = marshalOne[CountList](v)
+	d.AdditionalMaxMpCountListInternal, err = MarshalOne[CountList](v)
 	return
 }
 
 func (d *CharacterParameters) CurrentMpCountList() (v *CountList, err error) {
-	return unmarshalOne[CountList](d.CurrentMpCountListInternal)
+	return UnmarshalOne[CountList](d.CurrentMpCountListInternal)
 }
 
 func (d *CharacterParameters) SetCurrentMpCountList(v *CountList) (err error) {
-	d.CurrentMpCountListInternal, err = marshalOne[CountList](v)
+	d.CurrentMpCountListInternal, err = MarshalOne[CountList](v)
 	return
 }
 
 func (d *OwnedCharacter) CommandList() (v *CommandList, err error) {
-	return unmarshalOne[CommandList](d.CommandListInternal)
+	return UnmarshalOne[CommandList](d.CommandListInternal)
 }
 
-func (d *OwnedCharacter) SetCommandList(v *CommandList) (err error) {
-	d.CommandListInternal, err = marshalOne[CommandList](v)
+func (d *OwnedCharacter) SetCommandList(v []int) (err error) {
+	d.CommandListInternal, err = MarshalOne[CommandList](&CommandList{Target: v})
 	return
 }
 
-func (d *OwnedCharacter) AbilityList() (v *AbilityList, err error) {
-	return unmarshalOne[AbilityList](d.AbilityListInternal)
-}
-
-func (d *OwnedCharacter) SetAbilityList(v *AbilityList) (err error) {
-	d.AbilityListInternal, err = marshalOne[AbilityList](v)
+func (d *OwnedCharacter) Abilities() (v []*Ability, err error) {
+	var al *AbilityList
+	if al, err = UnmarshalOne[AbilityList](d.AbilityListInternal); err == nil {
+		v, err = UnmarshalMany[Ability](al.Target)
+	}
 	return
 }
 
-func (d *AbilityList) Abilities() (v []*Ability, err error) {
-	return unmarshalMany[Ability](d.Target)
-}
-
-func (d *AbilityList) SetAbilities(v []*Ability) (err error) {
-	d.Target, err = marshalMany[Ability](v)
+func (d *OwnedCharacter) SetAbilityList(v []*Ability) (err error) {
+	var s []string
+	if s, err = MarshalMany[Ability](v); err == nil {
+		d.AbilityListInternal, err = MarshalOne[AbilityList](&AbilityList{Target: s})
+	}
 	return
 }
 
-func (d *OwnedCharacter) AbilitySlotDataList() (v *AbilitySlotDataList, err error) {
-	return unmarshalOne[AbilitySlotDataList](d.AbilitySlotDataListInternal)
-}
-
-func (d *OwnedCharacter) SetAbilitySlotDataList(v *AbilitySlotDataList) (err error) {
-	d.AbilitySlotDataListInternal, err = marshalOne[AbilitySlotDataList](v)
+func (d *OwnedCharacter) AbilitySlotData() (v []*AbilitySlotData, err error) {
+	var (
+		asd *AbilitySlotDataList
+		i   *Ability
+	)
+	if asd, err = UnmarshalOne[AbilitySlotDataList](d.AbilitySlotDataListInternal); err == nil {
+		if v, err = UnmarshalMany[AbilitySlotData](asd.Target); err == nil {
+			for _, s := range v {
+				if s.SlotInfo, err = UnmarshalOne[AbilitySlot](s.SlotInfoInternal); err == nil {
+					for _, a := range s.SlotInfo.ValuesInternal {
+						if a == "" {
+							i = &Ability{}
+						} else if i, err = UnmarshalOne[Ability](a); err != nil {
+							return
+						}
+						s.SlotInfo.Values = append(s.SlotInfo.Values, i)
+					}
+				}
+			}
+		}
+	}
 	return
 }
 
-func (d *AbilitySlotDataList) AbilitySlotData() (v []*AbilitySlotData, err error) {
-	return unmarshalMany[AbilitySlotData](d.Target)
+func (d *OwnedCharacter) SetAbilitySlotData(v []*AbilitySlotData) (err error) {
+	for _, asd := range v {
+		for i, a := range asd.SlotInfo.Values {
+			if a == nil || a.AbilityID == 0 {
+				asd.SlotInfo.ValuesInternal[i] = ""
+			} else if asd.SlotInfo.ValuesInternal[i], err = MarshalOne(a); err != nil {
+				return
+			}
+		}
+		if asd.SlotInfoInternal, err = MarshalOne(asd.SlotInfo); err != nil {
+			return
+		}
+	}
+	l := &AbilitySlotDataList{}
+	l.Target, err = MarshalMany(v)
+	d.AbilitySlotDataListInternal, err = MarshalOne[AbilitySlotDataList](l)
+	return
 }
 
 func (d *AbilitySlotDataList) SetAbilitySlotData(v []*AbilitySlotData) (err error) {
-	d.Target, err = marshalMany[AbilitySlotData](v)
+	d.Target, err = MarshalMany[AbilitySlotData](v)
 	return
 }
 
-func (d *AbilitySlotData) AbilitySlot() (v *AbilitySlot, err error) {
-	return unmarshalOne[AbilitySlot](d.SlotInfoInternal)
-}
-
 func (d *AbilitySlotData) SetAbilitySlot(v *AbilitySlot) (err error) {
-	d.SlotInfoInternal, err = marshalOne[AbilitySlot](v)
+	d.SlotInfoInternal, err = MarshalOne[AbilitySlot](v)
 	return
 }
 
 func (d *OwnedCharacter) JobList() (v *JobList, err error) {
-	return unmarshalOne[JobList](d.JobListInternal)
+	return UnmarshalOne[JobList](d.JobListInternal)
 }
 
 func (d *OwnedCharacter) SetJobList(v *JobList) (err error) {
-	d.JobListInternal, err = marshalOne[JobList](v)
+	d.JobListInternal, err = MarshalOne[JobList](v)
 	return
 }
 
 func (d *JobList) Jobs() (v []*Job, err error) {
-	return unmarshalMany[Job](d.Target)
+	return UnmarshalMany[Job](d.Target)
 }
 
 func (d *JobList) SetJobs(v []*Job) (err error) {
-	d.Target, err = marshalMany[Job](v)
+	d.Target, err = MarshalMany[Job](v)
 	return
 }
 
-func (d *OwnedCharacter) EquipmentList() (v *EquipmentList, err error) {
-	return unmarshalOne[EquipmentList](d.EquipmentListInternal)
-}
-
-func (d *OwnedCharacter) SetEquipmentList(v *EquipmentList) (err error) {
-	d.EquipmentListInternal, err = marshalOne[EquipmentList](v)
+func (d *OwnedCharacter) Equipment() (v *EquipmentList, err error) {
+	if v, err = UnmarshalOne[EquipmentList](d.EquipmentListInternal); err == nil {
+		v.Values, err = UnmarshalMany[Equipment](v.ValuesInternal)
+	}
 	return
 }
 
-func (d *EquipmentList) Equipments() (v []*Equipment, err error) {
-	return unmarshalMany[Equipment](d.Values)
-}
-
-func (d *EquipmentList) SetEquipments(v []*Equipment) (err error) {
-	d.Values, err = marshalMany[Equipment](v)
+func (d *OwnedCharacter) SetEquipment(v *EquipmentList) (err error) {
+	if v.ValuesInternal, err = MarshalMany(v.Values); err == nil {
+		d.EquipmentListInternal, err = MarshalOne(v)
+	}
 	return
 }
 
-func (d *OwnedCharacter) AdditionOrderOwnedAbilityIds() (v *AdditionOrderOwnedAbilityIds, err error) {
-	return unmarshalOne[AdditionOrderOwnedAbilityIds](d.AdditionOrderOwnedAbilityIdsInternal)
+func (d *OwnedCharacter) AdditionOrderOwnedAbilityIds() (v []int, err error) {
+	var i *AdditionOrderOwnedAbilityIds
+	if i, err = UnmarshalOne[AdditionOrderOwnedAbilityIds](d.AdditionOrderOwnedAbilityIdsInternal); err == nil {
+		v = i.Target
+	}
+	return
 }
 
-func (d *OwnedCharacter) SetAdditionOrderOwnedAbilityIds(v *AdditionOrderOwnedAbilityIds) (err error) {
-	d.AdditionOrderOwnedAbilityIdsInternal, err = marshalOne[AdditionOrderOwnedAbilityIds](v)
+func (d *OwnedCharacter) SetAdditionOrderOwnedAbilityIds(v []int) (err error) {
+	d.AdditionOrderOwnedAbilityIdsInternal, err = MarshalOne[AdditionOrderOwnedAbilityIds](&AdditionOrderOwnedAbilityIds{Target: v})
 	return
 }
 
 func (d *OwnedCharacter) SortOrderOwnedAbilityIds() (v *SortOrderOwnedAbilityIds, err error) {
-	return unmarshalOne[SortOrderOwnedAbilityIds](d.SortOrderOwnedAbilityIdsInternal)
+	return UnmarshalOne[SortOrderOwnedAbilityIds](d.SortOrderOwnedAbilityIdsInternal)
 }
 
 func (d *OwnedCharacter) SetSortOrderOwnedAbilityIds(v *SortOrderOwnedAbilityIds) (err error) {
-	d.SortOrderOwnedAbilityIdsInternal, err = marshalOne[SortOrderOwnedAbilityIds](v)
+	d.SortOrderOwnedAbilityIdsInternal, err = MarshalOne[SortOrderOwnedAbilityIds](v)
 	return
 }
 
 func (d *OwnedCharacter) AbilityDictionary() (v *AbilityDictionary, err error) {
-	return unmarshalOne[AbilityDictionary](d.AbilityDictionaryInternal)
+	return UnmarshalOne[AbilityDictionary](d.AbilityDictionaryInternal)
 }
 
 func (d *OwnedCharacter) SetAbilityDictionary(v *AbilityDictionary) (err error) {
-	d.AbilityDictionaryInternal, err = marshalOne[AbilityDictionary](v)
+	d.AbilityDictionaryInternal, err = MarshalOne[AbilityDictionary](v)
 	return
 }
 
 func (d *OwnedCharacter) SkillLevelTargets() (v *SkillLevelTargets, err error) {
-	return unmarshalOne[SkillLevelTargets](d.SkillLevelTargetsInternal)
+	return UnmarshalOne[SkillLevelTargets](d.SkillLevelTargetsInternal)
 }
 
 func (d *OwnedCharacter) SetSkillLevelTargets(v *SkillLevelTargets) (err error) {
-	d.SkillLevelTargetsInternal, err = marshalOne[SkillLevelTargets](v)
+	d.SkillLevelTargetsInternal, err = MarshalOne[SkillLevelTargets](v)
 	return
 }
 
 func (d *OwnedCharacter) LearningAbilities() (v *LearningAbilities, err error) {
-	return unmarshalOne[LearningAbilities](d.LearningAbilitiesInternal)
+	return UnmarshalOne[LearningAbilities](d.LearningAbilitiesInternal)
 }
 
 func (d *OwnedCharacter) SetLearningAbilities(v *LearningAbilities) (err error) {
-	d.LearningAbilitiesInternal, err = marshalOne[LearningAbilities](v)
+	d.LearningAbilitiesInternal, err = MarshalOne[LearningAbilities](v)
 	return
 }
 
 func (d *OwnedCharacter) EquipmentAbilities() (v *EquipmentAbilities, err error) {
-	return unmarshalOne[EquipmentAbilities](d.EquipmentAbilitiesInternal)
+	return UnmarshalOne[EquipmentAbilities](d.EquipmentAbilitiesInternal)
 }
 
 func (d *OwnedCharacter) SetEquipmentAbilities(v *EquipmentAbilities) (err error) {
-	d.EquipmentAbilitiesInternal, err = marshalOne[EquipmentAbilities](v)
+	d.EquipmentAbilitiesInternal, err = MarshalOne[EquipmentAbilities](v)
 	return
 }

@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
 	"pixel-remastered-save-editor/models/finder"
+	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
 
@@ -37,11 +38,11 @@ func NewFF1Abilities(c *core.Character) *FF1Abilities {
 	})
 
 	e.bodyLeft.Add(e.abilities)
-	for i, lvl := range e.c.FF1.TrainedAbilities {
+	for i, asd := range e.c.AbilitySlotData {
 		l := container.NewGridWithRows(4)
-		for _, a := range lvl {
-			func(a *core.Ability) {
-				r := inputs.NewIdEntryWithDataWithHint(&a.ID, finder.Abilities)
+		for _, a := range asd.SlotInfo.Values {
+			func(a *save.Ability) {
+				r := inputs.NewIdEntryWithDataWithHint(&a.AbilityID, finder.Abilities)
 				l.Add(container.NewGridWithColumns(4, r.Label, r.ID))
 			}(a)
 		}
@@ -53,7 +54,7 @@ func NewFF1Abilities(c *core.Character) *FF1Abilities {
 }
 
 func (e *FF1Abilities) addAbility() {
-	a := &core.Ability{}
+	a := &save.Ability{}
 	e.c.AddAbility(a)
 	e.populate()
 }
@@ -66,9 +67,9 @@ func (e *FF1Abilities) removeAbility(index int) {
 func (e *FF1Abilities) populate() {
 	e.abilities.RemoveAll()
 	for i, a := range e.c.Abilities {
-		func(i int, a *core.Ability) {
-			r := inputs.NewIdEntryWithDataWithHint(&a.ID, finder.Abilities)
-			e.abilities.Add(container.NewGridWithColumns(3, r.Label, r.ID, widget.NewButtonWithIcon("", theme.DeleteIcon(), func() {
+		func(i int, a *save.Ability) {
+			r := inputs.NewIdEntryWithDataWithHint(&a.AbilityID, finder.Abilities)
+			e.abilities.Add(container.NewGridWithColumns(4, r.Label, r.ID, widget.NewButtonWithIcon("", theme.DeleteIcon(), func() {
 				e.removeAbility(i)
 			})))
 		}(i, a)

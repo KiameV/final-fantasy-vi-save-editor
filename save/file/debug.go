@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
+
+	jo "gitlab.com/c0b/go-ordered-json"
 )
 
 func printFile(name string, b []byte) {
@@ -11,7 +13,7 @@ func printFile(name string, b []byte) {
 		s := strings.ReplaceAll(string(b), "\\", "")
 		s = strings.ReplaceAll(s, "\"{", "{")
 		s = strings.ReplaceAll(s, "}\"", "}")
-		var m map[string]any
+		m := jo.NewOrderedMap()
 		if err := json.Unmarshal([]byte(s), &m); err == nil {
 			if b, err = json.MarshalIndent(m, "", "\t"); err == nil {
 				_ = os.WriteFile(name, b, 0755)

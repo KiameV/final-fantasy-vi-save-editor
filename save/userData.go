@@ -2,32 +2,35 @@ package save
 
 type (
 	UserData struct {
-		CorpsListInternal                 string  `json:"corpsList"`
-		CorpsSlotsInternal                string  `json:"corpsSlots"`
-		OwnedCharacterListInternal        string  `json:"ownedCharacterList"`
-		ReleasedJobsInternal              string  `json:"releasedJobs"`
-		OwnedGil                          int     `json:"owendGil"`
-		PlayTime                          float64 `json:"playTime"`
-		NormalOwnedItemListInternal       string  `json:"normalOwnedItemList"`
-		ImportantOwnedItemListInternal    string  `json:"importantOwendItemList"`
-		NormalOwnedItemSortIDListInternal string  `json:"normalOwnedItemSortIdList"`
-		CurrentArea                       string  `json:"currentArea"`
-		CurrentLocation                   string  `json:"currentLocation"`
-		OwnedTransportationListInternal   string  `json:"ownedTransportationList"`
-		OwnedCrystalFlagsInternal         string  `json:"owendCrystalFlags"`
-		ConfigData                        string  `json:"configData"`
-		WarehouseItemListInternal         string  `json:"warehouseItemList"`
-		OwnedKeyWordListInternal          string  `json:"ownedKeyWaordList"`
-		OwnedMagicListInternal            string  `json:"ownedMagicList"`
-		LearnedAbilityListInternal        string  `json:"learnedAbilityList"`
-		EscapeCount                       int     `json:"escapeCount"`
-		BattleCount                       int     `json:"battleCount"`
-		CorpsSlotIndex                    int     `json:"corpsSlotIndex"`
-		OpenChestCount                    int     `json:"openChestCount"`
-		OwnedMagicStoneListInternal       string  `json:"ownedMagicStoneList"`
-		Steps                             int     `json:"steps"`
-		SaveCompleteCount                 int     `json:"saveCompleteCount"`
-		MonstersKilledCount               int     `json:"monstersKilledCount"`
+		CorpsListInternal                 string             `json:"corpsList"`
+		CorpsSlotsInternal                string             `json:"corpsSlots"`
+		OwnedCharacterListInternal        string             `json:"ownedCharacterList"`
+		ReleasedJobsInternal              string             `json:"releasedJobs"`
+		OwnedGil                          int                `json:"owendGil"`
+		PlayTime                          float64            `json:"playTime"`
+		NormalOwnedItemListInternal       string             `json:"normalOwnedItemList"`
+		ImportantOwnedItemListInternal    string             `json:"importantOwendItemList"`
+		NormalOwnedItemSortIDListInternal string             `json:"normalOwnedItemSortIdList"`
+		CurrentArea                       string             `json:"currentArea"`
+		CurrentLocation                   string             `json:"currentLocation"`
+		OwnedTransportationListInternal   string             `json:"ownedTransportationList"`
+		OwnedCrystalFlagsInternal         string             `json:"owendCrystalFlags"`
+		ConfigData                        string             `json:"configData"`
+		WarehouseItemListInternal         string             `json:"warehouseItemList"`
+		OwnedKeyWordListInternal          string             `json:"ownedKeyWaordList"`
+		OwnedMagicListInternal            string             `json:"ownedMagicList"`
+		LearnedAbilityListInternal        string             `json:"learnedAbilityList"`
+		EscapeCount                       int                `json:"escapeCount"`
+		BattleCount                       int                `json:"battleCount"`
+		CorpsSlotIndex                    int                `json:"corpsSlotIndex"`
+		OpenChestCount                    int                `json:"openChestCount"`
+		OwnedMagicStoneListInternal       string             `json:"ownedMagicStoneList"`
+		Steps                             int                `json:"steps"`
+		SaveCompleteCount                 int                `json:"saveCompleteCount"`
+		MonstersKilledCount               int                `json:"monstersKilledCount"`
+		TotalGil                          *int               `json:"totalGil,omitempty"`
+		CheatSettingsDataInternal         *CheatSettingsData `json:"cheatSettingsData,omitempty"`
+		IsOpenedGameBoosterWindow         *bool              `json:"isOpenedGameBoosterWindow,omitempty"`
 	}
 	ReleasedJobs struct {
 		Target []int `json:"target"`
@@ -35,12 +38,12 @@ type (
 	NormalOwnedItemList struct {
 		Target []string `json:"target"`
 	}
-	NormalOwnedItems struct {
+	ImportantOwnedItemList struct {
+		Target []string `json:"target"`
+	}
+	OwnedItems struct {
 		ContentID int `json:"contentId"`
 		Count     int `json:"count"`
-	}
-	ImportantOwnedItemList struct {
-		Target []any `json:"target"`
 	}
 	NormalOwnedItemSortIDList struct {
 		Target []int `json:"target"`
@@ -74,157 +77,173 @@ type (
 	OwnedMagicStoneList struct {
 		Target []any `json:"target"`
 	}
+	CheatSettingsData struct {
+		IsEnableEncounters           bool    `json:"isEnableEncount"`
+		ExpRate                      float64 `json:"expRate"`
+		GilRate                      float64 `json:"gilRate"`
+		LearningProficiencyRate      float64 `json:"learningProficiencyRate"`
+		IsHpIncreaseByFightCount     bool    `json:"isHpIncreaseByFightCount"`
+		AbpRate                      float64 `json:"abpRate"`
+		MagicProficiencyRate         float64 `json:"magicProficiencyRate"`
+		ParameterUpRate              float64 `json:"parameterUpRate"`
+		MagicLearningProficiencyRate float64 `json:"magicLearningProficiencyRate"`
+	}
 )
 
 func (d *UserData) CorpsList() (v *CorpsList, err error) {
-	return unmarshalOne[CorpsList](d.CorpsListInternal)
+	return UnmarshalOne[CorpsList](d.CorpsListInternal)
 }
 
 func (d *UserData) SetCorpsList(v *CorpsList) (err error) {
-	d.CorpsListInternal, err = marshalOne[CorpsList](v)
+	d.CorpsListInternal, err = MarshalOne[CorpsList](v)
 	return
 }
 
 func (d *UserData) CorpsSlots() (v *CorpsSlots, err error) {
-	return unmarshalOne[CorpsSlots](d.CorpsSlotsInternal)
+	return UnmarshalOne[CorpsSlots](d.CorpsSlotsInternal)
 }
 
 func (d *UserData) SetCorpsSlots(v *CorpsSlots) (err error) {
-	d.CorpsSlotsInternal, err = marshalOne[CorpsSlots](v)
+	d.CorpsSlotsInternal, err = MarshalOne[CorpsSlots](v)
 	return
 }
 
 func (d *UserData) OwnedCharacterList() (v *OwnedCharacterList, err error) {
-	return unmarshalOne[OwnedCharacterList](d.OwnedCharacterListInternal)
+	return UnmarshalOne[OwnedCharacterList](d.OwnedCharacterListInternal)
 }
 
 func (d *UserData) SetOwnedCharacterList(v *OwnedCharacterList) (err error) {
-	d.OwnedCharacterListInternal, err = marshalOne[OwnedCharacterList](v)
+	d.OwnedCharacterListInternal, err = MarshalOne[OwnedCharacterList](v)
 	return
 }
 
 func (d *UserData) ReleasedJobs() (v *ReleasedJobs, err error) {
-	return unmarshalOne[ReleasedJobs](d.ReleasedJobsInternal)
+	return UnmarshalOne[ReleasedJobs](d.ReleasedJobsInternal)
 }
 
 func (d *UserData) SetReleasedJobs(v *ReleasedJobs) (err error) {
-	d.ReleasedJobsInternal, err = marshalOne[ReleasedJobs](v)
+	d.ReleasedJobsInternal, err = MarshalOne[ReleasedJobs](v)
 	return
 }
 
-func (d *UserData) NormalOwnedItemList() (v *NormalOwnedItemList, err error) {
-	return unmarshalOne[NormalOwnedItemList](d.NormalOwnedItemListInternal)
-}
-
-func (d *UserData) SetNormalOwnedItemList(v *NormalOwnedItemList) (err error) {
-	d.NormalOwnedItemListInternal, err = marshalOne[NormalOwnedItemList](v)
+func (d *UserData) NormalOwnedItems() (v []*OwnedItems, err error) {
+	var i *NormalOwnedItemList
+	if i, err = UnmarshalOne[NormalOwnedItemList](d.NormalOwnedItemListInternal); err == nil {
+		v, err = UnmarshalMany[OwnedItems](i.Target)
+	}
 	return
 }
 
-func (d *NormalOwnedItemList) NormalOwnedItems() (v []*NormalOwnedItems, err error) {
-	return unmarshalMany[NormalOwnedItems](d.Target)
-}
-
-func (d *NormalOwnedItemList) SetNormalOwnedItems(v []*NormalOwnedItems) (err error) {
-	d.Target, err = marshalMany[NormalOwnedItems](v)
+func (d *UserData) SetNormalOwnedItems(v []*OwnedItems) (err error) {
+	i := &NormalOwnedItemList{}
+	if i.Target, err = MarshalMany[OwnedItems](v); err == nil {
+		d.NormalOwnedItemListInternal, err = MarshalOne(i)
+	}
 	return
 }
 
-func (d *UserData) ImportantOwnedItemList() (v *ImportantOwnedItemList, err error) {
-	return unmarshalOne[ImportantOwnedItemList](d.ImportantOwnedItemListInternal)
+func (d *UserData) ImportantOwnedItems() (v []*OwnedItems, err error) {
+	var i *ImportantOwnedItemList
+	if i, err = UnmarshalOne[ImportantOwnedItemList](d.ImportantOwnedItemListInternal); err == nil {
+		v, err = UnmarshalMany[OwnedItems](i.Target)
+	}
+	return
 }
 
-func (d *UserData) SetImportantOwnedItemList(v *ImportantOwnedItemList) (err error) {
-	d.ImportantOwnedItemListInternal, err = marshalOne[ImportantOwnedItemList](v)
+func (d *UserData) SetImportantOwnedItems(v []*OwnedItems) (err error) {
+	i := &ImportantOwnedItemList{}
+	if i.Target, err = MarshalMany[OwnedItems](v); err == nil {
+		d.ImportantOwnedItemListInternal, err = MarshalOne(i)
+	}
 	return
 }
 
 func (d *UserData) NormalOwnedItemSortIDList() (v *NormalOwnedItemSortIDList, err error) {
-	return unmarshalOne[NormalOwnedItemSortIDList](d.NormalOwnedItemSortIDListInternal)
+	return UnmarshalOne[NormalOwnedItemSortIDList](d.NormalOwnedItemSortIDListInternal)
 }
 
 func (d *UserData) SetNormalOwnedItemSortIDList(v *NormalOwnedItemSortIDList) (err error) {
-	d.NormalOwnedItemSortIDListInternal, err = marshalOne[NormalOwnedItemSortIDList](v)
+	d.NormalOwnedItemSortIDListInternal, err = MarshalOne[NormalOwnedItemSortIDList](v)
 	return
 }
 
 func (d *UserData) OwnedTransportationList() (v *OwnedTransportationList, err error) {
-	return unmarshalOne[OwnedTransportationList](d.OwnedTransportationListInternal)
+	return UnmarshalOne[OwnedTransportationList](d.OwnedTransportationListInternal)
 }
 
 func (d *UserData) SetOwnedTransportationList(v *OwnedTransportationList) (err error) {
-	d.OwnedTransportationListInternal, err = marshalOne[OwnedTransportationList](v)
+	d.OwnedTransportationListInternal, err = MarshalOne[OwnedTransportationList](v)
 	return
 }
 
 func (d *OwnedTransportationList) OwnedTransportation() (v []*OwnedTransportation, err error) {
-	return unmarshalMany[OwnedTransportation](d.Target)
+	return UnmarshalMany[OwnedTransportation](d.Target)
 }
 
 func (d *OwnedTransportationList) SetOwnedTransportation(v []*OwnedTransportation) (err error) {
-	d.Target, err = marshalMany[OwnedTransportation](v)
+	d.Target, err = MarshalMany[OwnedTransportation](v)
 	return
 }
 
 func (d *OwnedTransportation) Position() (v *Position, err error) {
-	return unmarshalOne[Position](d.PositionInternal)
+	return UnmarshalOne[Position](d.PositionInternal)
 }
 
 func (d *OwnedTransportation) SetPosition(v *Position) (err error) {
-	d.PositionInternal, err = marshalOne[Position](v)
+	d.PositionInternal, err = MarshalOne[Position](v)
 	return
 }
 
 func (d *UserData) OwnedCrystalFlags() (v *OwnedCrystalFlags, err error) {
-	return unmarshalOne[OwnedCrystalFlags](d.OwnedCrystalFlagsInternal)
+	return UnmarshalOne[OwnedCrystalFlags](d.OwnedCrystalFlagsInternal)
 }
 
 func (d *UserData) SetOwnedCrystalFlags(v *OwnedCrystalFlags) (err error) {
-	d.OwnedCrystalFlagsInternal, err = marshalOne[OwnedCrystalFlags](v)
+	d.OwnedCrystalFlagsInternal, err = MarshalOne[OwnedCrystalFlags](v)
 	return
 }
 
 func (d *UserData) WarehouseItemList() (v *WarehouseItemList, err error) {
-	return unmarshalOne[WarehouseItemList](d.WarehouseItemListInternal)
+	return UnmarshalOne[WarehouseItemList](d.WarehouseItemListInternal)
 }
 
 func (d *UserData) SetWarehouseItemList(v *WarehouseItemList) (err error) {
-	d.WarehouseItemListInternal, err = marshalOne[WarehouseItemList](v)
+	d.WarehouseItemListInternal, err = MarshalOne[WarehouseItemList](v)
 	return
 }
 
 func (d *UserData) OwnedKeyWordList() (v *OwnedKeyWordList, err error) {
-	return unmarshalOne[OwnedKeyWordList](d.OwnedKeyWordListInternal)
+	return UnmarshalOne[OwnedKeyWordList](d.OwnedKeyWordListInternal)
 }
 
 func (d *UserData) SetOwnedKeyWordList(v *OwnedKeyWordList) (err error) {
-	d.OwnedKeyWordListInternal, err = marshalOne[OwnedKeyWordList](v)
+	d.OwnedKeyWordListInternal, err = MarshalOne[OwnedKeyWordList](v)
 	return
 }
 
 func (d *UserData) OwnedMagicList() (v *OwnedMagicList, err error) {
-	return unmarshalOne[OwnedMagicList](d.OwnedMagicListInternal)
+	return UnmarshalOne[OwnedMagicList](d.OwnedMagicListInternal)
 }
 
 func (d *UserData) SetOwnedMagicList(v *OwnedMagicList) (err error) {
-	d.OwnedMagicListInternal, err = marshalOne[OwnedMagicList](v)
+	d.OwnedMagicListInternal, err = MarshalOne[OwnedMagicList](v)
 	return
 }
 
 func (d *UserData) LearnedAbilityList() (v *LearnedAbilityList, err error) {
-	return unmarshalOne[LearnedAbilityList](d.LearnedAbilityListInternal)
+	return UnmarshalOne[LearnedAbilityList](d.LearnedAbilityListInternal)
 }
 
 func (d *UserData) SetLearnedAbilityList(v *LearnedAbilityList) (err error) {
-	d.LearnedAbilityListInternal, err = marshalOne[LearnedAbilityList](v)
+	d.LearnedAbilityListInternal, err = MarshalOne[LearnedAbilityList](v)
 	return
 }
 
 func (d *UserData) OwnedMagicStoneList() (v *OwnedMagicStoneList, err error) {
-	return unmarshalOne[OwnedMagicStoneList](d.OwnedMagicStoneListInternal)
+	return UnmarshalOne[OwnedMagicStoneList](d.OwnedMagicStoneListInternal)
 }
 
 func (d *UserData) SetOwnedMagicStoneList(v *OwnedMagicStoneList) (err error) {
-	d.OwnedMagicStoneListInternal, err = marshalOne[OwnedMagicStoneList](v)
+	d.OwnedMagicStoneListInternal, err = MarshalOne[OwnedMagicStoneList](v)
 	return
 }

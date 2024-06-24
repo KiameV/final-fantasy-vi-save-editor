@@ -1,29 +1,22 @@
 package core
 
+import (
+	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/save"
+)
+
 type (
-	V3 struct {
-		X, Y, Z float64
-	}
-	GPS struct {
-		MapID  int
-		AreaID int
-		GpsID  int
-		Width  int
-		Height int
-	}
 	MapData struct {
-		MapID             int
-		PointIn           int
-		TransportationID  int
-		CarryingHoverShip bool
-		Player            V3
-		PlayerDirection   int
-		Gps               GPS
-		// MoveCount                int
-		PlayableCharacterCorpsID int
+		Map    *save.MapData
+		Player *save.PlayerEntity
+		Gps    *save.GpsData
 	}
 )
 
-func NewMapData() *MapData {
-	return &MapData{}
+func NewMapData(game global.Game, md *save.MapData) (m *MapData, err error) {
+	m = &MapData{Map: md}
+	if m.Player, err = md.PlayerEntity(); err == nil {
+		m.Gps, err = md.GpsData()
+	}
+	return
 }

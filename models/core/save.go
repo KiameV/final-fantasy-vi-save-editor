@@ -2,7 +2,6 @@ package core
 
 import (
 	"pixel-remastered-save-editor/global"
-	"pixel-remastered-save-editor/models"
 	"pixel-remastered-save-editor/save"
 )
 
@@ -14,40 +13,102 @@ type (
 		ImportantInventory *Inventory
 		Transportations    *Transportations
 		Map                *MapData
-		Misc               *Misc
-		Data               *save.Data
+		// Misc               *Misc
+		Data *save.Data
 	}
 )
 
-func NewSave(data *save.Data) (*Save, error) {
+func NewSave(data *save.Data) (s *Save, err error) {
 	var (
-		ud, md, cd, ds, err = data.Unpack()
-		s                   = &Save{Data: data}
+		ud *save.UserData
+		md *save.MapData
+		ds *save.DataStorage
+		cl *save.OwnedCharacterList
+		oi []*save.OwnedItems
 	)
-	if err == nil {
-		// if s.Characters, err = ud.OwnedCharacterList(); err == nil {
-		ud = ud
-		md = md
-		cd = cd
-		ds = ds
-		// }
+	s = &Save{Data: data}
+	if ud, md, ds, err = data.Unpack(); err != nil {
+		return
+	}
+	if cl, err = ud.OwnedCharacterList(); err != nil {
+		return
+	}
+	if s.Characters, err = NewCharacters(data.Game, cl); err != nil {
+		return
+	}
+	if s.Party, err = NewParty(data.Game, ud); err != nil {
+		return
+	}
+	if oi, err = ud.NormalOwnedItems(); err != nil {
+		return
+	}
+	s.Inventory = NewInventory(data.Game, oi)
+	if oi, err = ud.ImportantOwnedItems(); err != nil {
+		return
+	}
+	s.ImportantInventory = NewInventory(data.Game, oi)
+	if s.Transportations, err = NewTransportations(data.Game, ds); err != nil {
+		return
+	}
+	if s.Map, err = NewMapData(data.Game, md); err != nil {
+		return
 	}
 	return s, err
 }
 
-func (s *Save) ToSave() *save.Data {
-	// TODO
-	return s.Data
+func (s *Save) ToSave(slot int) (d *save.Data, err error) {
+	if err = s.preSave(); err != nil {
+		return
+	}
+	var (
+		ud  *save.UserData
+		md  *save.MapData
+		ds  *save.DataStorage
+		all = s.Characters.All()
+		cl  = &save.OwnedCharacterList{Target: make([]string, len(all))}
+		oi  []*save.OwnedItems
+	)
+	if ud, md, ds, err = s.Data.Unpack(); err != nil {
+		return
+	}
+
+	for i, c := range all {
+		if cl.Target[i], err = c.ToSave(); err != nil {
+			return
+		}
+	}
+	if err = ud.SetOwnedCharacterList(cl); err != nil {
+		return
+	}
+	if err = s.Party.ToSave(ud); err != nil {
+		return
+	}
+	if oi, err = s.Inventory.ToSave(); err != nil {
+		return
+	}
+	if err = ud.SetNormalOwnedItems(oi); err != nil {
+		return
+	}
+	if oi, err = s.ImportantInventory.ToSave(); err != nil {
+		return
+	}
+	if err = ud.SetImportantOwnedItems(oi); err != nil {
+		return
+	}
+	d, err = s.Data.Pack(slot, ud, md, ds)
+	return
 }
 
 func (s *Save) preSave() (err error) {
-	inv := make(map[int]*Row)
+	game := s.Game()
+
+	inv := make(map[int]*save.OwnedItems)
 	for _, i := range s.Inventory.Rows {
 		inv[i.ContentID] = i
 	}
-	eq := make(map[int][]*models.IdCount)
+	eq := make(map[int][]*save.Equipment)
 	for _, c := range s.Characters.All() {
-		for _, e := range c.Equipment {
+		for _, e := range c.Equipment.Values {
 			sl, _ := eq[e.ContentID]
 			sl = append(sl, e)
 			eq[e.ContentID] = sl
@@ -61,7 +122,7 @@ func (s *Save) preSave() (err error) {
 				row.Count = needed
 			}
 		} else {
-			row = &Row{ContentID: k, Count: needed}
+			row = &save.OwnedItems{ContentID: k, Count: needed}
 			inv[k] = row
 			s.Inventory.Add(row)
 		}
@@ -69,47 +130,60 @@ func (s *Save) preSave() (err error) {
 			e.Count = row.Count
 		}
 	}
+	for _, c := range s.Characters.All() {
+		if !c.Base.IsEnableCorps {
+			continue
+		}
+		if game == global.One {
+			err = s.preCharacterSaveFF1(c)
+		} else if game == global.Two {
+			err = s.preCharacterSaveFF2(c)
+		}
+		if err != nil {
+			return
+		}
+	}
 	return
 }
 
-func (s *Save) preCharacterSave(c *Character) (err error) {
-	if s.Game() == global.One {
-		owned := make(map[int]bool)
-		abilities := make(map[int]bool)
-		for _, i := range c.OwnedAbilityIds {
-			owned[i] = true
-		}
-		for _, a := range c.Abilities {
-			abilities[a.ContentID] = true
-		}
-		for i := 0; i < len(c.FF1.TrainedAbilities); i++ {
-			for j := 0; j < len(c.FF1.TrainedAbilities[i]); j++ {
-				t := c.FF1.TrainedAbilities[i][j]
-				if t.ContentID == 0 && t.ID > 0 {
-					t.ContentID = t.ID + 208
+func (s *Save) preCharacterSaveFF1(c *Character) (err error) {
+	owned := make(map[int]bool)
+	abilities := make(map[int]bool)
+	for _, i := range c.AdditionAbilityIds {
+		owned[i] = true
+	}
+	for _, a := range c.Abilities {
+		abilities[a.ContentID] = true
+	}
+	for _, asd := range c.AbilitySlotData {
+		for _, sd := range asd.SlotInfo.Values {
+			if sd.AbilityID > 0 {
+				sd.ContentID = sd.AbilityID + 208
+			}
+			if sd.ContentID > 0 {
+				if _, ok := owned[sd.ContentID]; !ok {
+					c.AdditionAbilityIds = append(c.AdditionAbilityIds, sd.ContentID)
 				}
-				if t.ContentID > 0 {
-					if _, ok := owned[t.ContentID]; !ok {
-						c.OwnedAbilityIds = append(c.OwnedAbilityIds, t.ContentID)
-					}
-					if _, ok := abilities[t.ContentID]; !ok {
-						c.Abilities = append(c.Abilities, &Ability{ID: t.ID, ContentID: t.ContentID})
-					}
+				if _, ok := abilities[sd.ContentID]; !ok {
+					c.Abilities = append(c.Abilities, &save.Ability{AbilityID: sd.AbilityID, ContentID: sd.ContentID})
 				}
 			}
 		}
-		for _, a := range c.Abilities {
-			if a.ID > 0 {
-				if _, ok := owned[a.ContentID]; !ok {
-					c.OwnedAbilityIds = append(c.OwnedAbilityIds, a.ContentID)
-				}
+	}
+	for _, a := range c.Abilities {
+		if a.AbilityID > 0 {
+			if _, ok := owned[a.ContentID]; !ok {
+				c.AdditionAbilityIds = append(c.AdditionAbilityIds, a.ContentID)
 			}
 		}
-	} else if s.Game() == global.Two {
-		for _, a := range c.Abilities {
-			if a.ContentID == 0 && a.ID > 0 {
-				a.ContentID = a.ID + 207
-			}
+	}
+	return
+}
+
+func (s *Save) preCharacterSaveFF2(c *Character) (err error) {
+	for _, a := range c.Abilities {
+		if a.ContentID == 0 && a.AbilityID > 0 {
+			a.ContentID = a.AbilityID + 207
 		}
 	}
 	return

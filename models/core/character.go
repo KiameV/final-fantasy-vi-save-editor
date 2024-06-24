@@ -3,94 +3,81 @@ package core
 import (
 	"slices"
 
-	"pixel-remastered-save-editor/models"
+	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/save"
 )
 
 type (
-	AdditionalParams struct {
-		MaxHP                int
-		MaxMP                int
-		Power                int
-		Vitality             int
-		Agility              int
-		Weight               int
-		Intelligence         int
-		Spirit               int
-		Attack               int
-		Defense              int
-		AbilityDefence       int
-		AbilityEvasionRate   int
-		Magic                int
-		Luck                 int
-		AccuracyRate         int
-		EvasionRate          int
-		AbilityDisturbedRate int
-		CriticalRate         int
-		DamageDirmeter       int
-		AbilityDefenseRate   int
-		AccuracyCount        int
-		EvasionCount         int
-		DefenseCount         int
-		MagicDefenseCount    int
-		Abilities            []*Ability
-	}
 	Character struct {
-		AdditionalParams
-		ID              int
-		JobID           int
-		IsEnabled       bool
-		Name            string
-		Level           int
-		Exp             int
-		CurrentHP       int
-		CurrentMP       int
-		Equipment       []*models.IdCount
-		OwnedAbilityIds []int
-		FF1             struct {
-			TrainedAbilities [8][3]*Ability `json:"trainedAbilities"`
-		}
-		Commands *Commands
-	}
-	Ability struct {
-		ID         int `json:"abilityId"`
-		ContentID  int `json:"contentID"`
-		SkillLevel int `json:"skillLevel"`
+		Base               *save.OwnedCharacter
+		Parameters         *save.CharacterParameters
+		Commands           []int
+		Abilities          []*save.Ability
+		AbilitySlotData    []*save.AbilitySlotData
+		Job                *save.Job
+		Equipment          *save.EquipmentList
+		AdditionAbilityIds []int
+		// SortOrderOwnedAbilityIdsInternal ???
+		AbilityDictionary *save.AbilityDictionary
+		SkillLevelTargets *save.SkillLevelTargets
+		// LearningAbilities ???
+		EquipmentAbilities []int
+		EnableCommandsSave bool
 	}
 	Characters struct {
 		characters []*Character
 	}
-	Commands struct {
-		EnableSave bool
-		commands   []*int
-	}
 )
 
-func NewCharacters(size int) *Characters {
-	return &Characters{
-		characters: make([]*Character, 0, size),
+func NewCharacters(game global.Game, in *save.OwnedCharacterList) (c *Characters, err error) {
+	var l []*save.OwnedCharacter
+	if l, err = in.OwnedCharacters(); err != nil {
+		return
 	}
-}
-
-func NewCharacter() *Character {
-	return &Character{}
-}
-
-func (c *Character) AddAbility(ability *Ability) {
-	c.Abilities = append(c.Abilities, ability)
-}
-
-func (c *Character) RemoveAbility(index int) {
-	c.Abilities = append(c.Abilities[:index], c.Abilities[index+1:]...)
-}
-
-func (c *Character) AbilitiesToSave() []*Ability {
-	a := make([]*Ability, 0, len(c.Abilities))
-	for _, i := range c.Abilities {
-		if i.ID != 0 {
-			a = append(a, i)
+	c = &Characters{characters: make([]*Character, len(l))}
+	for i, j := range l {
+		if c.characters[i], err = NewCharacter(game, j); err != nil {
+			return
 		}
 	}
-	return a
+	return
+}
+
+func NewCharacter(game global.Game, in *save.OwnedCharacter) (c *Character, err error) {
+	c = &Character{
+		Base: in,
+	}
+
+	if c.Parameters, err = in.CharacterParameters(); err != nil {
+		return
+	}
+
+	var cl *save.CommandList
+	if cl, err = in.CommandList(); err != nil {
+		return
+	}
+	c.Commands = cl.Target
+
+	if c.Abilities, err = in.Abilities(); err != nil {
+		return
+	}
+
+	if c.AbilitySlotData, err = in.AbilitySlotData(); err != nil {
+		return
+	}
+
+	if c.AdditionAbilityIds, err = c.Base.AdditionOrderOwnedAbilityIds(); err != nil {
+		return
+	}
+
+	if c.SkillLevelTargets, err = in.SkillLevelTargets(); err != nil {
+		return
+	}
+
+	if c.Equipment, err = in.Equipment(); err != nil {
+		return
+	}
+	return
 }
 
 func (c *Characters) All() []*Character {
@@ -101,20 +88,16 @@ func (c *Characters) Names() []string {
 	names := make([]string, 0, len(c.characters))
 	for _, character := range c.characters {
 		if character != nil {
-			names = append(names, character.Name)
+			names = append(names, character.Base.Name)
 		}
 	}
 	slices.Sort(names)
 	return names
 }
 
-func (c *Characters) AddCharacter(character *Character) {
-	c.characters = append(c.characters, character)
-}
-
 func (c *Characters) GetByID(id int) (character *Character, found bool) {
 	for _, character = range c.characters {
-		if character != nil && character.ID == id {
+		if character != nil && character.Base.ID == id {
 			return character, true
 		}
 	}
@@ -123,39 +106,54 @@ func (c *Characters) GetByID(id int) (character *Character, found bool) {
 
 func (c *Characters) GetByName(name string) (character *Character, found bool) {
 	for _, character = range c.characters {
-		if character != nil && character.Name == name {
+		if character != nil && character.Base.Name == name {
 			return character, true
 		}
 	}
 	return nil, false
 }
 
-func NewCommands(size int) *Commands {
-	c := &Commands{
-		commands: make([]*int, size),
+func (c *Character) AddAbility(ability *save.Ability) {
+	c.Abilities = append(c.Abilities, ability)
+}
+
+func (c *Character) RemoveAbility(index int) {
+	c.Abilities = append(c.Abilities[:index], c.Abilities[index+1:]...)
+}
+
+func (c *Character) AbilitiesToSave() []*save.Ability {
+	a := make([]*save.Ability, 0, len(c.Abilities))
+	for _, i := range c.Abilities {
+		if i.AbilityID != 0 {
+			a = append(a, i)
+		}
 	}
-	for i := 0; i < size; i++ {
-		c.commands[i] = new(int)
+	return a
+}
+
+func (c *Character) ToSave() (s string, err error) {
+	if err = c.Base.SetCharacterParameters(c.Parameters); err != nil {
+		return
 	}
-	return c
-}
-
-func (c *Commands) All() []any {
-	commands := make([]any, len(c.commands))
-	for i, j := range c.commands {
-		commands[i] = *j
+	if c.EnableCommandsSave {
+		if err = c.Base.SetCommandList(c.Commands); err != nil {
+			return
+		}
 	}
-	return commands
-}
-
-func (c *Commands) Get(i int) *int {
-	return c.commands[i]
-}
-
-func (c *Commands) Len() int {
-	return len(c.commands)
-}
-
-func (c *Commands) Set(i int, value int) {
-	*c.commands[i] = value
+	if err = c.Base.SetAbilityList(c.Abilities); err != nil {
+		return
+	}
+	if err = c.Base.SetAbilitySlotData(c.AbilitySlotData); err != nil {
+		return
+	}
+	if err = c.Base.SetAdditionOrderOwnedAbilityIds(c.AdditionAbilityIds); err != nil {
+		return
+	}
+	if err = c.Base.SetSkillLevelTargets(c.SkillLevelTargets); err != nil {
+		return
+	}
+	if err = c.Base.SetEquipment(c.Equipment); err != nil {
+		return
+	}
+	return save.MarshalOne(c.Base)
 }

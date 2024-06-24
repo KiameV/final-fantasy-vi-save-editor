@@ -1,8 +1,13 @@
 package core
 
+import (
+	"pixel-remastered-save-editor/global"
+	"pixel-remastered-save-editor/save"
+)
+
 type (
 	Inventory struct {
-		Rows             []*Row
+		Rows             []*save.OwnedItems
 		ResetSortOrder   bool
 		RemoveDuplicates bool
 	}
@@ -12,8 +17,8 @@ type (
 	}
 )
 
-func NewInventory() *Inventory {
-	return &Inventory{}
+func NewInventory(game global.Game, items []*save.OwnedItems) *Inventory {
+	return &Inventory{Rows: items}
 }
 
 func (i *Inventory) Reset() {
@@ -23,25 +28,23 @@ func (i *Inventory) Reset() {
 	}
 }
 
-func (i *Inventory) AppendEmptyRows() {
-	for j := 0; j < 20; j++ {
-		i.Rows = append(i.Rows, &Row{})
-	}
+func (i *Inventory) AddEmptyRow() {
+	i.Rows = append(i.Rows, &save.OwnedItems{})
 }
 
-func (i *Inventory) Set(index int, row Row) {
+func (i *Inventory) Set(index int, row *save.OwnedItems) {
 	if len(i.Rows) <= index {
-		i.Rows = append(i.Rows, &row)
+		i.Rows = append(i.Rows, row)
 	} else {
-		i.Rows[index] = &row
+		i.Rows[index] = row
 	}
 }
 
-func (i *Inventory) RowsForPrSave() []Row {
-	rows := make([]Row, 0, len(i.Rows))
+func (i *Inventory) RowsForPrSave() []*save.OwnedItems {
+	rows := make([]*save.OwnedItems, 0, len(i.Rows))
 	for _, r := range i.Rows {
 		if r.ContentID > 0 && r.ContentID <= 999 && r.Count > 0 && r.Count <= 99 {
-			rows = append(rows, *r)
+			rows = append(rows, r)
 		}
 	}
 	return rows
@@ -55,6 +58,10 @@ func (i *Inventory) ItemLookup() map[int]int {
 	return m
 }
 
-func (i *Inventory) Add(row *Row) {
+func (i *Inventory) Add(row *save.OwnedItems) {
 	i.Rows = append(i.Rows, row)
+}
+
+func (i *Inventory) ToSave() ([]*save.OwnedItems, error) {
+	return i.Rows, nil
 }

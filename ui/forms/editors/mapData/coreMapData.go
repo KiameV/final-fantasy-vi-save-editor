@@ -21,10 +21,10 @@ type (
 func NewCore(data *core.MapData) *MapData {
 	e := &MapData{
 		player: []fyne.CanvasObject{
-			inputs.NewLabeledEntry("Position X", inputs.NewFloatEntryWithData(&data.Player.X)),
-			inputs.NewLabeledEntry("Position Y", inputs.NewFloatEntryWithData(&data.Player.Y)),
-			inputs.NewLabeledEntry("Position Z", inputs.NewFloatEntryWithData(&data.Player.Z)),
-			inputs.NewLabeledEntry("Facing Direction", inputs.NewIntEntryWithData(&data.PlayerDirection)),
+			inputs.NewLabeledEntry("Position X", inputs.NewFloatEntryWithData(&data.Player.Position.X)),
+			inputs.NewLabeledEntry("Position Y", inputs.NewFloatEntryWithData(&data.Player.Position.Y)),
+			inputs.NewLabeledEntry("Position Z", inputs.NewFloatEntryWithData(&data.Player.Position.Z)),
+			inputs.NewLabeledEntry("Facing Direction", inputs.NewIntEntryWithData(&data.Player.Direction)),
 		},
 		gps: []fyne.CanvasObject{
 			inputs.NewLabeledEntry("World", inputs.NewIntEntryWithData(&data.Gps.MapID)),
@@ -34,10 +34,10 @@ func NewCore(data *core.MapData) *MapData {
 			inputs.NewLabeledEntry("Height", inputs.NewIntEntryWithData(&data.Gps.Height)),
 		},
 		misc: []fyne.CanvasObject{
-			inputs.NewLabeledEntry("Map ID", inputs.NewIntEntryWithData(&data.MapID)),
-			inputs.NewLabeledEntry("Point In", inputs.NewIntEntryWithData(&data.PointIn)),
-			inputs.NewLabeledEntry("Transportation ID", inputs.NewIntEntryWithData(&data.TransportationID)),
-			inputs.NewLabeledEntry("Carrying Hover Ship", widget.NewCheckWithData("", binding.BindBool(&data.CarryingHoverShip))),
+			inputs.NewLabeledEntry("Map ID", inputs.NewIntEntryWithData(&data.Map.MapID)),
+			inputs.NewLabeledEntry("Point In", inputs.NewIntEntryWithData(&data.Map.PointIn)),
+			inputs.NewLabeledEntry("Transportation ID", inputs.NewIntEntryWithData(&data.Map.TransportationID)),
+			inputs.NewLabeledEntry("Carrying Hover Ship", widget.NewCheckWithData("", binding.BindBool(&data.Map.CarryingHoverShip))),
 		},
 	}
 	e.ExtendBaseWidget(e)

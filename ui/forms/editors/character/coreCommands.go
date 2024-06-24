@@ -20,12 +20,12 @@ type (
 
 func NewCoreCommands(c *core.Character) *Commands {
 	e := &Commands{
-		enabled: binding.BindBool(&c.Commands.EnableSave),
-		inputs:  make([]*inputs.IdEntry, c.Commands.Len()),
+		enabled: binding.BindBool(&c.EnableCommandsSave),
+		inputs:  make([]*inputs.IdEntry, len(c.Commands)),
 	}
 	e.ExtendBaseWidget(e)
-	for i := 0; i < c.Commands.Len(); i++ {
-		j := inputs.NewIdEntryWithDataWithHint(c.Commands.Get(i), finder.Commands)
+	for i := 0; i < len(c.Commands); i++ {
+		j := inputs.NewIdEntryWithDataWithHint(&c.Commands[i], finder.Commands)
 		j.ID.Disable()
 		e.inputs[i] = j
 	}

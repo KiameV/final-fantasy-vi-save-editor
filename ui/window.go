@@ -193,7 +193,11 @@ func (g *gui) Save() {
 			}()
 			// Save file
 			config.SetSaveDir(game, dir)
-			if err := file.SaveSave(game, g.data.ToSave(), slot, filepath.Join(dir, f)); err != nil {
+			d, err := g.data.ToSave(slot)
+			if err == nil {
+				err = file.SaveSave(game, d, slot, filepath.Join(dir, f))
+			}
+			if err != nil {
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)

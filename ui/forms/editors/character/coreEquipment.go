@@ -18,10 +18,10 @@ type (
 
 func NewCoreEquipment(c *core.Character) *Equipment {
 	e := &Equipment{
-		inputs: make([]*inputs.IdEntry, len(c.Equipment)),
+		inputs: make([]*inputs.IdEntry, len(c.Equipment.Values)),
 	}
 	e.ExtendBaseWidget(e)
-	for i, j := range c.Equipment {
+	for i, j := range c.Equipment.Values {
 		e.inputs[i] = inputs.NewIdEntryWithDataWithHint(&j.ContentID, finder.Items)
 	}
 	return e
