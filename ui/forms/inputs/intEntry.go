@@ -29,6 +29,7 @@ func NewIntEntry() *IntEntry {
 func NewIntEntryWithData(i *int) *IntEntry {
 	entry := NewIntEntry()
 	data := NewIntEntryBinding(i)
+	entry.SetInt(*i)
 	entry.Bind(data.s)
 	entry.Entry.Validator = nil
 	return entry

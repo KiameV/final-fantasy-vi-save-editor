@@ -12,11 +12,10 @@ import (
 )
 
 const (
-	// TODO
 	tagUrl = `https://api.github.com/repos/KiameV/final-fantasy-pr-save-editor/tags`
 	relUrl = `https://github.com/KiameV/final-fantasy-pr-save-editor/releases/%s`
 
-	Version = "0.4.7"
+	Version = "0.5.0"
 )
 
 type (

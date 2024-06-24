@@ -79,7 +79,7 @@ func New() Gui {
 			canvas: container.NewStack(),
 		}
 	)
-	g.window.SetIcon(fyne.NewStaticResource("icon", bundled.ResourceIcon16Png.StaticContent))
+	g.window.SetIcon(fyne.NewStaticResource("icon", bundled.ResourceIconPng.StaticContent))
 	g.window.SetContent(g.canvas)
 	g.open = fyne.NewMenuItem("Open", func() {
 		g.Load()

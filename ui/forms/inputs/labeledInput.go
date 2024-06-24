@@ -65,6 +65,7 @@ func NewIdCountEntryWithDataWithHint(key *int, value *int, find finder.Find) *Id
 	id.OnChanged = func(s string) {
 		hint(s, label, find)
 	}
+	hint(strconv.Itoa(*key), label, find)
 	return &IdCountEntry{
 		ID:    id,
 		Count: count,
@@ -78,6 +79,7 @@ func NewIdEntryWithDataWithHint(key *int, find finder.Find) *IdEntry {
 	id.OnChanged = func(s string) {
 		hint(s, label, find)
 	}
+	hint(strconv.Itoa(*key), label, find)
 	return &IdEntry{
 		ID:    id,
 		Label: label,
@@ -91,6 +93,7 @@ func NewIdEntryWithDataWithHintWithChange(key *int, find finder.Find, onChange f
 		hint(s, label, find)
 		onChange(s)
 	}
+	hint(strconv.Itoa(*key), label, find)
 	return &IdEntry{
 		ID:    id,
 		Label: label,
