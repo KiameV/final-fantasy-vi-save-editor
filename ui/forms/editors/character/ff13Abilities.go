@@ -14,7 +14,7 @@ import (
 )
 
 type (
-	FF1Abilities struct {
+	FF13Abilities struct {
 		widget.BaseWidget
 		c         *core.Character
 		abilities *fyne.Container
@@ -24,8 +24,8 @@ type (
 	}
 )
 
-func NewFF1Abilities(c *core.Character) *FF1Abilities {
-	e := &FF1Abilities{
+func NewFF13Abilities(c *core.Character) *FF13Abilities {
+	e := &FF13Abilities{
 		c:         c,
 		bodyLeft:  container.NewVBox(),
 		bodyRight: container.NewVBox(),
@@ -53,18 +53,18 @@ func NewFF1Abilities(c *core.Character) *FF1Abilities {
 	return e
 }
 
-func (e *FF1Abilities) addAbility() {
+func (e *FF13Abilities) addAbility() {
 	a := &save.Ability{}
 	e.c.AddAbility(a)
 	e.populate()
 }
 
-func (e *FF1Abilities) removeAbility(index int) {
+func (e *FF13Abilities) removeAbility(index int) {
 	e.c.RemoveAbility(index)
 	e.populate()
 }
 
-func (e *FF1Abilities) populate() {
+func (e *FF13Abilities) populate() {
 	e.abilities.RemoveAll()
 	for i, a := range e.c.Abilities {
 		func(i int, a *save.Ability) {
@@ -77,7 +77,7 @@ func (e *FF1Abilities) populate() {
 	e.abilities.Add(container.NewGridWithColumns(3, container.NewStack(), container.NewStack(), e.add))
 }
 
-func (e *FF1Abilities) addAbilityTable(body fyne.CanvasObject, includeButton bool) fyne.CanvasObject {
+func (e *FF13Abilities) addAbilityTable(body fyne.CanvasObject, includeButton bool) fyne.CanvasObject {
 	top := container.NewGridWithColumns(4,
 		container.NewStack(),
 		widget.NewLabel("Ability ID"))
@@ -87,7 +87,7 @@ func (e *FF1Abilities) addAbilityTable(body fyne.CanvasObject, includeButton boo
 	return container.NewBorder(top, nil, nil, nil, body)
 }
 
-func (e *FF1Abilities) CreateRenderer() fyne.WidgetRenderer {
+func (e *FF13Abilities) CreateRenderer() fyne.WidgetRenderer {
 	search := inputs.GetSearches().Abilities
 	return widget.NewSimpleRenderer(container.NewStack(
 		container.NewGridWithColumns(4,

@@ -158,12 +158,16 @@ func (d *UserData) SetImportantOwnedItems(v []*OwnedItems) (err error) {
 	return
 }
 
-func (d *UserData) NormalOwnedItemSortIDList() (v *NormalOwnedItemSortIDList, err error) {
-	return UnmarshalOne[NormalOwnedItemSortIDList](d.NormalOwnedItemSortIDListInternal)
+func (d *UserData) NormalOwnedItemSortIDList() (v []int, err error) {
+	var l *NormalOwnedItemSortIDList
+	if l, err = UnmarshalOne[NormalOwnedItemSortIDList](d.NormalOwnedItemSortIDListInternal); err == nil {
+		v = l.Target
+	}
+	return
 }
 
-func (d *UserData) SetNormalOwnedItemSortIDList(v *NormalOwnedItemSortIDList) (err error) {
-	d.NormalOwnedItemSortIDListInternal, err = MarshalOne[NormalOwnedItemSortIDList](v)
+func (d *UserData) SetNormalOwnedItemSortIDList(v []int) (err error) {
+	d.NormalOwnedItemSortIDListInternal, err = MarshalOne[NormalOwnedItemSortIDList](&NormalOwnedItemSortIDList{Target: v})
 	return
 }
 

@@ -11,6 +11,7 @@ import (
 	"pixel-remastered-save-editor/models"
 	one "pixel-remastered-save-editor/models/core/ff1/consts"
 	two "pixel-remastered-save-editor/models/core/ff2/consts"
+	three "pixel-remastered-save-editor/models/core/ff3/consts"
 )
 
 type (
@@ -28,27 +29,31 @@ type (
 	}
 )
 
-var singletonSearch *Searches
+var _s *Searches
 
 func GetSearches() *Searches {
-	return singletonSearch
+	return _s
 }
 
 func Load(game global.Game) {
-	singletonSearch = &Searches{}
+	_s = &Searches{}
 	if game == global.One {
-		singletonSearch.Abilities = newSearch(one.Abilities)
-		singletonSearch.ImportantItems = newSearch(one.ImportantItems)
-		singletonSearch.Items = newSearch(one.Items, one.Weapons, one.Shields, one.Armors, one.Helmets, one.Gloves)
-		singletonSearch.Jobs = newSearch(one.Jobs)
-		singletonSearch.Maps = newSearch(one.Maps)
+		_s.Abilities = newSearch(one.Abilities)
+		_s.Items = newSearch(one.Items, one.Weapons, one.Shields, one.Armors, one.Helmets, one.Gloves)
+		_s.ImportantItems = newSearch(one.ImportantItems)
+		_s.Jobs = newSearch(one.Jobs)
+		_s.Maps = newSearch(one.Maps)
 	} else if game == global.Two {
-		singletonSearch.Abilities = newSearchFF2(two.Abilities)
-		singletonSearch.Items = newSearch(two.Items, two.Weapons, two.Shields, two.Armors, two.Helmets, two.Gloves)
-		singletonSearch.Jobs = newSearch(two.Jobs)
-		singletonSearch.Maps = newSearch(two.Maps)
+		_s.Abilities = newSearchFF2(two.Abilities)
+		_s.Items = newSearch(two.Items, two.Weapons, two.Shields, two.Armors, two.Helmets, two.Gloves)
+		_s.Jobs = newSearch(two.Jobs)
+		_s.Maps = newSearch(two.Maps)
 	} else if game == global.Three {
-
+		_s.Abilities = newSearch(three.Abilities, three.WhiteMagic, three.BlackMagic, three.SummonMagic)
+		_s.Items = newSearch(three.Items, three.Weapons, three.Shields, three.Armors, three.Helmets, three.Hands)
+		_s.ImportantItems = newSearch(three.ImportantItems)
+		_s.Jobs = newSearch(three.Jobs)
+		_s.Maps = newSearch(three.Maps)
 	} else if game == global.Four {
 
 	} else if game == global.Five {

@@ -25,6 +25,7 @@ func NewSave(data *save.Data) (s *Save, err error) {
 		ds *save.DataStorage
 		cl *save.OwnedCharacterList
 		oi []*save.OwnedItems
+		so []int
 	)
 	s = &Save{Data: data}
 	if ud, md, ds, err = data.Unpack(); err != nil {
@@ -42,11 +43,14 @@ func NewSave(data *save.Data) (s *Save, err error) {
 	if oi, err = ud.NormalOwnedItems(); err != nil {
 		return
 	}
-	s.Inventory = NewInventory(data.Game, oi)
+	if so, err = ud.NormalOwnedItemSortIDList(); err != nil {
+		return
+	}
+	s.Inventory = NewInventory(data.Game, oi, so)
 	if oi, err = ud.ImportantOwnedItems(); err != nil {
 		return
 	}
-	s.ImportantInventory = NewInventory(data.Game, oi)
+	s.ImportantInventory = NewInventory(data.Game, oi, nil)
 	if s.Transportations, err = NewTransportations(data.Game, ds); err != nil {
 		return
 	}
@@ -67,6 +71,7 @@ func (s *Save) ToSave(slot int) (d *save.Data, err error) {
 		all = s.Characters.All()
 		cl  = &save.OwnedCharacterList{Target: make([]string, len(all))}
 		oi  []*save.OwnedItems
+		so  []int
 	)
 	if ud, md, ds, err = s.Data.Unpack(); err != nil {
 		return
@@ -83,13 +88,16 @@ func (s *Save) ToSave(slot int) (d *save.Data, err error) {
 	if err = s.Party.ToSave(ud); err != nil {
 		return
 	}
-	if oi, err = s.Inventory.ToSave(); err != nil {
+	if oi, so, err = s.Inventory.ToSave(); err != nil {
 		return
 	}
 	if err = ud.SetNormalOwnedItems(oi); err != nil {
 		return
 	}
-	if oi, err = s.ImportantInventory.ToSave(); err != nil {
+	if err = ud.SetNormalOwnedItemSortIDList(so); err != nil {
+		return
+	}
+	if oi, _, err = s.ImportantInventory.ToSave(); err != nil {
 		return
 	}
 	if err = ud.SetImportantOwnedItems(oi); err != nil {

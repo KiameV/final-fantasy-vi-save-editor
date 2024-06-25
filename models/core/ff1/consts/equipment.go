@@ -6,7 +6,7 @@ import (
 
 var (
 	Weapons = []models.NameValue{
-		models.NewNameValue("[Empty Weapon]", 62),
+		models.NewNameValue("[Empty R. Hand]", 62),
 		models.NewNameValue("Knife", 63),
 		models.NewNameValue("Dagger", 64),
 		models.NewNameValue("Mythril Knife", 65),
@@ -57,7 +57,7 @@ var (
 		models.NewNameValue("Wizard's Staff", 123),
 	}
 	Shields = []models.NameValue{
-		models.NewNameValue("[Empty Shield]", 130),
+		models.NewNameValue("[Empty L. Hand]", 130),
 
 		models.NewNameValue("Leather Shield", 161),
 		models.NewNameValue("Buckler", 162),
@@ -70,7 +70,7 @@ var (
 		models.NewNameValue("Protect Cloak", 173),
 	}
 	Armors = []models.NameValue{
-		models.NewNameValue("[Empty Armor]", 131),
+		models.NewNameValue("[Empty Body]", 131),
 
 		models.NewNameValue("Clothes", 134),
 		models.NewNameValue("White Robe", 136),
@@ -90,7 +90,7 @@ var (
 		models.NewNameValue("Diamond Armlet", 160),
 	}
 	Helmets = []models.NameValue{
-		models.NewNameValue("[Empty Helmet]", 132),
+		models.NewNameValue("[Empty Head]", 132),
 
 		models.NewNameValue("Leather Cap", 175),
 		models.NewNameValue("Ribbon", 183),
@@ -101,7 +101,7 @@ var (
 		models.NewNameValue("Diamond Helm", 188),
 	}
 	Gloves = []models.NameValue{
-		models.NewNameValue("[Empty Hands]", 133),
+		models.NewNameValue("[Empty Arms]", 133),
 
 		models.NewNameValue("Leather Gloves", 191),
 		models.NewNameValue("Bronze Gloves", 192),

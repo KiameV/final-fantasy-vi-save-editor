@@ -29,8 +29,8 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 			c, _      = save.Characters.GetByName(name)
 			abilities fyne.CanvasObject
 		)
-		if game == global.One {
-			abilities = character.NewFF1Abilities(c)
+		if game == global.One || game == global.Three {
+			abilities = character.NewFF13Abilities(c)
 		} else if game == global.Two {
 			abilities = character.NewFF2Abilities(c)
 		} else {

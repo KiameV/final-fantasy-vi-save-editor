@@ -54,12 +54,12 @@ func Load(game global.Game) {
 		}
 	} else if game == global.Three {
 		singletonFinder = &finders{
-			abilities: nameLookup(),
-			commands:  nameLookup(),
-			important: nameLookup(),
+			abilities: nameLookup(three.Abilities, three.WhiteMagic, three.BlackMagic, three.SummonMagic),
+			commands:  nameLookup(three.Commands),
+			important: nameLookup(three.ImportantItems),
 			items:     nameLookup(three.Items, three.Weapons, three.Shields, three.Armors, three.Helmets, three.Hands),
-			jobs:      nameLookup(),
-			maps:      nameLookup(),
+			jobs:      nameLookup(three.Jobs),
+			maps:      nameLookup(three.Maps),
 		}
 	} else if game == global.Four {
 		singletonFinder = &finders{

@@ -11,7 +11,6 @@ import (
 
 	"github.com/kiamev/ffpr-save-cypher/rijndael"
 	oj "github.com/virtuald/go-ordered-json"
-	jo "gitlab.com/c0b/go-ordered-json"
 	"pixel-remastered-save-editor/global"
 	"pixel-remastered-save-editor/save"
 	"pixel-remastered-save-editor/save/config"
@@ -63,8 +62,4 @@ func loadFile(game global.Game, fromFile string) (out []byte, trimmed []byte, er
 	out, err = io.ReadAll(zr)
 	printFile(filepath.Join(config.Dir(game), "_loaded.file"), out)
 	return
-}
-
-func loadBase(base *jo.OrderedMap, s string) (err error) {
-	return base.UnmarshalJSON([]byte(s))
 }

@@ -15,6 +15,7 @@ type (
 		PlayableCharacterCorpsID int    `json:"playableCharacterCorpsId"`
 		TimerData                string `json:"timerData"`
 		EncountEnable            *bool  `json:"encountEnable,omitempty"`
+		ViewType                 *int   `json:"viewType,omitempty"`
 	}
 	GpsData struct {
 		MapID  int `json:"mapId"`
