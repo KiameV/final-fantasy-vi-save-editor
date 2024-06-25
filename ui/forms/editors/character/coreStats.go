@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 	"pixel-remastered-save-editor/models/core"
-	"pixel-remastered-save-editor/models/finder"
 	"pixel-remastered-save-editor/ui/forms/inputs"
 )
 
@@ -27,10 +26,8 @@ func NewCoreStats(c *core.Character) *Character {
 	e.ExtendBaseWidget(e)
 	name := widget.NewEntryWithData(binding.BindString(&c.Base.Name))
 	name.Validator = nil
-	job := inputs.NewIdEntryWithDataWithHint(&c.Base.JobID, finder.Jobs)
 	e.left = []fyne.CanvasObject{
 		container.NewGridWithColumns(3, widget.NewLabel("Name:"), name),
-		container.NewGridWithColumns(3, widget.NewLabel("Job:"), job.ID, job.Label),
 		container.NewGridWithColumns(3, widget.NewLabel("Level:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalLevel)),
 		container.NewGridWithColumns(3, widget.NewLabel("Experience:"), inputs.NewIntEntryWithData(&c.Base.CurrentExp)),
 		container.NewGridWithColumns(3, widget.NewLabel("HP Current:"), inputs.NewIntEntryWithData(&c.Parameters.CurrentHP)),

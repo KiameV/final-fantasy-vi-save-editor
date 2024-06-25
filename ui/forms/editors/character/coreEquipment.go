@@ -33,7 +33,7 @@ func (e *Equipment) CreateRenderer() fyne.WidgetRenderer {
 	for _, i := range e.inputs {
 		rows.Add(container.NewGridWithColumns(3, i.Label, i.ID))
 	}
-	return widget.NewSimpleRenderer(container.NewStack(
+	return widget.NewSimpleRenderer(container.NewGridWithColumns(2,
 		container.NewGridWithColumns(3,
 			container.NewVScroll(rows),
 			search.Fields(),

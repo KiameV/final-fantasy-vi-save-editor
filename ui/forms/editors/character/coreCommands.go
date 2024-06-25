@@ -15,6 +15,7 @@ type (
 		widget.BaseWidget
 		enabled binding.Bool
 		inputs  []*inputs.IdEntry
+		job     *inputs.IdEntry
 	}
 )
 
@@ -22,8 +23,10 @@ func NewCoreCommands(c *core.Character) *Commands {
 	e := &Commands{
 		enabled: binding.BindBool(&c.EnableCommandsSave),
 		inputs:  make([]*inputs.IdEntry, len(c.Commands)),
+		job:     inputs.NewIdEntryWithDataWithHint(&c.Base.JobID, finder.Jobs),
 	}
 	e.ExtendBaseWidget(e)
+
 	for i := 0; i < len(c.Commands); i++ {
 		j := inputs.NewIdEntryWithDataWithHint(&c.Commands[i], finder.Commands)
 		j.ID.Disable()
@@ -42,17 +45,24 @@ func (e *Commands) DataChanged() {
 			i.ID.Disable()
 		}
 	}
+	if enabled {
+		e.job.ID.Enable()
+	} else {
+		e.job.ID.Disable()
+	}
 }
 
 func (e *Commands) CreateRenderer() fyne.WidgetRenderer {
 	rows := container.NewVBox()
+	rows.Add(container.NewGridWithColumns(3, widget.NewLabel("Job:"), e.job.ID, e.job.Label))
 	for _, i := range e.inputs {
 		rows.Add(container.NewGridWithColumns(3, i.Label, i.ID))
 	}
-	return widget.NewSimpleRenderer(container.NewStack(
+	return widget.NewSimpleRenderer(container.NewGridWithColumns(2,
 		container.NewGridWithColumns(2,
-			container.NewBorder(
-				widget.NewCheckWithData("Enabled", e.enabled),
+			container.NewBorder(container.NewVBox(
+				widget.NewLabel("can cause soft locks when loading save"),
+				widget.NewCheckWithData("Enabled", e.enabled)),
 				nil, nil, nil,
 				container.NewVScroll(rows)))))
 }
