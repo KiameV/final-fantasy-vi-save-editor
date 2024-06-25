@@ -3,9 +3,11 @@ package finder
 import (
 	"pixel-remastered-save-editor/global"
 	"pixel-remastered-save-editor/models"
+	"pixel-remastered-save-editor/models/core"
 	one "pixel-remastered-save-editor/models/core/ff1/consts"
 	two "pixel-remastered-save-editor/models/core/ff2/consts"
 	three "pixel-remastered-save-editor/models/core/ff3/consts"
+	four "pixel-remastered-save-editor/models/core/ff4/consts"
 	six "pixel-remastered-save-editor/models/core/ff6/consts"
 )
 
@@ -13,6 +15,7 @@ type (
 	Find    func(int) (string, bool)
 	Finders interface {
 		Abilities(int) (string, bool)
+		Characters(int) (string, bool)
 		Commands(int) (string, bool)
 		Items(int) (string, bool)
 		ImportantItems(int) (string, bool)
@@ -20,20 +23,21 @@ type (
 		Maps(int) (string, bool)
 	}
 	finders struct {
-		abilities map[int]string
-		commands  map[int]string
-		items     map[int]string
-		important map[int]string
-		jobs      map[int]string
-		maps      map[int]string
+		abilities  map[int]string
+		characters map[int]string
+		commands   map[int]string
+		items      map[int]string
+		important  map[int]string
+		jobs       map[int]string
+		maps       map[int]string
 	}
 )
 
 var (
-	singletonFinder Finders
+	singletonFinder *finders
 )
 
-func Load(game global.Game) {
+func Load(game global.Game, characters []*core.Character) {
 	if game == global.One {
 		singletonFinder = &finders{
 			abilities: nameLookup(one.Abilities),
@@ -63,31 +67,37 @@ func Load(game global.Game) {
 		}
 	} else if game == global.Four {
 		singletonFinder = &finders{
-			abilities: nameLookup(),
-			commands:  nameLookup(),
-			important: nameLookup(),
-			items:     nameLookup(),
-			jobs:      nameLookup(),
-			maps:      nameLookup(),
+			abilities: nameLookup(four.Abilities, four.WhiteMagic, four.BlackMagic, four.SummonMagic),
+			commands:  nameLookup(four.Commands),
+			important: nameLookup(four.ImportantItems),
+			items:     nameLookup(four.Items, four.Weapons, four.Shields, four.Armors, four.Helmets, four.Hands),
+			jobs:      nameLookup(four.Jobs),
+			maps:      nameLookup(four.Maps),
 		}
 	} else if game == global.Five {
+		var temp []models.NameValue
 		singletonFinder = &finders{
-			abilities: nameLookup(),
-			commands:  nameLookup(),
-			important: nameLookup(),
-			items:     nameLookup(),
-			jobs:      nameLookup(),
-			maps:      nameLookup(),
+			abilities: nameLookup(temp),
+			commands:  nameLookup(temp),
+			important: nameLookup(temp),
+			items:     nameLookup(temp),
+			jobs:      nameLookup(temp),
+			maps:      nameLookup(temp),
 		}
 	} else { // Six
+		var temp []models.NameValue
 		singletonFinder = &finders{
 			abilities: nameLookup(six.Blitzes, six.Dances, six.Lores, six.Bushidos, six.Rages),
-			commands:  nameLookup(),
-			important: nameLookup(),
+			commands:  nameLookup(temp),
+			important: nameLookup(temp),
 			items:     six.ItemsByID,
 			jobs:      nameLookup(six.Jobs),
-			maps:      nameLookup(),
+			maps:      nameLookup(temp),
 		}
+	}
+	singletonFinder.characters = make(map[int]string)
+	for i, c := range characters {
+		singletonFinder.characters[i] = c.Base.Name
 	}
 }
 
@@ -97,6 +107,15 @@ func Abilities(i int) (s string, b bool) {
 
 func (f finders) Abilities(i int) (s string, b bool) {
 	s, b = f.abilities[i]
+	return
+}
+
+func Characters(i int) (string, bool) {
+	return singletonFinder.Characters(i)
+}
+
+func (f finders) Characters(i int) (s string, b bool) {
+	s, b = f.characters[i]
 	return
 }
 
@@ -157,4 +176,12 @@ func nameLookup(args ...[]models.NameValue) map[int]string {
 		}
 	}
 	return m
+}
+
+func AllCharacters() (v []models.NameValue) {
+	v = make([]models.NameValue, len(singletonFinder.characters))
+	for i, n := range singletonFinder.characters {
+		v[i] = models.NewNameValue(n, i)
+	}
+	return
 }

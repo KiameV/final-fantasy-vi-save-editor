@@ -58,11 +58,14 @@ func (e *Commands) CreateRenderer() fyne.WidgetRenderer {
 	for _, i := range e.inputs {
 		rows.Add(container.NewGridWithColumns(3, i.Label, i.ID))
 	}
+	search := inputs.GetSearches().Commands
 	return widget.NewSimpleRenderer(container.NewGridWithColumns(2,
-		container.NewGridWithColumns(2,
+		container.NewGridWithColumns(4,
 			container.NewBorder(container.NewVBox(
 				widget.NewLabel("can cause soft locks when loading save"),
 				widget.NewCheckWithData("Enabled", e.enabled)),
 				nil, nil, nil,
-				container.NewVScroll(rows)))))
+				container.NewVScroll(rows)),
+			search.Fields(),
+			search.Filter())))
 }

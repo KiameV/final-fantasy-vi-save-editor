@@ -163,7 +163,7 @@ func (g *gui) gameSelected(game global.Game) {
 				g.canvas.RemoveAll()
 				g.prev = nil
 				g.save.Disabled = false
-				finder.Load(game)
+				finder.Load(game, g.data.Characters.All())
 				g.canvas.Add(selections.NewEditor(game, g.data))
 				g.window.SetTitle(fmt.Sprintf("%s - FF%d - slot %d", appName, game, slot))
 			}

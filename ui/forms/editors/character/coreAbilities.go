@@ -66,6 +66,7 @@ func (e *Abilities) CreateRenderer() fyne.WidgetRenderer {
 					widget.NewLabel("Ability ID"),
 					widget.NewLabel("Content ID"),
 					widget.NewLabel("Level"),
+					e.add,
 				), nil, nil, nil,
 				container.NewVScroll(e.abilities)))))
 }

@@ -9,6 +9,7 @@ type (
 	Save struct {
 		Characters         *Characters
 		Party              *Party
+		Parties            *Parties
 		Inventory          *Inventory
 		ImportantInventory *Inventory
 		Transportations    *Transportations
@@ -38,6 +39,9 @@ func NewSave(data *save.Data) (s *Save, err error) {
 		return
 	}
 	if s.Party, err = NewParty(data.Game, ud); err != nil {
+		return
+	}
+	if s.Parties, err = NewParties(data.Game, ud); err != nil {
 		return
 	}
 	if oi, err = ud.NormalOwnedItems(); err != nil {
@@ -86,6 +90,9 @@ func (s *Save) ToSave(slot int) (d *save.Data, err error) {
 		return
 	}
 	if err = s.Party.ToSave(ud); err != nil {
+		return
+	}
+	if err = s.Parties.ToSave(ud); err != nil {
 		return
 	}
 	if oi, so, err = s.Inventory.ToSave(); err != nil {
