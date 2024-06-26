@@ -18,7 +18,6 @@ type (
 		widget.BaseWidget
 		c         *core.Character
 		abilities *fyne.Container
-		bodyLeft  *fyne.Container
 		bodyRight *fyne.Container
 		add       *widget.Button
 	}
@@ -27,7 +26,6 @@ type (
 func NewFF13Abilities(c *core.Character) *FF13Abilities {
 	e := &FF13Abilities{
 		c:         c,
-		bodyLeft:  container.NewVBox(),
 		bodyRight: container.NewVBox(),
 		abilities: container.NewVBox(),
 	}
@@ -37,7 +35,6 @@ func NewFF13Abilities(c *core.Character) *FF13Abilities {
 		e.addAbility()
 	})
 
-	e.bodyLeft.Add(e.abilities)
 	for i, asd := range e.c.AbilitySlotData {
 		l := container.NewGridWithRows(4)
 		for _, a := range asd.SlotInfo.Values {
@@ -74,25 +71,16 @@ func (e *FF13Abilities) populate() {
 			})))
 		}(i, a)
 	}
-	e.abilities.Add(container.NewGridWithColumns(3, container.NewStack(), container.NewStack(), e.add))
-}
-
-func (e *FF13Abilities) addAbilityTable(body fyne.CanvasObject, includeButton bool) fyne.CanvasObject {
-	top := container.NewGridWithColumns(4,
-		container.NewStack(),
-		widget.NewLabel("Ability ID"))
-	if includeButton {
-		top.Add(e.add)
-	}
-	return container.NewBorder(top, nil, nil, nil, body)
 }
 
 func (e *FF13Abilities) CreateRenderer() fyne.WidgetRenderer {
 	search := inputs.GetSearches().Abilities
-	return widget.NewSimpleRenderer(container.NewStack(
-		container.NewGridWithColumns(4,
-			container.NewVScroll(e.bodyLeft),
-			container.NewVScroll(e.bodyRight),
-			search.Fields(),
-			search.Filter())))
+	return widget.NewSimpleRenderer(container.NewGridWithColumns(7,
+		container.NewBorder(
+			container.NewGridWithColumns(4, container.NewStack(), widget.NewLabel("Ability ID"), container.NewStack(), e.add),
+			nil, nil, nil,
+			container.NewVScroll(e.abilities)),
+		container.NewVScroll(e.bodyRight),
+		container.NewStack(),
+		search.Fields(), search.Filter()))
 }

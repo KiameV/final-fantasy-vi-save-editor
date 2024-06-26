@@ -34,7 +34,7 @@ func NewCore(inv *core.Inventory, finder finder.Find, search *inputs.Search) *In
 }
 
 func (e *Inventory) CreateRenderer() fyne.WidgetRenderer {
-	const columns = 7
+	const columns = 6
 	id1 := widget.NewLabel("Item ID")
 	id1.Alignment = fyne.TextAlignCenter
 	id2 := widget.NewLabel("Item ID")
@@ -51,7 +51,6 @@ func (e *Inventory) CreateRenderer() fyne.WidgetRenderer {
 		g := container.NewGridWithColumns(columns, entry.Label, entry.ID, entry.Count)
 		if j := i + 1; j < l {
 			entry = e.items[j]
-			g.Add(container.NewStack())
 			g.Add(entry.Label)
 			g.Add(entry.ID)
 			g.Add(entry.Count)
@@ -66,6 +65,6 @@ func (e *Inventory) CreateRenderer() fyne.WidgetRenderer {
 				e.search.Filter()),
 			// middle
 			container.NewBorder(
-				container.NewGridWithColumns(columns, widget.NewCheckWithData("Reset Sort", e.resetSort), id1, c1, container.NewStack(), container.NewStack(), id2, c2), nil, nil, nil,
+				container.NewGridWithColumns(columns, widget.NewCheckWithData("Reset Sort", e.resetSort), id1, c1, container.NewStack(), id2, c2), nil, nil, nil,
 				container.NewVScroll(rows))))
 }

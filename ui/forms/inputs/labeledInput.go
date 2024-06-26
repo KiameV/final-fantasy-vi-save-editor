@@ -24,38 +24,18 @@ type (
 		Label *widget.Label
 	}
 	IdEntry struct {
-		ID    *IntEntry
+		ID    ToggleableEntry
 		Label *widget.Label
+	}
+	ToggleableEntry interface {
+		fyne.CanvasObject
+		Enable()
+		Disable()
 	}
 )
 
-func NewLabeledEntry(label string, entry fyne.CanvasObject) fyne.CanvasObject {
-	return container.NewGridWithColumns(2, widget.NewLabel(label), entry)
-}
-
-func NewLabeledIntEntryWithHint(label string, i *int, args HintArgs) fyne.CanvasObject {
-	if args.Align == nil {
-		args.Align = NewAlign(fyne.TextAlignTrailing)
-	}
-	h := newHinter(args)
-	entry := NewIntEntryWithData(i)
-	h.hint(entry.Text)
-	entry.OnChanged = func(s string) {
-		h.hint(s)
-	}
-	return container.NewVBox(NewLabeledEntry(label, entry), h.label)
-}
-
-func NewIdCountEntryWithHint(key *IntEntry, value *IntEntry, find finder.Find) *IdCountEntry {
-	label := widget.NewLabel("")
-	key.OnChanged = func(s string) {
-		hint(s, label, find)
-	}
-	return &IdCountEntry{
-		ID:    key,
-		Count: value,
-		Label: label,
-	}
+func NewLabeledEntry(label string, entry fyne.CanvasObject, columns int) fyne.CanvasObject {
+	return container.NewGridWithColumns(columns, widget.NewLabel(label), entry)
 }
 
 func NewIdCountEntryWithDataWithHint(key *int, value *int, find finder.Find) *IdCountEntry {

@@ -35,6 +35,26 @@ func NewIntEntryWithData(i *int) *IntEntry {
 	return entry
 }
 
+func NewLabeledEntryWithData(label string, entry *widget.Entry) *IdEntry {
+	entry.Validator = nil
+	return &IdEntry{
+		ID:    entry,
+		Label: widget.NewLabel(label),
+	}
+}
+
+func NewLabeledIntEntryWithData(label string, i *int) *IdEntry {
+	entry := NewIntEntry()
+	data := NewIntEntryBinding(i)
+	entry.SetInt(*i)
+	entry.Bind(data.s)
+	entry.Entry.Validator = nil
+	return &IdEntry{
+		ID:    entry,
+		Label: widget.NewLabel(label),
+	}
+}
+
 func (e *IntEntry) Int() int {
 	i, err := strconv.Atoi(e.Text)
 	if err != nil {

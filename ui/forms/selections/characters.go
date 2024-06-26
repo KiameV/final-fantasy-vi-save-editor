@@ -33,9 +33,10 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 			abilities = character.NewFF13Abilities(c)
 		} else if game == global.Two {
 			abilities = character.NewFF2Abilities(c)
-		} else {
-			abilities = character.NewCoreAbilities(c)
+		} else if game == global.Four {
+			abilities = character.NewFF4Abilities(c)
 		}
+		abilities = abilities
 		s.middle.RemoveAll()
 		s.middle.Add(container.NewAppTabs(
 			container.NewTabItem("Stats", character.NewCoreStats(c)),
@@ -43,7 +44,7 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 			container.NewTabItem("Equipment", character.NewCoreEquipment(c)),
 			container.NewTabItem("Commands", character.NewCoreCommands(c)),
 		))
-	})))
+	}), 2))
 	return s
 }
 

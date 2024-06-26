@@ -81,12 +81,11 @@ func (e *FF2Abilities) populate() {
 
 func (e *FF2Abilities) CreateRenderer() fyne.WidgetRenderer {
 	search := inputs.GetSearches().Abilities
-	return widget.NewSimpleRenderer(container.NewGridWithColumns(3,
+	return widget.NewSimpleRenderer(container.NewGridWithColumns(7,
 		container.NewBorder(
 			container.NewGridWithColumns(4, container.NewStack(), widget.NewLabel("Ability ID"), widget.NewLabel("Skill Level"), e.add),
 			nil, nil, nil,
 			container.NewVScroll(e.abilities)),
-		container.NewGridWithColumns(2,
-			search.Fields(),
-			search.Filter())))
+		container.NewStack(),
+		search.Fields(), search.Filter()))
 }

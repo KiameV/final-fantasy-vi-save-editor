@@ -28,6 +28,10 @@ func NewInventory(save *core.Save) *Inventory {
 func (s *Inventory) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(
 		container.NewAppTabs(
-			container.NewTabItem("Inventory", inventory.NewCore(s.save.Inventory, finder.Items, inputs.GetSearches().Items)),
-			container.NewTabItem("Important", inventory.NewCore(s.save.ImportantInventory, finder.ImportantItems, inputs.GetSearches().ImportantItems))))
+			container.NewTabItem("Inventory",
+				inventory.NewCore(s.save.Inventory, finder.Items, inputs.GetSearches().Items),
+			),
+			container.NewTabItem("Important",
+				inventory.NewCore(s.save.ImportantInventory, finder.ImportantItems, inputs.GetSearches().ImportantItems),
+			)))
 }

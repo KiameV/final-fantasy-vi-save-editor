@@ -13,8 +13,8 @@ type (
 	Character struct {
 		widget.BaseWidget
 		isEnabled binding.Bool
-		left      []fyne.CanvasObject
-		right     []fyne.CanvasObject
+		left      []*inputs.IdEntry
+		right     []*inputs.IdEntry
 	}
 )
 
@@ -26,50 +26,73 @@ func NewCoreStats(c *core.Character) *Character {
 	e.ExtendBaseWidget(e)
 	name := widget.NewEntryWithData(binding.BindString(&c.Base.Name))
 	name.Validator = nil
-	e.left = []fyne.CanvasObject{
-		container.NewGridWithColumns(3, widget.NewLabel("Name:"), name),
-		container.NewGridWithColumns(3, widget.NewLabel("Level:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalLevel)),
-		container.NewGridWithColumns(3, widget.NewLabel("Experience:"), inputs.NewIntEntryWithData(&c.Base.CurrentExp)),
-		container.NewGridWithColumns(3, widget.NewLabel("HP Current:"), inputs.NewIntEntryWithData(&c.Parameters.CurrentHP)),
-		container.NewGridWithColumns(3, widget.NewLabel("HP Max:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalMaxHp)),
-		container.NewGridWithColumns(3, widget.NewLabel("MP Current:"), inputs.NewIntEntryWithData(&c.Parameters.CurrentMP)),
-		container.NewGridWithColumns(3, widget.NewLabel("MP Max:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalMaxMp)),
-		container.NewGridWithColumns(3, widget.NewLabel("Agility:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAgility)),
-		container.NewGridWithColumns(3, widget.NewLabel("Intelligence:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalIntelligence)),
-		container.NewGridWithColumns(3, widget.NewLabel("Luck:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalLuck)),
-		container.NewGridWithColumns(3, widget.NewLabel("Magic:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalMagic)),
-		container.NewGridWithColumns(3, widget.NewLabel("Power:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalPower)),
-		container.NewGridWithColumns(3, widget.NewLabel("Spirit:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalSpirit)),
-		container.NewGridWithColumns(3, widget.NewLabel("Vitality:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalVitality)),
+	e.left = []*inputs.IdEntry{
+		inputs.NewLabeledEntryWithData("Name:", name),
+		inputs.NewLabeledIntEntryWithData("Level:", &c.Parameters.AdditionalLevel),
+		inputs.NewLabeledIntEntryWithData("Experience:", &c.Base.CurrentExp),
+		inputs.NewLabeledIntEntryWithData("HP Current:", &c.Parameters.CurrentHP),
+		inputs.NewLabeledIntEntryWithData("HP Max:", &c.Parameters.AdditionalMaxHp),
+		inputs.NewLabeledIntEntryWithData("MP Current:", &c.Parameters.CurrentMP),
+		inputs.NewLabeledIntEntryWithData("MP Max:", &c.Parameters.AdditionalMaxMp),
+		inputs.NewLabeledIntEntryWithData("Agility:", &c.Parameters.AdditionalAgility),
+		inputs.NewLabeledIntEntryWithData("Intelligence:", &c.Parameters.AdditionalIntelligence),
+		inputs.NewLabeledIntEntryWithData("Luck:", &c.Parameters.AdditionalLuck),
+		inputs.NewLabeledIntEntryWithData("Magic:", &c.Parameters.AdditionalMagic),
+		inputs.NewLabeledIntEntryWithData("Power:", &c.Parameters.AdditionalPower),
+		inputs.NewLabeledIntEntryWithData("Spirit:", &c.Parameters.AdditionalSpirit),
+		inputs.NewLabeledIntEntryWithData("Vitality:", &c.Parameters.AdditionalVitality),
 	}
-	e.right = []fyne.CanvasObject{
-		container.NewGridWithColumns(3, widget.NewLabel("Ability Defense:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAbilityDefense)),
-		container.NewGridWithColumns(3, widget.NewLabel("Ability Defense Rate:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAbilityDefenseRate)),
-		container.NewGridWithColumns(3, widget.NewLabel("Ability Disturbed Rate:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAbilityDisturbedRate)),
-		container.NewGridWithColumns(3, widget.NewLabel("Ability Evasion Rate:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAbilityEvasionRate)),
-		container.NewGridWithColumns(3, widget.NewLabel("Accuracy Count:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAccuracyCount)),
-		container.NewGridWithColumns(3, widget.NewLabel("Accuracy Rate:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAccuracyRate)),
-		container.NewGridWithColumns(3, widget.NewLabel("Attack:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalAttack)),
-		container.NewGridWithColumns(3, widget.NewLabel("Critical Rate:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalCriticalRate)),
-		container.NewGridWithColumns(3, widget.NewLabel("Damage Dirmeter:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalDamageDirmeter)),
-		container.NewGridWithColumns(3, widget.NewLabel("Defense:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalDefense)),
-		container.NewGridWithColumns(3, widget.NewLabel("Defense Count:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalDefenseCount)),
-		container.NewGridWithColumns(3, widget.NewLabel("Evasion Count:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalEvasionCount)),
-		container.NewGridWithColumns(3, widget.NewLabel("Evasion Rate:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalEvasionRate)),
-		container.NewGridWithColumns(3, widget.NewLabel("Magic Defense Count:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalMagicDefenseCount)),
-		container.NewGridWithColumns(3, widget.NewLabel("Weight:"), inputs.NewIntEntryWithData(&c.Parameters.AdditionalWeight)),
+	e.right = []*inputs.IdEntry{
+		inputs.NewLabeledIntEntryWithData("Ability Defense:", &c.Parameters.AdditionalAbilityDefense),
+		inputs.NewLabeledIntEntryWithData("Ability Defense Rate:", &c.Parameters.AdditionalAbilityDefenseRate),
+		inputs.NewLabeledIntEntryWithData("Ability Disturbed Rate:", &c.Parameters.AdditionalAbilityDisturbedRate),
+		inputs.NewLabeledIntEntryWithData("Ability Evasion Rate:", &c.Parameters.AdditionalAbilityEvasionRate),
+		inputs.NewLabeledIntEntryWithData("Accuracy Count:", &c.Parameters.AdditionalAccuracyCount),
+		inputs.NewLabeledIntEntryWithData("Accuracy Rate:", &c.Parameters.AdditionalAccuracyRate),
+		inputs.NewLabeledIntEntryWithData("Attack:", &c.Parameters.AdditionalAttack),
+		inputs.NewLabeledIntEntryWithData("Critical Rate:", &c.Parameters.AdditionalCriticalRate),
+		inputs.NewLabeledIntEntryWithData("Damage Dirmeter:", &c.Parameters.AdditionalDamageDirmeter),
+		inputs.NewLabeledIntEntryWithData("Defense:", &c.Parameters.AdditionalDefense),
+		inputs.NewLabeledIntEntryWithData("Defense Count:", &c.Parameters.AdditionalDefenseCount),
+		inputs.NewLabeledIntEntryWithData("Evasion Count:", &c.Parameters.AdditionalEvasionCount),
+		inputs.NewLabeledIntEntryWithData("Evasion Rate:", &c.Parameters.AdditionalEvasionRate),
+		inputs.NewLabeledIntEntryWithData("Magic Defense Count:", &c.Parameters.AdditionalMagicDefenseCount),
+		inputs.NewLabeledIntEntryWithData("Weight:", &c.Parameters.AdditionalWeight),
 	}
 	return e
 }
 
 func (e *Character) CreateRenderer() fyne.WidgetRenderer {
-	search := inputs.GetSearches().Jobs
+	body := container.NewVBox()
+	l := len(e.left)
+	r := len(e.right)
+	s := l
+	if r > l {
+		s = r
+	}
+	for i := 0; i < s; i++ {
+		row := container.NewGridWithColumns(7)
+		if i < l {
+			row.Add(e.left[i].Label)
+			row.Add(e.left[i].ID)
+		} else {
+			row.Add(container.NewStack())
+			row.Add(container.NewStack())
+		}
+		row.Add(container.NewStack())
+		if i < r {
+			row.Add(e.right[i].Label)
+			row.Add(e.right[i].ID)
+		} else {
+			row.Add(container.NewStack())
+			row.Add(container.NewStack())
+		}
+		body.Add(row)
+	}
 	return widget.NewSimpleRenderer(
-		container.NewBorder(
-			container.NewHBox(widget.NewCheckWithData("Enabled", e.isEnabled)),
-			nil, nil, nil,
-			container.NewVScroll(container.NewGridWithColumns(3,
-				container.NewVBox(e.left...),
-				container.NewVBox(e.right...),
-				search.Fields()))))
+		container.NewGridWithColumns(2,
+			container.NewBorder(
+				container.NewHBox(widget.NewCheckWithData("Enabled", e.isEnabled)),
+				nil, nil, nil,
+				container.NewVScroll(body))))
 }

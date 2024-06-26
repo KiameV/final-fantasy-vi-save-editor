@@ -1,6 +1,9 @@
 package finder
 
 import (
+	"cmp"
+	"slices"
+
 	"pixel-remastered-save-editor/global"
 	"pixel-remastered-save-editor/models"
 	"pixel-remastered-save-editor/models/core"
@@ -96,8 +99,8 @@ func Load(game global.Game, characters []*core.Character) {
 		}
 	}
 	singletonFinder.characters = make(map[int]string)
-	for i, c := range characters {
-		singletonFinder.characters[i] = c.Base.Name
+	for _, c := range characters {
+		singletonFinder.characters[c.Base.ID] = c.Base.Name
 	}
 }
 
@@ -179,9 +182,12 @@ func nameLookup(args ...[]models.NameValue) map[int]string {
 }
 
 func AllCharacters() (v []models.NameValue) {
-	v = make([]models.NameValue, len(singletonFinder.characters))
+	v = make([]models.NameValue, 0, len(singletonFinder.characters))
 	for i, n := range singletonFinder.characters {
-		v[i] = models.NewNameValue(n, i)
+		v = append(v, models.NewNameValue(n, i))
 	}
+	slices.SortFunc(v, func(i, j models.NameValue) int {
+		return cmp.Compare(i.Value, j.Value)
+	})
 	return
 }
