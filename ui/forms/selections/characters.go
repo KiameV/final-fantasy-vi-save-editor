@@ -26,29 +26,36 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 	s.ExtendBaseWidget(s)
 	s.top.Add(inputs.NewLabeledEntry("Character:", widget.NewSelect(save.Characters.Names(), func(name string) {
 		var (
-			c, _      = save.Characters.GetByName(name)
-			abilities fyne.CanvasObject
+			c, _ = save.Characters.GetByName(name)
+			tabs = container.NewAppTabs(
+				container.NewTabItem("Stats", character.NewCoreStats(c)),
+				container.NewTabItem("Abilities", s.abilities(game, c)),
+				container.NewTabItem("Equipment", character.NewCoreEquipment(c)),
+				container.NewTabItem("Commands", character.NewCoreCommands(c)),
+			)
 		)
-		if game == global.One || game == global.Three {
-			abilities = character.NewFF13Abilities(c)
-		} else if game == global.Two {
-			abilities = character.NewFF2Abilities(c)
-		} else if game == global.Four {
-			abilities = character.NewFF4Abilities(c)
-		} else {
-			abilities = container.NewStack()
+		if game == global.Five {
+			tabs.Append(container.NewTabItem("Jobs", NewFF5Jobs(c)))
 		}
 		s.middle.RemoveAll()
-		s.middle.Add(container.NewAppTabs(
-			container.NewTabItem("Stats", character.NewCoreStats(c)),
-			container.NewTabItem("Abilities", abilities),
-			container.NewTabItem("Equipment", character.NewCoreEquipment(c)),
-			container.NewTabItem("Commands", character.NewCoreCommands(c)),
-		))
+		s.middle.Add(tabs)
 	}), 2))
 	return s
 }
 
 func (s *Characters) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(container.NewBorder(s.top, nil, s.middle, nil))
+}
+
+func (s *Characters) abilities(game global.Game, c *core.Character) (a fyne.CanvasObject) {
+	if game == global.One || game == global.Three {
+		a = character.NewFF13Abilities(c)
+	} else if game == global.Two {
+		a = character.NewFF2Abilities(c)
+	} else if game == global.Four {
+		a = character.NewFF4Abilities(c)
+	} else {
+		a = container.NewStack()
+	}
+	return
 }

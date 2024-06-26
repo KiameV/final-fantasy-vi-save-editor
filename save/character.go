@@ -289,21 +289,19 @@ func (d *AbilitySlotData) SetAbilitySlot(v *AbilitySlot) (err error) {
 	return
 }
 
-func (d *OwnedCharacter) JobList() (v *JobList, err error) {
-	return UnmarshalOne[JobList](d.JobListInternal)
-}
-
-func (d *OwnedCharacter) SetJobList(v *JobList) (err error) {
-	d.JobListInternal, err = MarshalOne[JobList](v)
+func (d *OwnedCharacter) Jobs() (v []*Job, err error) {
+	var l *JobList
+	if l, err = UnmarshalOne[JobList](d.JobListInternal); err == nil {
+		v, err = UnmarshalMany[Job](l.Target)
+	}
 	return
 }
 
-func (d *JobList) Jobs() (v []*Job, err error) {
-	return UnmarshalMany[Job](d.Target)
-}
-
-func (d *JobList) SetJobs(v []*Job) (err error) {
-	d.Target, err = MarshalMany[Job](v)
+func (d *OwnedCharacter) SetJobs(v []*Job) (err error) {
+	l := &JobList{}
+	if l.Target, err = MarshalMany[Job](v); err == nil {
+		d.JobListInternal, err = MarshalOne[JobList](l)
+	}
 	return
 }
 

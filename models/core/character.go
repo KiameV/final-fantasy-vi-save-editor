@@ -14,7 +14,7 @@ type (
 		Commands           []int
 		Abilities          []*save.Ability
 		AbilitySlotData    []*save.AbilitySlotData
-		Job                *save.Job
+		Jobs               []*save.Job
 		Equipment          *save.EquipmentList
 		AdditionAbilityIds []int
 		// SortOrderOwnedAbilityIdsInternal ???
@@ -75,6 +75,10 @@ func NewCharacter(game global.Game, in *save.OwnedCharacter) (c *Character, err 
 	}
 
 	if c.Equipment, err = in.Equipment(); err != nil {
+		return
+	}
+
+	if c.Jobs, err = in.Jobs(); err != nil {
 		return
 	}
 	return

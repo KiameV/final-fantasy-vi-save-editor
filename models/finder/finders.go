@@ -191,3 +191,7 @@ func AllCharacters() (v []models.NameValue) {
 	})
 	return
 }
+
+func AllJobs() (v map[int]string) {
+	return singletonFinder.jobs
+}

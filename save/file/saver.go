@@ -42,7 +42,7 @@ func saveFile(game global.Game, data []byte, toFile string, trimmed []byte) (err
 		b  bytes.Buffer
 		zw *flate.Writer
 	)
-	printFile(filepath.Join(config.Dir(game), "_save.file"), data)
+	printFile(filepath.Join(config.Dir(game), "_save.json"), data)
 	// Flate
 	if zw, err = flate.NewWriter(&b, 6); err != nil {
 		return
