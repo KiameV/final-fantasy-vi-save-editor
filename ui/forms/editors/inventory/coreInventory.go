@@ -44,6 +44,8 @@ func (e *Inventory) CreateRenderer() fyne.WidgetRenderer {
 	c2 := widget.NewLabel("Count")
 	c2.Alignment = fyne.TextAlignCenter
 
+	headers := container.NewPadded(container.NewGridWithColumns(columns, container.NewStack(), id1, c1, container.NewStack(), id2, c2))
+
 	l := len(e.items)
 	rows := container.NewVBox()
 	for i := 0; i < l; i += 2 {
@@ -55,16 +57,17 @@ func (e *Inventory) CreateRenderer() fyne.WidgetRenderer {
 			g.Add(entry.ID)
 			g.Add(entry.Count)
 		}
-		rows.Add(g)
+		rows.Add(container.NewPadded(g))
 	}
 	return widget.NewSimpleRenderer(
-		container.NewBorder(nil, nil, nil,
+		container.NewBorder(nil, nil,
+			// left
+			container.NewBorder(
+				headers, nil, nil, nil,
+				container.NewVScroll(rows)),
 			// right
 			container.NewGridWithColumns(2,
 				e.search.Fields(),
 				e.search.Filter()),
-			// middle
-			container.NewBorder(
-				container.NewGridWithColumns(columns, widget.NewCheckWithData("Reset Sort", e.resetSort), id1, c1, container.NewStack(), id2, c2), nil, nil, nil,
-				container.NewVScroll(rows))))
+		))
 }

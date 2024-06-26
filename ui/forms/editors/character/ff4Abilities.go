@@ -64,15 +64,13 @@ func (e *FF4Abilities) populate() {
 func (e *FF4Abilities) CreateRenderer() fyne.WidgetRenderer {
 	body := container.NewVBox()
 	for _, r := range e.rows {
-		body.Add(container.NewGridWithColumns(3, r.ID, r.remove))
+		body.Add(container.NewGridWithColumns(3, r.Label, r.ID, r.remove))
 	}
 	search := inputs.GetSearches().Abilities
-	return widget.NewSimpleRenderer(
-		container.NewGridWithColumns(7,
-			container.NewBorder(
-				container.NewGridWithColumns(4, container.NewStack(), widget.NewLabel("Ability ID"), container.NewStack(), e.add),
-				nil, nil, nil,
-				container.NewVScroll(body)),
-			container.NewStack(),
-			search.Fields(), search.Filter()))
+	left := container.NewBorder(
+		container.NewGridWithColumns(3, container.NewStack(), widget.NewLabel("Ability ID"), e.add),
+		nil, nil, nil,
+		container.NewVScroll(body))
+	right := container.NewGridWithColumns(2, search.Fields(), search.Filter())
+	return widget.NewSimpleRenderer(container.NewBorder(nil, nil, left, right))
 }

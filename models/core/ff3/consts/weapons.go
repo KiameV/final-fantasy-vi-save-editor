@@ -74,7 +74,7 @@ var (
 		models.NewValueName(115, "Hellish Claws"),
 		models.NewValueName(116, "Thorian Hammer"),
 		models.NewValueName(117, "Morning Star"),
-		models.NewValueName(118, "<IC_HMR>Triton Hammer"),
+		models.NewValueName(118, "Triton Hammer"),
 		models.NewValueName(119, "Battleaxe"),
 		models.NewValueName(120, "Dual Tomahawk"),
 		models.NewValueName(121, "Dual Haken"),

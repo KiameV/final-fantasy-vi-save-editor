@@ -60,16 +60,10 @@ func (e *Commands) CreateRenderer() fyne.WidgetRenderer {
 	}
 	cmdSearch := inputs.GetSearches().Commands
 	jobSearch := inputs.GetSearches().Jobs
-	return widget.NewSimpleRenderer(container.NewGridWithColumns(5,
-		container.NewBorder(container.NewVBox(
-			widget.NewLabel("can cause soft locks when loading save"),
-			widget.NewCheckWithData("Enabled", e.enabled)),
-			nil, nil, nil,
-			container.NewVScroll(rows)),
-		container.NewGridWithColumns(3,
-			cmdSearch.Fields(),
-			cmdSearch.Filter()),
-		container.NewGridWithColumns(3,
-			jobSearch.Fields(),
-			jobSearch.Filter())))
+	top := container.NewVBox(
+		widget.NewLabel("can cause soft locks when loading save"),
+		widget.NewCheckWithData("Enabled", e.enabled))
+	left := container.NewVScroll(rows)
+	right := container.NewGridWithColumns(4, cmdSearch.Fields(), cmdSearch.Filter(), jobSearch.Fields(), jobSearch.Filter())
+	return widget.NewSimpleRenderer(container.NewBorder(top, nil, left, right))
 }

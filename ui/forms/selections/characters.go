@@ -36,7 +36,6 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 		} else if game == global.Four {
 			abilities = character.NewFF4Abilities(c)
 		}
-		abilities = abilities
 		s.middle.RemoveAll()
 		s.middle.Add(container.NewAppTabs(
 			container.NewTabItem("Stats", character.NewCoreStats(c)),
@@ -49,5 +48,5 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 }
 
 func (s *Characters) CreateRenderer() fyne.WidgetRenderer {
-	return widget.NewSimpleRenderer(container.NewBorder(s.top, nil, nil, nil, s.middle))
+	return widget.NewSimpleRenderer(container.NewBorder(s.top, nil, s.middle, nil))
 }

@@ -21,6 +21,7 @@ type (
 		Abilities      *Search
 		Characters     *Search
 		Commands       *Search
+		Equipment      *Search
 		ImportantItems *Search
 		Items          *Search
 		Jobs           *Search
@@ -46,6 +47,7 @@ func Load(game global.Game) {
 	if game == global.One {
 		_s.Abilities = newSearch(one.Abilities)
 		_s.Commands = newSearch(one.Commands)
+		_s.Equipment = newSearch(one.Weapons, one.Shields, one.Armors, one.Helmets, one.Gloves)
 		_s.Items = newSearch(one.Items, one.Weapons, one.Shields, one.Armors, one.Helmets, one.Gloves)
 		_s.ImportantItems = newSearch(one.ImportantItems)
 		_s.Jobs = newSearch(one.Jobs)
@@ -53,12 +55,14 @@ func Load(game global.Game) {
 	} else if game == global.Two {
 		_s.Abilities = newSearchFF2(two.Abilities)
 		_s.Commands = newSearch(two.Commands)
+		_s.Equipment = newSearch(two.Weapons, two.Shields, two.Armors, two.Helmets, two.Gloves)
 		_s.Items = newSearch(two.Items, two.Weapons, two.Shields, two.Armors, two.Helmets, two.Gloves)
 		_s.Jobs = newSearch(two.Jobs)
 		_s.Maps = newSearch(two.Maps)
 	} else if game == global.Three {
 		_s.Abilities = newSearch(three.Abilities, three.WhiteMagic, three.BlackMagic, three.SummonMagic)
 		_s.Commands = newSearch(three.Commands)
+		_s.Equipment = newSearch(three.Weapons, three.Shields, three.Armors, three.Helmets, three.Hands)
 		_s.Items = newSearch(three.Items, three.Weapons, three.Shields, three.Armors, three.Helmets, three.Hands)
 		_s.ImportantItems = newSearch(three.ImportantItems)
 		_s.Jobs = newSearch(three.Jobs)
@@ -66,6 +70,7 @@ func Load(game global.Game) {
 	} else if game == global.Four {
 		_s.Abilities = newSearch(four.Abilities, four.WhiteMagic, four.BlackMagic, four.SummonMagic)
 		_s.Commands = newSearch(four.Commands)
+		_s.Equipment = newSearch(four.Weapons, four.Shields, four.Armors, four.Helmets, four.Hands)
 		_s.Items = newSearch(four.Items, four.Weapons, four.Shields, four.Armors, four.Helmets, four.Hands)
 		_s.ImportantItems = newSearch(four.ImportantItems)
 		_s.Jobs = newSearch(four.Jobs)

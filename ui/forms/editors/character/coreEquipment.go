@@ -29,13 +29,15 @@ func NewCoreEquipment(c *core.Character) *Equipment {
 
 func (e *Equipment) CreateRenderer() fyne.WidgetRenderer {
 	rows := container.NewVBox()
-	search := inputs.GetSearches().Items
+	itSearch := inputs.GetSearches().Items
+	eqSearch := inputs.GetSearches().Equipment
 	for _, i := range e.inputs {
 		rows.Add(container.NewGridWithColumns(3, i.Label, i.ID))
 	}
-	return widget.NewSimpleRenderer(container.NewGridWithColumns(2,
-		container.NewGridWithColumns(3,
-			container.NewVScroll(rows),
-			search.Fields(),
-			search.Filter())))
+	left := container.NewVScroll(rows)
+	right := container.NewGridWithColumns(4,
+		eqSearch.Fields(), eqSearch.Filter(),
+		itSearch.Fields(), itSearch.Filter())
+	return widget.NewSimpleRenderer(
+		container.NewBorder(nil, nil, left, right, nil))
 }

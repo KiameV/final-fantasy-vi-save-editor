@@ -63,15 +63,15 @@ func NewCoreStats(c *core.Character) *Character {
 }
 
 func (e *Character) CreateRenderer() fyne.WidgetRenderer {
-	body := container.NewVBox()
 	l := len(e.left)
 	r := len(e.right)
 	s := l
 	if r > l {
 		s = r
 	}
+	rows := make([]fyne.CanvasObject, 0, s)
 	for i := 0; i < s; i++ {
-		row := container.NewGridWithColumns(7)
+		row := container.NewGridWithColumns(4)
 		if i < l {
 			row.Add(e.left[i].Label)
 			row.Add(e.left[i].ID)
@@ -79,7 +79,6 @@ func (e *Character) CreateRenderer() fyne.WidgetRenderer {
 			row.Add(container.NewStack())
 			row.Add(container.NewStack())
 		}
-		row.Add(container.NewStack())
 		if i < r {
 			row.Add(e.right[i].Label)
 			row.Add(e.right[i].ID)
@@ -87,12 +86,10 @@ func (e *Character) CreateRenderer() fyne.WidgetRenderer {
 			row.Add(container.NewStack())
 			row.Add(container.NewStack())
 		}
-		body.Add(row)
+		rows = append(rows, container.NewPadded(row))
 	}
 	return widget.NewSimpleRenderer(
-		container.NewGridWithColumns(2,
-			container.NewBorder(
-				container.NewHBox(widget.NewCheckWithData("Enabled", e.isEnabled)),
-				nil, nil, nil,
-				container.NewVScroll(body))))
+		container.NewBorder(
+			widget.NewCheckWithData("Is Available", e.isEnabled),
+			nil, container.NewVScroll(container.NewVBox(rows...)), nil))
 }

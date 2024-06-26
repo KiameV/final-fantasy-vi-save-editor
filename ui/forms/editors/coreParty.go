@@ -15,34 +15,34 @@ import (
 type (
 	Party struct {
 		widget.BaseWidget
-		left  *fyne.Container
-		right *fyne.Container
+		current *fyne.Container
+		parties *fyne.Container
 	}
 )
 
 func NewCoreParty(p *core.Party, parties *core.Parties) *Party {
 	e := &Party{
 		BaseWidget: widget.BaseWidget{},
-		left:       container.NewVBox(),
-		right:      container.NewVBox(),
+		current:    container.NewVBox(),
+		parties:    container.NewVBox(),
 	}
 	e.ExtendBaseWidget(e)
-	e.left.Add(widget.NewLabel("Current Party"))
+	e.current.Add(widget.NewLabel("Current Party"))
 	for _, m := range p.Members {
 		func(m *save.CorpsSlotInfo) {
 			j := inputs.NewIdEntryWithDataWithHint(&m.CharacterID, finder.Characters)
-			e.left.Add(container.NewPadded(
+			e.current.Add(container.NewPadded(
 				container.NewGridWithColumns(3, j.Label, j.ID)))
 		}(m)
 	}
 	for i, j := range parties.Parties {
 		if i > 0 {
-			e.right.Add(widget.NewSeparator())
+			e.parties.Add(widget.NewSeparator())
 		}
-		e.right.Add(widget.NewLabel(fmt.Sprintf("Party %d", i+1)))
+		e.parties.Add(widget.NewLabel(fmt.Sprintf("Party %d", i+1)))
 		for _, m := range j {
 			in := inputs.NewIdEntryWithDataWithHint(&m.CharacterID, finder.Characters)
-			e.right.Add(container.NewPadded(
+			e.parties.Add(container.NewPadded(
 				container.NewGridWithColumns(3, in.Label, in.ID)))
 		}
 	}
@@ -51,9 +51,8 @@ func NewCoreParty(p *core.Party, parties *core.Parties) *Party {
 
 func (e *Party) CreateRenderer() fyne.WidgetRenderer {
 	search := inputs.GetSearches().Characters
-	return widget.NewSimpleRenderer(container.NewGridWithColumns(2,
-		container.NewVScroll(container.NewGridWithColumns(3,
-			e.left,
-			container.NewVScroll(e.right),
-			search.Fields()))))
+	return widget.NewSimpleRenderer(container.NewBorder(nil, nil,
+		container.NewVScroll(container.NewGridWithColumns(2,
+			e.current,
+			container.NewVScroll(e.parties))), search.Fields()))
 }

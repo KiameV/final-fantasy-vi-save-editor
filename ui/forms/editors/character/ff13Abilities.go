@@ -18,7 +18,7 @@ type (
 		widget.BaseWidget
 		c         *core.Character
 		abilities *fyne.Container
-		bodyRight *fyne.Container
+		body      *fyne.Container
 		add       *widget.Button
 	}
 )
@@ -26,7 +26,7 @@ type (
 func NewFF13Abilities(c *core.Character) *FF13Abilities {
 	e := &FF13Abilities{
 		c:         c,
-		bodyRight: container.NewVBox(),
+		body:      container.NewVBox(),
 		abilities: container.NewVBox(),
 	}
 	e.ExtendBaseWidget(e)
@@ -36,16 +36,12 @@ func NewFF13Abilities(c *core.Character) *FF13Abilities {
 	})
 
 	for i, asd := range e.c.AbilitySlotData {
-		l := container.NewGridWithRows(4)
+		e.body.Add(widget.NewLabel(fmt.Sprintf("%d", i+1)))
 		for _, a := range asd.SlotInfo.Values {
-			func(a *save.Ability) {
-				r := inputs.NewIdEntryWithDataWithHint(&a.AbilityID, finder.Abilities)
-				l.Add(container.NewGridWithColumns(4, r.Label, r.ID))
-			}(a)
+			r := inputs.NewIdEntryWithDataWithHint(&a.AbilityID, finder.Abilities)
+			e.body.Add(container.NewPadded(container.NewGridWithColumns(3, r.Label, r.ID)))
 		}
-		e.bodyRight.Add(widget.NewCard(fmt.Sprintf("%d:", i+1), "", l))
 	}
-
 	e.populate()
 	return e
 }
@@ -75,12 +71,14 @@ func (e *FF13Abilities) populate() {
 
 func (e *FF13Abilities) CreateRenderer() fyne.WidgetRenderer {
 	search := inputs.GetSearches().Abilities
-	return widget.NewSimpleRenderer(container.NewGridWithColumns(7,
-		container.NewBorder(
-			container.NewGridWithColumns(4, container.NewStack(), widget.NewLabel("Ability ID"), container.NewStack(), e.add),
-			nil, nil, nil,
-			container.NewVScroll(e.abilities)),
-		container.NewVScroll(e.bodyRight),
-		container.NewStack(),
-		search.Fields(), search.Filter()))
+	left := container.NewBorder(
+		container.NewGridWithColumns(4, container.NewStack(), widget.NewLabel("Ability ID"), e.add),
+		nil, nil, nil,
+		container.NewVScroll(e.abilities))
+	right := container.NewGridWithColumns(2, search.Fields(), search.Filter())
+	return widget.NewSimpleRenderer(
+		container.NewBorder(nil, nil,
+			left, right,
+			container.NewBorder(nil, nil,
+				container.NewVScroll(e.body), nil)))
 }

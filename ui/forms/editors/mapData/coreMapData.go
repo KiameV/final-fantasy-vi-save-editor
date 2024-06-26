@@ -46,11 +46,10 @@ func NewCore(data *core.MapData) *MapData {
 
 func (e *MapData) CreateRenderer() fyne.WidgetRenderer {
 	search := inputs.GetSearches().Maps
-	return widget.NewSimpleRenderer(container.NewGridWithColumns(3,
+	return widget.NewSimpleRenderer(container.NewBorder(nil, nil,
 		container.NewVScroll(container.NewVBox(
 			widget.NewCard("Player", "", container.NewVBox(e.player...)),
 			widget.NewCard("GPS", "", container.NewVBox(e.gps...)),
 			widget.NewCard("Misc", "", container.NewVBox(e.misc...)))),
-		search.Fields(),
-		search.Filter()))
+		container.NewGridWithColumns(2, search.Fields(), search.Filter())))
 }
