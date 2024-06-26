@@ -35,6 +35,8 @@ func NewCharacters(game global.Game, save *core.Save) *Characters {
 			abilities = character.NewFF2Abilities(c)
 		} else if game == global.Four {
 			abilities = character.NewFF4Abilities(c)
+		} else {
+			abilities = container.NewStack()
 		}
 		s.middle.RemoveAll()
 		s.middle.Add(container.NewAppTabs(

@@ -43,8 +43,9 @@ func (e *Inventory) CreateRenderer() fyne.WidgetRenderer {
 	c1.Alignment = fyne.TextAlignCenter
 	c2 := widget.NewLabel("Count")
 	c2.Alignment = fyne.TextAlignCenter
+	reset := widget.NewCheckWithData("Reset Sort", e.resetSort)
 
-	headers := container.NewPadded(container.NewGridWithColumns(columns, container.NewStack(), id1, c1, container.NewStack(), id2, c2))
+	headers := container.NewPadded(container.NewGridWithColumns(columns, reset, id1, c1, container.NewStack(), id2, c2))
 
 	l := len(e.items)
 	rows := container.NewVBox()

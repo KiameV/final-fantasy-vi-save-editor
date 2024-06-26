@@ -7,7 +7,7 @@ import (
 var (
 	Abilities = []models.NameValue{}
 
-	WhiteMagic = []models.NameValue{models.NewValueName(6, "Cure"),
+	WhiteMagic = []models.NameValue{
 		models.NewValueName(6, "Cure"),
 		models.NewValueName(7, "Cura"),
 		models.NewValueName(8, "Curaga"),

@@ -31,6 +31,7 @@ type (
 		TotalGil                          *int               `json:"totalGil,omitempty"`
 		CheatSettingsDataInternal         *CheatSettingsData `json:"cheatSettingsData,omitempty"`
 		IsOpenedGameBoosterWindow         *bool              `json:"isOpenedGameBoosterWindow,omitempty"`
+		WonderWandIndex                   *int               `json:"wonderWandIndex,omitempty"`
 	}
 	ReleasedJobs struct {
 		Target []int `json:"target"`

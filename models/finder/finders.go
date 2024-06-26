@@ -11,6 +11,7 @@ import (
 	two "pixel-remastered-save-editor/models/core/ff2/consts"
 	three "pixel-remastered-save-editor/models/core/ff3/consts"
 	four "pixel-remastered-save-editor/models/core/ff4/consts"
+	five "pixel-remastered-save-editor/models/core/ff5/consts"
 	six "pixel-remastered-save-editor/models/core/ff6/consts"
 )
 
@@ -78,14 +79,13 @@ func Load(game global.Game, characters []*core.Character) {
 			maps:      nameLookup(four.Maps),
 		}
 	} else if game == global.Five {
-		var temp []models.NameValue
 		singletonFinder = &finders{
-			abilities: nameLookup(temp),
-			commands:  nameLookup(temp),
-			important: nameLookup(temp),
-			items:     nameLookup(temp),
-			jobs:      nameLookup(temp),
-			maps:      nameLookup(temp),
+			abilities: nameLookup(five.Abilities, five.WhiteMagic, five.BlackMagic, five.SummonMagic, five.TimeMagic),
+			commands:  nameLookup(five.Commands),
+			important: nameLookup(five.ImportantItems),
+			items:     nameLookup(five.Items, five.Weapons, five.Shields, five.Armors, five.Helmets, five.Hands),
+			jobs:      nameLookup(five.Jobs),
+			maps:      nameLookup(five.Maps),
 		}
 	} else { // Six
 		var temp []models.NameValue
