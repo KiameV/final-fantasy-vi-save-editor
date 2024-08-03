@@ -50,37 +50,36 @@ func NewCharacter(c *models.Character) *Character {
 func (e *Character) CreateRenderer() fyne.WidgetRenderer {
 	name := widget.NewEntryWithData(e.name)
 	name.Validator = nil
-	return widget.NewSimpleRenderer(
-		container.NewBorder(nil, nil, nil,
-			container.NewGridWithRows(2, container.NewVScroll(widget.NewRichTextWithText(lvlToExp))),
-			container.NewVBox(
-				inputs.NewLabeledEntry("Name:", name),
-				inputs.NewLabeledEntry("Experience:", inputs.NewIntEntryWithBinding(e.exp)),
-				inputs.NewLabeledEntry("Level:", inputs.NewIntEntryWithBinding(e.level)),
-				inputs.NewLabeledEntry("HP Current/Max:", container.NewGridWithColumns(2,
-					inputs.NewIntEntryWithBinding(e.currentHP),
-					inputs.NewIntEntryWithBinding(e.maxHP))),
-				inputs.NewLabeledEntry("MP Current/Max:", container.NewGridWithColumns(2,
-					inputs.NewIntEntryWithBinding(e.currentMP),
-					inputs.NewIntEntryWithBinding(e.maxMP))),
-				inputs.NewLabeledEntry("Strength:", inputs.NewIntEntryWithBinding(e.strength)),
-				inputs.NewLabeledEntry("Agility:", inputs.NewIntEntryWithBinding(e.agility)),
-				inputs.NewLabeledEntry("Reset:", container.NewHBox(
-					container.NewPadded(widget.NewButton("Exp", func() {
-						// TODO
-						e.exp.Set(0)
-					})),
-					container.NewPadded(widget.NewButton("HP", func() {
-						// TODO
-						e.maxHP.Set(0)
-					})),
-					container.NewPadded(widget.NewButton("MP", func() {
-						// TODO
-						e.maxMP.Set(0)
-					})))),
-				inputs.NewLabeledEntry("Stamina:", inputs.NewIntEntryWithBinding(e.stamina)),
-				inputs.NewLabeledEntry("Magic:", inputs.NewIntEntryWithBinding(e.magic)),
-			)))
+	left := container.NewVBox(
+		inputs.NewLabeledEntry("Name:", name),
+		inputs.NewLabeledEntry("Experience:", inputs.NewIntEntryWithBinding(e.exp)),
+		inputs.NewLabeledEntry("Level:", inputs.NewIntEntryWithBinding(e.level)),
+		inputs.NewLabeledEntry("HP Current/Max:", container.NewGridWithColumns(2,
+			inputs.NewIntEntryWithBinding(e.currentHP),
+			inputs.NewIntEntryWithBinding(e.maxHP))),
+		inputs.NewLabeledEntry("MP Current/Max:", container.NewGridWithColumns(2,
+			inputs.NewIntEntryWithBinding(e.currentMP),
+			inputs.NewIntEntryWithBinding(e.maxMP))),
+		inputs.NewLabeledEntry("Strength:", inputs.NewIntEntryWithBinding(e.strength)),
+		inputs.NewLabeledEntry("Agility:", inputs.NewIntEntryWithBinding(e.agility)),
+		inputs.NewLabeledEntry("Reset:", container.NewHBox(
+			container.NewPadded(widget.NewButton("Exp", func() {
+				// TODO
+				e.exp.Set(0)
+			})),
+			container.NewPadded(widget.NewButton("HP", func() {
+				// TODO
+				e.maxHP.Set(0)
+			})),
+			container.NewPadded(widget.NewButton("MP", func() {
+				// TODO
+				e.maxMP.Set(0)
+			})))),
+		inputs.NewLabeledEntry("Stamina:", inputs.NewIntEntryWithBinding(e.stamina)),
+		inputs.NewLabeledEntry("Magic:", inputs.NewIntEntryWithBinding(e.magic)),
+	)
+	right := container.NewGridWithRows(2, container.NewVScroll(widget.NewRichTextWithText(lvlToExp)))
+	return widget.NewSimpleRenderer(container.NewBorder(nil, nil, left, right))
 }
 
 const (

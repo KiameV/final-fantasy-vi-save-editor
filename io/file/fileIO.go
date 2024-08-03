@@ -46,7 +46,7 @@ func LoadFile(fromFile string) (out []byte, trimmed []byte, err error) {
 	zr := flate.NewReader(bytes.NewReader(b))
 	defer func() { _ = zr.Close() }()
 	out, err = io.ReadAll(zr)
-	printFile("loaded.file", out)
+	printFile("loaded.json", out)
 	return
 }
 
@@ -55,7 +55,7 @@ func SaveFile(data []byte, toFile string, trimmed []byte) (err error) {
 		b  bytes.Buffer
 		zw *flate.Writer
 	)
-	printFile("save.file", data)
+	printFile("save.json", data)
 	// Flate
 	if zw, err = flate.NewWriter(&b, 6); err != nil {
 		return

@@ -73,8 +73,6 @@ Scroll
 101 - Swordbreaker
 102 - Gladius
 103 - Valiant Knife
-
-Sword
 104 - Mythril Sword
 105 - Great Sword
 106 - Rune Blade
@@ -94,8 +92,6 @@ Sword
 120 - Lightbringer
 121 - Ragnarok
 122 - Ultima Weapon
-
-Lance
 123 - Mythril Spear
 124 - Trident
 125 - Heavy Lance
@@ -104,16 +100,12 @@ Lance
 128 - Golden Lance
 129 - Radiant Lance
 130 - Impartisan
-
-Dirk
 131 - Kunai
 132 - Kodachi
 133 - Sakura
 134 - Sasuke
 135 - Ichigeki
 136 - Kagenui
-
-Katana
 137 - Ashura
 138 - Kotetsu
 139 - Kikuichimonji
@@ -122,8 +114,6 @@ Katana
 142 - Masamune
 143 - Murakumo
 144 - Mutsunokami
-
-Rod
 145 - Heal Rod
 146 - Mythril Rod
 147 - Flame Rod
@@ -134,19 +124,13 @@ Rod
 152 - Gravity Rod
 153 - Punisher
 154 - Magus Rod
-
-Brush
 155 - Chocobo Brush
 156 - Da Vinci Brush
 157 - Magical Brush
 158 - Rainbow Brush
-
-Stars
 159 - Shuriken
 160 - Fuma Shuriken
 161 - Pinwheel
-
-Special
 162 - Chain Flail
 163 - Moonring Blade
 164 - Morning Star
@@ -156,16 +140,12 @@ Special
 168 - Bone Club
 169 - Sniper
 170 - Wing Edge
-
-Gambler
 171 - Cards
 172 - Darts
 173 - Death Tarot
 174 - Viper Darts
 175 - Dice
 176 - Fixed Dice
-
-Claw
 177 - Metal Knuckles
 178 - Mythril Claws
 179 - Kaiser Knuckles

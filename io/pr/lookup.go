@@ -258,9 +258,9 @@ var (
 		328: "Tintinnabulum",
 		329: "Sprint Shoes",
 		0:   "Invalid",
-		93:  "[Empty (weapon/shield)]",
-		199: "[Empty (helmet)]",
-		198: "[Empty (armor)]",
-		200: "[Empty (relic)]",
+		93:  "[Empty Weapon/Shield]",
+		199: "[Empty Head]",
+		198: "[Empty Armor]",
+		200: "[Empty Relic]",
 	}
 )
