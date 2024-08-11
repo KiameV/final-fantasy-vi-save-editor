@@ -14,7 +14,7 @@ import (
 	jo "gitlab.com/c0b/go-ordered-json"
 )
 
-func (p *PR) Save(slot int, toFile string) (err error) {
+func (p *PR) Save(slot int, toFile string, saveType global.SaveFileType) (err error) {
 	var (
 		// needed   = make(map[int]int)
 		slTarget = jo.NewOrderedMap()
@@ -105,7 +105,7 @@ func (p *PR) Save(slot int, toFile string) (err error) {
 		return
 	}
 
-	return file.SaveFile(data, toFile, p.fileTrimmed)
+	return file.SaveFile(data, toFile, p.fileTrimmed, saveType)
 }
 
 func (p *PR) saveCharacters(addedItems *[]int) (err error) {

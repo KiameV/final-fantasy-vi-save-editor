@@ -10,6 +10,15 @@ const (
 	WindowHeight = 800
 )
 
+type (
+	SaveFileType byte
+)
+
+const (
+	PC SaveFileType = iota
+	PS
+)
+
 var (
 	PWD string
 )

@@ -18,10 +18,11 @@ var (
 
 type (
 	d struct {
-		WindowX       float32 `json:"width"`
-		WindowY       float32 `json:"height""`
-		SaveDir       string  `json:"dir"`
-		AutoEnableCmd bool    `json:"autoEnableCmd"`
+		WindowX           float32 `json:"width"`
+		WindowY           float32 `json:"height""`
+		SaveDir           string  `json:"dir"`
+		AutoEnableCmd     bool    `json:"autoEnableCmd"`
+		EnablePlayStation bool    `json:"ps"`
 	}
 )
 
@@ -51,6 +52,8 @@ func AutoEnableCmd() bool {
 	return data.AutoEnableCmd
 }
 
+func EnablePlayStation() bool { return data.EnablePlayStation }
+
 func SetWindowSize(x, y float32) {
 	data.WindowX = x
 	data.WindowY = y
@@ -64,6 +67,11 @@ func SetSaveDir(dir string) {
 
 func SetAutoEnableCmd(v bool) {
 	data.AutoEnableCmd = v
+	save()
+}
+
+func SetEnablePlayStation(v bool) {
+	data.EnablePlayStation = v
 	save()
 }
 

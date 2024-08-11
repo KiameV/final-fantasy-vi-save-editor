@@ -9,15 +9,19 @@ import (
 	"io"
 	"os"
 
+	"ffvi_editor/global"
 	"github.com/kiamev/ffpr-save-cypher/rijndael"
 )
 
-func LoadFile(fromFile string) (out []byte, trimmed []byte, err error) {
+func LoadFile(fromFile string, saveType global.SaveFileType) (out []byte, trimmed []byte, err error) {
 	var (
 		b []byte
 	)
 	if b, err = os.ReadFile(fromFile); err != nil {
 		return
+	}
+	if saveType == global.PS {
+		return b, nil, nil
 	}
 	if len(b) < 10 {
 		err = errors.New("unable to load file")
@@ -50,39 +54,40 @@ func LoadFile(fromFile string) (out []byte, trimmed []byte, err error) {
 	return
 }
 
-func SaveFile(data []byte, toFile string, trimmed []byte) (err error) {
+func SaveFile(data []byte, toFile string, trimmed []byte, saveType global.SaveFileType) (err error) {
 	var (
 		b  bytes.Buffer
 		zw *flate.Writer
 	)
 	printFile("save.json", data)
-	// Flate
-	if zw, err = flate.NewWriter(&b, 6); err != nil {
-		return
-	}
-	if _, err = zw.Write(data); err != nil {
-		return
-	}
-	_ = zw.Flush()
-	_ = zw.Close()
+	if saveType == global.PC {
+		// Flate
+		if zw, err = flate.NewWriter(&b, 6); err != nil {
+			return
+		}
+		if _, err = zw.Write(data); err != nil {
+			return
+		}
+		_ = zw.Flush()
+		_ = zw.Close()
 
-	// Encrypt
-	if data, err = rijndael.New().Encrypt(b.Bytes()); err != nil {
-		return
+		// Encrypt
+		if data, err = rijndael.New().Encrypt(b.Bytes()); err != nil {
+			return
+		}
+
+		// Encode
+		s := base64.StdEncoding.EncodeToString(data)
+
+		// Format
+		if len(trimmed) > 0 {
+			data = make([]byte, 0, len(trimmed)+len(s))
+			data = append(data, trimmed...)
+			data = append(data, []byte(s)...)
+		} else {
+			data = []byte(s)
+		}
 	}
-
-	// Encode
-	s := base64.StdEncoding.EncodeToString(data)
-
-	// Format
-	if len(trimmed) > 0 {
-		data = make([]byte, 0, len(trimmed)+len(s))
-		data = append(data, trimmed...)
-		data = append(data, []byte(s)...)
-	} else {
-		data = []byte(s)
-	}
-
 	// Write to file
 	if _, err = os.Stat(toFile); errors.Is(err, os.ErrNotExist) {
 		if _, err = os.Create(toFile); err != nil {

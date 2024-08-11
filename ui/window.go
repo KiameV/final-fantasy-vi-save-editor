@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"ffvi_editor/browser"
+	"ffvi_editor/global"
 	"ffvi_editor/io/config"
 	"ffvi_editor/io/pr"
 	"ffvi_editor/ui/forms"
@@ -110,12 +111,12 @@ func (g *gui) Load() {
 	g.open.Disabled = true
 	g.canvas.RemoveAll()
 	g.canvas.Add(
-		forms.NewFileIO(forms.Load, g.window, config.SaveDir(), func(name, dir, file string, _ int) {
+		forms.NewFileIO(forms.Load, g.window, config.SaveDir(), func(name, dir, file string, _ int, saveType global.SaveFileType) {
 			defer func() { g.open.Disabled = false }()
 			// Load file
 			config.SetSaveDir(dir)
 			p := pr.New()
-			if err := p.Load(filepath.Join(dir, file)); err != nil {
+			if err := p.Load(filepath.Join(dir, file), saveType); err != nil {
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)
@@ -147,14 +148,14 @@ func (g *gui) Save() {
 	g.save.Disabled = true
 	g.canvas.RemoveAll()
 	g.canvas.Add(
-		forms.NewFileIO(forms.Save, g.window, config.SaveDir(), func(name, dir, file string, slot int) {
+		forms.NewFileIO(forms.Save, g.window, config.SaveDir(), func(name, dir, file string, slot int, saveType global.SaveFileType) {
 			defer func() {
 				g.open.Disabled = false
 				g.save.Disabled = false
 			}()
 			// Save file
 			config.SetSaveDir(dir)
-			if err := g.pr.Save(slot, filepath.Join(dir, file)); err != nil {
+			if err := g.pr.Save(slot, filepath.Join(dir, file), saveType); err != nil {
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)

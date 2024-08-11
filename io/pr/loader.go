@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"ffvi_editor/global"
 	"ffvi_editor/io/config"
 	"ffvi_editor/io/file"
 	"ffvi_editor/models"
@@ -22,7 +23,7 @@ import (
 	jo "gitlab.com/c0b/go-ordered-json"
 )
 
-func (p *PR) Load(fromFile string) (err error) {
+func (p *PR) Load(fromFile string, saveType global.SaveFileType) (err error) {
 	var (
 		out   []byte
 		i     interface{}
@@ -30,7 +31,7 @@ func (p *PR) Load(fromFile string) (err error) {
 		names []unicodeNameReplace
 	)
 
-	if out, p.fileTrimmed, err = file.LoadFile(fromFile); err != nil {
+	if out, p.fileTrimmed, err = file.LoadFile(fromFile, saveType); err != nil {
 		return
 	}
 	s = string(out)

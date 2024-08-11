@@ -1,9 +1,11 @@
 package forms
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 
+	"ffvi_editor/global"
 	"ffvi_editor/io/config"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -13,11 +15,11 @@ import (
 
 const (
 	quickSave = "Quick Save"
-	autoSave = "Auto Save"
+	autoSave  = "Auto Save"
 )
 
 type (
-	OnSelect func(name, dir, file string, slot int)
+	OnSelect func(name, dir, file string, slot int, saveType global.SaveFileType)
 	FileIO   struct {
 		widget.BaseWidget
 		kind       Kind
@@ -26,6 +28,7 @@ type (
 		buttons    *fyne.Container
 		onSelected OnSelect
 		onCancel   func()
+		saveType   *widget.Select
 	}
 	Kind bool
 )
@@ -47,17 +50,30 @@ func NewFileIO(kind Kind, window fyne.Window, dir string, onSelected OnSelect, o
 	w.ExtendBaseWidget(w)
 	w.dir.OnChanged = w.dirChange
 	w.dir.SetText(config.SaveDir())
+	w.saveType = widget.NewSelect([]string{"PC", "Playstation"}, func(s string) {
+		config.SetEnablePlayStation(s == "Playstation")
+		w.dirChange(w.dir.Text)
+	})
+	if config.EnablePlayStation() {
+		w.saveType.SetSelected("Playstation")
+	} else {
+		w.saveType.SetSelected("PC")
+	}
 	return w
 }
 
 func (w *FileIO) dirChange(s string) {
 	var (
-		d     []fs.DirEntry
-		m     = make(map[string]fs.FileInfo)
-		fi    fs.FileInfo
-		found bool
-		err   error
+		d        []fs.DirEntry
+		m        = make(map[string]fs.FileInfo)
+		fi       fs.FileInfo
+		saveType = global.PC
+		found    bool
+		err      error
 	)
+	if config.EnablePlayStation() {
+		saveType = global.PS
+	}
 	if d, err = os.ReadDir(s); err != nil {
 		w.buttons.RemoveAll()
 	}
@@ -69,22 +85,24 @@ func (w *FileIO) dirChange(s string) {
 		}
 	}
 	if len(m) > 0 {
-		var changed bool
+		var key string
+		w.buttons.RemoveAll()
 		for _, save := range saves {
-			if _, found = m[save.UUID]; found || w.kind == Save {
-				if !changed {
-					changed = true
-					w.buttons.RemoveAll()
-				}
+			if saveType == global.PS {
+				key = fmt.Sprintf("slot%d.sav", save.Slot)
+			} else {
+				key = save.UUID
+			}
+			if _, found = m[key]; found || w.kind == Save {
 				name := save.Name
 				if found && w.kind == Save {
 					name += " (replace)"
 				}
-				func(name string, uuid string, slot int) {
+				func(name string, key string, slot int) {
 					w.buttons.Add(widget.NewButton(name, func() {
-						w.onSelected(name, s, uuid, slot)
+						w.onSelected(name, s, key, slot, saveType)
 					}))
-				}(name, save.UUID, save.Slot)
+				}(name, key, save.Slot)
 			}
 		}
 	}
@@ -99,6 +117,7 @@ func (w *FileIO) CreateRenderer() fyne.WidgetRenderer {
 			}
 		}),
 		w.dir)
+	top = container.NewBorder(top, nil, widget.NewLabel("Save Type:"), nil, w.saveType)
 	bottom := widget.NewButton("Cancel", func() {
 		w.onCancel()
 	})
